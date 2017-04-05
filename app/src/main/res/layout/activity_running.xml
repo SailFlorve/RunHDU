@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:keepScreenOn="true"
+    android:orientation="vertical">
+
+    <com.baidu.mapapi.map.MapView
+        android:id="@+id/bmapView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:fitsSystemWindows="true">
+
+    </com.baidu.mapapi.map.MapView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:background="@color/colorPrimary"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:orientation="horizontal">
+
+            <com.sailflorve.runhdu.view.NumberView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:numberDesText="步数"
+                app:numberDesTextColor="#fff"
+                app:numberText="0"
+                app:numberTextColor="#fff"
+                app:numberUnitText="步"
+                app:numberUnitTextColor="#fff">
+
+            </com.sailflorve.runhdu.view.NumberView>
+
+            <com.sailflorve.runhdu.view.NumberView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:numberDesText="消耗"
+                app:numberDesTextColor="#fff"
+                app:numberText="0"
+                app:numberTextColor="#fff"
+                app:numberUnitText="千卡"
+                app:numberUnitTextColor="#fff">
+
+            </com.sailflorve.runhdu.view.NumberView>
+
+            <com.sailflorve.runhdu.view.NumberView
+                android:id="@+id/speed_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.2"
+                app:numberDesText="速度"
+                app:numberDesTextColor="#fff"
+                app:numberText="0.0"
+                app:numberTextColor="#fff"
+                app:numberUnitText="m/s"
+                app:numberUnitTextColor="#fff">
+
+            </com.sailflorve.runhdu.view.NumberView>
+
+            <com.sailflorve.runhdu.view.NumberView
+                android:id="@+id/distance_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:numberDesText="路程"
+                app:numberDesTextColor="#fff"
+                app:numberText="0"
+                app:numberTextColor="#fff"
+                app:numberUnitText="米"
+                app:numberUnitTextColor="#fff">
+
+            </com.sailflorve.runhdu.view.NumberView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:orientation="vertical">
+
+            <com.dd.CircularProgressButton
+                android:id="@+id/cpb_button"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:background="@color/colorPrimaryDark"
+                android:textColor="@color/cpb_white"
+                android:textSize="20sp"
+                app:cpb_cornerRadius="15dp"
+                app:cpb_textComplete="结束跑步"
+                app:cpb_textIdle="开始跑步" />
+
+            <TextView
+                android:id="@+id/lat_lng_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#fff" />
+
+            <Chronometer
+                android:id="@+id/timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:format="00:00:00"
+                android:textColor="#fff" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

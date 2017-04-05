@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">RunHDU</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="title_activity_login">RunHDU</string>
+
+    <string name="app_description">RunHDU Ver 1.0.0 Demo</string>
+    <string name="title_activity_main">我的运动</string>
+    <string name="demo_tip">提示：所有数据均为演示用途。</string>
+    <string name="tabText1_activity_main">本周跑步统计</string>
+    <string name="tabText2_activity_main">历史跑步数据</string>
+    <string name="sunlight_running_login_tips">Tip: 用户名为学号，登录密码为杭电阳光长跑官网密码，初始密码与学号相同。</string>
+</resources>
