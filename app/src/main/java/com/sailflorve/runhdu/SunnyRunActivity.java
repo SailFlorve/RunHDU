@@ -21,8 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.sailflorve.runhdu.adapters.SunnyRunRecyclerViewAdapter;
+import com.sailflorve.runhdu.httputils.HttpUtil;
 import com.sailflorve.runhdu.sport.SunnyRunInfo;
-import com.sailflorve.runhdu.utils.HttpUtil;
 import com.sailflorve.runhdu.utils.Prefs;
 
 import org.jsoup.Jsoup;
@@ -119,9 +119,9 @@ public class SunnyRunActivity extends AppCompatActivity {
     private void requestCookie() {
         loginLayout.setVisibility(View.VISIBLE);
         refreshLayout.setRefreshing(true);
-        HttpUtil.HttpRequest.url(LOGIN_URL)
-                .add("username", usernameText.getEditText().getText().toString())
-                .add("password", pwText.getEditText().getText().toString())
+        HttpUtil.load(LOGIN_URL)
+                .addParams("username", usernameText.getEditText().getText().toString())
+                .addParams("password", pwText.getEditText().getText().toString())
                 .post(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
@@ -133,7 +133,7 @@ public class SunnyRunActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        Log.d(TAG, "onResponse: enter");
+                        Log.d(TAG, response.body().string());
                         String setCookie = response.header("Set-Cookie");
                         if (setCookie != null) {
                             Log.d("setCookie", setCookie);
@@ -182,8 +182,9 @@ public class SunnyRunActivity extends AppCompatActivity {
         refreshLayout.setRefreshing(true);
         loginLayout.setVisibility(View.GONE);
         infoList.clear();
-        HttpUtil.HttpRequest.url(QUERY_URL)
-                .header("cookie", (String) prefs.get("cookie", null))
+        adapter.notifyDataSetChanged();
+        HttpUtil.load(QUERY_URL)
+                .addHeader("cookie", (String) prefs.get("cookie", null))
                 .get(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
@@ -199,12 +200,19 @@ public class SunnyRunActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         String str = response.body().string();
-                        if (str.contains("用户登录")) {
+                        Log.i(TAG, str);
+                        Document doc = Jsoup.parse(str);
+                        final String topText;
+                        try {
+                            topText = doc.getElementsByClass("nav navbar-nav navbar-right")
+                                    .get(0).select("li").get(0).select("a").text()
+                                    + "同学，以下是你的阳光长跑情况：";
+                        } catch (IndexOutOfBoundsException e) {
                             runOnUiThread(new Runnable() {
                                               @Override
                                               public void run() {
                                                   Toast.makeText(SunnyRunActivity.this,
-                                                          "登录出现异常，请重试。", Toast.LENGTH_SHORT).show();
+                                                          "出现异常，请重试。", Toast.LENGTH_SHORT).show();
                                                   cancelLogin();
                                                   refreshLayout.setRefreshing(false);
                                               }
@@ -212,10 +220,7 @@ public class SunnyRunActivity extends AppCompatActivity {
                             );
                             return;
                         }
-                        Document doc = Jsoup.parse(str);
-                        final String topText = doc.getElementsByClass("nav navbar-nav navbar-right")
-                                .get(0).select("li").get(0).select("a").text()
-                                + "同学，以下是你的阳光长跑情况：";
+
                         Elements trs = doc.select("table").select("tr");
                         for (int i = 0; i < trs.size(); i++) {
                             Elements tds = trs.get(i).select("td");

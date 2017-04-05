@@ -1,6 +1,4 @@
-package com.sailflorve.runhdu.utils;
-
-import java.util.concurrent.TimeUnit;
+package com.sailflorve.runhdu.httputils;
 
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -14,32 +12,41 @@ import okhttp3.Request;
 
 public class HttpUtil {
 
-    public static class HttpRequest {
-        private static HttpRequest httpRequest = new HttpRequest();
-        private static Request.Builder requestBuilder = new Request.Builder();
+    public static RequestManager load(String url) {
+        RequestManager manager = new RequestManager();
+        manager.url(url);
+        return manager;
+    }
+
+    public static class RequestManager {
+        private Request.Builder requestBuilder = new Request.Builder();
         private FormBody.Builder formBuilder = new FormBody.Builder();
 
-        public static HttpRequest url(String url) {
-            httpRequest.formBuilder = new FormBody.Builder();
+        private RequestManager url(String url) {
+            formBuilder = new FormBody.Builder();
+            requestBuilder = new Request.Builder();
+
             requestBuilder = requestBuilder.url(url);
-            return httpRequest;
+            return this;
         }
 
-        public HttpRequest header(String key, String value) {
+        public RequestManager addHeader(String key, String value) {
             requestBuilder.addHeader(key, value);
-            return httpRequest;
+            StringBuilder stringBuilder = new StringBuilder();
+            return this;
         }
 
-        public HttpRequest add(String key, String value) {
-            httpRequest.formBuilder = httpRequest.formBuilder.add(key, value);
-            return httpRequest;
+        public RequestManager addParams(String key, String value) {
+            formBuilder = formBuilder.add(key, value);
+            return this;
         }
 
         public void post(Callback callback) {
             OkHttpClient client = new OkHttpClient.Builder()
                     .followRedirects(false)
                     .followSslRedirects(false)
-                    .build();;
+                    .build();
+            ;
             Request request = requestBuilder.post(formBuilder.build()).build();
             client.newCall(request).enqueue(callback);
         }

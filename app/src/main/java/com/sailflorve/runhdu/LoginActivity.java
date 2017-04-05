@@ -15,8 +15,8 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.dd.CircularProgressButton;
+import com.sailflorve.runhdu.httputils.HttpUtil;
 import com.sailflorve.runhdu.utils.ActivityManager;
-import com.sailflorve.runhdu.utils.HttpUtil;
 
 import java.io.IOException;
 
@@ -97,9 +97,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         loginButton.setProgress(1);
         loginButton.setClickable(false);
-        HttpUtil.HttpRequest.url("http://112.74.115.231:8080/HelloWorld/HelloForm")
-                .add("name", usernameInputLayout.getEditText().getText().toString())
-                .add("password", pwInputLayout.getEditText().getText().toString())
+        HttpUtil.load("http://112.74.115.231:8080/HelloWorld/HelloForm")
+                .addParams("name", usernameInputLayout.getEditText().getText().toString())
+                .addParams("password", pwInputLayout.getEditText().getText().toString())
                 .post(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
