@@ -13,9 +13,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
 
         <TextView
+            android:textColor="@color/TextTitle"
             android:id="@+id/running_time_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,9 +30,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:divider="@drawable/line"
+            android:showDividers="middle"
+            android:dividerPadding="5dp"
+            android:gravity="center">
 
-            <com.sailflorve.runhdu.view.NumberView
+            <com.cxsj.runhdu.view.NumberView
                 android:id="@+id/step_number_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -38,9 +44,9 @@
                 app:numberText="0"
                 app:numberDesText="步数"
                 app:numberUnitText="步">
-            </com.sailflorve.runhdu.view.NumberView>
+            </com.cxsj.runhdu.view.NumberView>
 
-            <com.sailflorve.runhdu.view.NumberView
+            <com.cxsj.runhdu.view.NumberView
                 android:id="@+id/energy_number_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -48,17 +54,17 @@
                 app:numberText="0"
                 app:numberDesText="能量"
                 app:numberUnitText="千卡">
-            </com.sailflorve.runhdu.view.NumberView>
+            </com.cxsj.runhdu.view.NumberView>
 
-            <com.sailflorve.runhdu.view.NumberView
+            <com.cxsj.runhdu.view.NumberView
                 android:id="@+id/dis_number_view"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 app:numberText="0"
                 app:numberDesText="里程"
-                app:numberUnitText="千米">
-            </com.sailflorve.runhdu.view.NumberView>
+                app:numberUnitText="米">
+            </com.cxsj.runhdu.view.NumberView>
         </LinearLayout>
     </LinearLayout>
 

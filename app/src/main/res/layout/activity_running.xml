@@ -5,116 +5,188 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:keepScreenOn="true"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:id="@+id/root_layout"
+    tools:context="com.cxsj.runhdu.MainActivity"
+    android:keepScreenOn="true">
 
-    <com.baidu.mapapi.map.MapView
-        android:id="@+id/bmapView"
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/running_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/BlackMD"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:title="开始跑步"
+        app:layout_collapseMode="pin"
+        app:popupTheme="@style/AppTheme.PopupOverlay">
+
+    </android.support.v7.widget.Toolbar>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4"
-        android:fitsSystemWindows="true">
+        android:layout_weight="3">
 
-    </com.baidu.mapapi.map.MapView>
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/bmapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:layout_collapseMode="parallax" />
+
+        <TextView
+            android:id="@+id/lat_lng_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:padding="5dp"
+            android:background="#96000000"
+            android:textColor="#fff"
+            android:textSize="12sp" />
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
-        android:background="@color/colorPrimary"
-        android:orientation="vertical">
+        android:layout_weight="2"
+        android:background="@color/BlackMD"
+        android:baselineAligned="false"
+        android:divider="@drawable/line"
+        android:dividerPadding="25dp"
+        android:orientation="horizontal"
+        android:showDividers="middle">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:orientation="horizontal">
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <com.sailflorve.runhdu.view.NumberView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:numberDesText="步数"
-                app:numberDesTextColor="#fff"
-                app:numberText="0"
-                app:numberTextColor="#fff"
-                app:numberUnitText="步"
-                app:numberUnitTextColor="#fff">
+                android:gravity="bottom">
 
-            </com.sailflorve.runhdu.view.NumberView>
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:src="@drawable/ic_speed" />
 
-            <com.sailflorve.runhdu.view.NumberView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:numberDesText="消耗"
-                app:numberDesTextColor="#fff"
-                app:numberText="0"
-                app:numberTextColor="#fff"
-                app:numberUnitText="千卡"
-                app:numberUnitTextColor="#fff">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" M/s"
+                    android:textColor="#fff"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
-            </com.sailflorve.runhdu.view.NumberView>
-
-            <com.sailflorve.runhdu.view.NumberView
+            <TextView
                 android:id="@+id/speed_text"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1.2"
-                app:numberDesText="速度"
-                app:numberDesTextColor="#fff"
-                app:numberText="0.0"
-                app:numberTextColor="#fff"
-                app:numberUnitText="m/s"
-                app:numberUnitTextColor="#fff">
+                android:text="0.00"
+                android:scaleX="1.1"
+                android:textColor="#fff"
+                android:textSize="40sp" />
 
-            </com.sailflorve.runhdu.view.NumberView>
-
-            <com.sailflorve.runhdu.view.NumberView
-                android:id="@+id/distance_text"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:numberDesText="路程"
-                app:numberDesTextColor="#fff"
-                app:numberText="0"
-                app:numberTextColor="#fff"
-                app:numberUnitText="米"
-                app:numberUnitTextColor="#fff">
+                android:layout_marginTop="3dp"
+                android:orientation="vertical">
 
-            </com.sailflorve.runhdu.view.NumberView>
+                <com.cxsj.runhdu.view.ImageNumberDisplay
+                    android:id="@+id/running_step"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    app:description="步数"
+                    app:imageSrc="@drawable/ic_steps"
+                    app:layout_columnWeight="1"
+                    app:layout_rowWeight="1"
+                    app:number="0"
+                    app:unit="步" />
+
+                <com.cxsj.runhdu.view.ImageNumberDisplay
+                    android:id="@+id/distance_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:gravity="center"
+                    app:description="里程"
+                    app:imageSrc="@drawable/ic_distance"
+                    app:layout_columnWeight="1"
+                    app:layout_rowWeight="1"
+                    app:number="0"
+                    app:unit="M" />
+
+                <com.cxsj.runhdu.view.ImageNumberDisplay
+                    android:id="@+id/running_energy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="3dp"
+                    android:gravity="center"
+                    app:description="消耗"
+                    app:imageSrc="@drawable/ic_energy"
+                    app:layout_columnWeight="1"
+                    app:layout_rowWeight="1"
+                    app:number="0"
+                    app:unit="千卡" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
+            android:layout_weight="1"
+            android:gravity="center"
             android:orientation="vertical">
 
             <com.dd.CircularProgressButton
                 android:id="@+id/cpb_button"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
                 android:background="@color/colorPrimaryDark"
                 android:textColor="@color/cpb_white"
-                android:textSize="20sp"
-                app:cpb_cornerRadius="15dp"
-                app:cpb_textComplete="结束跑步"
+                android:textSize="18sp"
+                app:cpb_cornerRadius="48dp"
+                app:cpb_selectorComplete="@drawable/stop_run_button_selector"
+                app:cpb_selectorIdle="@drawable/run_button_selector"
+                app:cpb_textComplete="停止跑步"
+                app:cpb_textError="等待定位"
                 app:cpb_textIdle="开始跑步" />
 
-            <TextView
-                android:id="@+id/lat_lng_text"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#fff" />
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_marginTop="15dp">
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_time" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" 跑步用时"
+                    android:textColor="#fff" />
+
+            </LinearLayout>
 
             <Chronometer
+                android:layout_marginTop="5dp"
                 android:id="@+id/timer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:format="00:00:00"
-                android:textColor="#fff" />
+                android:textColor="#fff"
+                android:textSize="18sp" />
         </LinearLayout>
+
+
     </LinearLayout>
+
 </LinearLayout>

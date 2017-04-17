@@ -31,7 +31,7 @@
         android:orientation="vertical"
         android:gravity="center">
         <Button
-            android:id="@+id/real_login_button"
+            android:id="@+id/welcome_login_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="登录"
@@ -42,7 +42,7 @@
             android:textColor="#fff"
             android:visibility="gone" />
         <Button
-            android:id="@+id/register_button"
+            android:id="@+id/welcome_register_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="注册"

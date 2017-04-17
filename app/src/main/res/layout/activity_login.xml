@@ -90,7 +90,7 @@
                 android:layout_marginTop="40dp">
 
                 <com.dd.CircularProgressButton
-                    android:id="@+id/real_login_button"
+                    android:id="@+id/login_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
@@ -98,7 +98,7 @@
                     android:layout_marginRight="60dp"
                     android:layout_marginTop="15dp"
                     android:textColor="#fff"
-                    app:cpb_selectorIdle="@drawable/idle_state_selector"
+                    app:cpb_selectorIdle="@drawable/login_idle_state_selector"
                     app:cpb_textComplete="登陆成功"
                     app:cpb_textError="重试"
                     app:cpb_textIdle="登录" />

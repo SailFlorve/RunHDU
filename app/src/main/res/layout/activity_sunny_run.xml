@@ -23,7 +23,6 @@
             android:title="阳光长跑"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:titleTextColor="#fff">
-
         </android.support.v7.widget.Toolbar>
 
         <FrameLayout
@@ -40,13 +39,14 @@
                     android:id="@+id/sun_list_top_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/TextTitle"
                     android:layout_margin="5dp" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/sunny_run_list"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_margin="5dp">
+                    >
 
                 </android.support.v7.widget.RecyclerView>
 
@@ -77,7 +77,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="15dp">
+                        android:padding="15dp"
+                        android:gravity="center">
 
                         <android.support.design.widget.TextInputLayout
                             android:id="@+id/username_edit_text"
@@ -88,7 +89,7 @@
                             <EditText
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="用户名"
+                                android:hint="学号"
                                 android:inputType="number"/>
                         </android.support.design.widget.TextInputLayout>
 
@@ -118,6 +119,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="15dp"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginRight="30dp"
+                            android:gravity="center"
                             android:text="@string/sunlight_running_login_tips" />
                     </LinearLayout>
                 </ScrollView>

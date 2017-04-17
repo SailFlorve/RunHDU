@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:layout_marginTop="40dp">
 
-    <com.sailflorve.runhdu.view.GradeProgressView
+    <com.cxsj.runhdu.view.GradeProgressView
         android:id="@+id/circle_progress"
         android:layout_width="250dp"
         android:layout_height="250dp"
@@ -21,22 +21,26 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/progress_times"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="今日跑步15次" />
+            android:text="今日跑步0次" />
 
         <TextView
+            android:id="@+id/progress_step_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="6044"
+            android:layout_centerInParent="true"
+            android:text="0"
             android:textColor="#fff"
             android:textSize="36sp" />
 
         <TextView
+            android:id="@+id/progress_dis_energy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="2.52KM | 342千卡" />
+            android:text="0KM | 0千卡" />
     </LinearLayout>
 </FrameLayout>

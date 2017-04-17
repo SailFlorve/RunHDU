@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.sailflorve.runhdu">
+    package="com.cxsj.runhdu">
 
     <!-- 这个权限用于进行网络定位 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -20,37 +20,61 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- SD卡读取权限，用户写入离线定位数据 -->
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
+        android:name="org.litepal.LitePalApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.cxsj.runhdu.MainActivity"
+            android:alwaysRetainTaskState="true"
             android:label="@string/app_name"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
-            android:name=".WelcomeActivity"
-            android:label="@string/title_activity_login">
+            android:name="com.cxsj.runhdu.WelcomeActivity"
+            android:alwaysRetainTaskState="true"
+            android:label="@string/title_activity_login"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".LoginActivity"
+            android:name="com.cxsj.runhdu.LoginActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".SunnyRunActivity" />/>
-        <activity android:name=".RunningActivity" />
+
+        <activity
+            android:name="com.cxsj.runhdu.RegisterActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.cxsj.runhdu.SunnyRunActivity"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.cxsj.runhdu.RunningActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/RunningActivityTheme" />
+
+        <activity
+            android:name="com.cxsj.runhdu.AboutActivity"
+            android:screenOrientation="portrait" />
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="dw9zgf0bd70VGDsejnwqwLfHZCoSRQXc" />
+            android:value="SmDpyxK6fySevn8wSjc1nn4890OCHOpm" />
 
         <service
             android:name="com.baidu.location.f"

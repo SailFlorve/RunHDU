@@ -25,6 +25,11 @@
         <item name="android:textSize">0dp</item>
     </style>
 
+    <style name="RunningExpandedTitleText">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#00ffffff</item>
+    </style>
+
     <style name="BlueTheme" parent="AppTheme">
         <item name="colorPrimary">#0396fa </item>
     </style>

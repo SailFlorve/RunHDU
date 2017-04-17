@@ -4,12 +4,13 @@
     android:id="@+id/history_fragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FAFAFA"
     android:orientation="vertical">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="2dp"
+        android:layout_margin="5dp"
         android:clickable="true"
         android:foreground="?attr/selectableItemBackground"
         app:cardCornerRadius="1dp">
@@ -19,135 +20,111 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
+            <android.support.v7.widget.GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                app:columnCount="3"
+                app:rowCount="3">
 
-                <com.sailflorve.runhdu.view.NumberView
-                    android:layout_width="0dp"
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/all_steps"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_margin="6dp"
                     android:background="@drawable/border"
-                    android:layout_margin="5dp"
+                    app:layout_columnWeight="1"
                     app:numberDesText="总步数"
-                    app:numberText="10992"
-                    app:numberUnitText="步">
+                    app:numberText="0"
+                    app:numberUnitText="步" />
 
-                </com.sailflorve.runhdu.view.NumberView>
-
-                <com.sailflorve.runhdu.view.NumberView
-                    android:layout_margin="5dp"
-                    android:layout_width="0dp"
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/all_energies"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_margin="6dp"
                     android:background="@drawable/border"
+                    app:layout_columnWeight="1"
                     app:numberDesText="总能量"
-                    app:numberText="1252"
-                    app:numberUnitText="千卡">
+                    app:numberText="0"
+                    app:numberUnitText="千卡" />
 
-                </com.sailflorve.runhdu.view.NumberView>
-
-                <com.sailflorve.runhdu.view.NumberView
-                    android:layout_margin="5dp"
-                    android:layout_width="0dp"
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/all_distances"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_margin="6dp"
                     android:background="@drawable/border"
+                    app:layout_columnWeight="1"
                     app:numberDesText="总里程"
-                    app:numberText="7.86"
-                    app:numberUnitText="千米">
-                </com.sailflorve.runhdu.view.NumberView>
-            </LinearLayout>
+                    app:numberText="0"
+                    app:numberUnitText="千米" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.sailflorve.runhdu.view.NumberView
-                    android:layout_margin="5dp"
-                    android:layout_width="0dp"
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/day_ave_step"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_margin="6dp"
                     android:background="@drawable/border"
-                    app:numberDesText="日均步数"
-                    app:numberText="1166"
-                    app:numberUnitText="步">
+                    app:layout_columnWeight="1"
+                    app:numberDesText="平均步数"
+                    app:numberText="0"
+                    app:numberUnitText="步" />
 
-                </com.sailflorve.runhdu.view.NumberView>
-
-                <com.sailflorve.runhdu.view.NumberView
-                    android:layout_margin="5dp"
-                    android:layout_width="0dp"
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/day_ave_energy"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_margin="6dp"
                     android:background="@drawable/border"
-                    app:numberDesText="日均能量"
-                    app:numberText="255"
-                    app:numberUnitText="千卡">
+                    app:layout_columnWeight="1"
+                    app:numberDesText="平均能量"
+                    app:numberText="0"
+                    app:numberUnitText="千卡" />
 
-                </com.sailflorve.runhdu.view.NumberView>
-
-                <com.sailflorve.runhdu.view.NumberView
-                    android:layout_margin="5dp"
-                    android:layout_width="0dp"
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/day_ave_dis"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_margin="6dp"
                     android:background="@drawable/border"
-                    app:numberDesText="日均里程"
-                    app:numberText="2011"
-                    app:numberUnitText="米">
+                    app:layout_columnWeight="1"
+                    app:numberDesText="平均里程"
+                    app:numberText="0"
+                    app:numberUnitText="千米" />
 
-                </com.sailflorve.runhdu.view.NumberView>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.sailflorve.runhdu.view.NumberView
-                    android:layout_margin="5dp"
-                    android:layout_width="0dp"
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/all_run_times"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_margin="6dp"
                     android:background="@drawable/border"
+                    app:layout_columnWeight="1"
                     app:numberDesText="总跑步次数"
-                    app:numberText="5"
-                    app:numberUnitText="次">
+                    app:numberText="0"
+                    app:numberUnitText="次" />
 
-                </com.sailflorve.runhdu.view.NumberView>
-
-                <com.sailflorve.runhdu.view.NumberView
-                    android:layout_margin="5dp"
-                    android:layout_width="0dp"
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/day_ave_times"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_margin="6dp"
                     android:background="@drawable/border"
+                    app:layout_columnWeight="1"
                     app:numberDesText="日均跑步次数"
-                    app:numberText="0.72"
-                    app:numberUnitText="次">
+                    app:numberText="0"
+                    app:numberUnitText="次" />
 
-                </com.sailflorve.runhdu.view.NumberView>
-
-                <com.sailflorve.runhdu.view.NumberView
-                    android:layout_margin="5dp"
-                    android:layout_width="0dp"
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/all_run_time"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:layout_margin="6dp"
                     android:background="@drawable/border"
+                    app:layout_columnWeight="1"
                     app:numberDesText="总跑步时长"
-                    app:numberText="2.81"
-                    app:numberUnitText="小时">
-
-                </com.sailflorve.runhdu.view.NumberView>
-            </LinearLayout>
+                    app:numberText="0"
+                    app:numberUnitText="小时" />
+            </android.support.v7.widget.GridLayout>
         </LinearLayout>
     </android.support.v7.widget.CardView>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="@string/demo_tip" />
 </LinearLayout>
