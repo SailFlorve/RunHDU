@@ -30,15 +30,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name="com.cxsj.runhdu.MainActivity"
+            android:name=".MainActivity"
             android:alwaysRetainTaskState="true"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
-            android:name="com.cxsj.runhdu.WelcomeActivity"
+            android:name=".WelcomeActivity"
             android:alwaysRetainTaskState="true"
             android:label="@string/title_activity_login"
             android:screenOrientation="portrait">
@@ -48,42 +47,42 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="com.cxsj.runhdu.LoginActivity"
+            android:name=".LoginActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
-            android:name="com.cxsj.runhdu.RegisterActivity"
+            android:name=".RegisterActivity"
             android:screenOrientation="portrait" />
-
         <activity
-            android:name="com.cxsj.runhdu.SunnyRunActivity"
+            android:name=".SunnyRunActivity"
             android:screenOrientation="portrait" />
-
         <activity
-            android:name="com.cxsj.runhdu.RunningActivity"
+            android:name=".RunningActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/RunningActivityTheme" />
-
         <activity
-            android:name="com.cxsj.runhdu.AboutActivity"
+            android:name=".AboutActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".RunDetailsActivity"
+            android:theme="@style/RunningActivityTheme" />
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="SmDpyxK6fySevn8wSjc1nn4890OCHOpm" />
+            android:value="Q0DmxShaZqW6Fi7sYecp2xGcEPYdTt8p" />
 
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
-            android:process=":remote">
+            android:process=":remote" />
 
-        </service>
-
-
+        <activity android:name=".TestActivity" />
+        <activity android:name=".FeedbackActivity"></activity>
     </application>
 
 </manifest>

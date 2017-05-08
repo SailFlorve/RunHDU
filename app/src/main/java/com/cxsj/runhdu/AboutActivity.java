@@ -1,17 +1,17 @@
 package com.cxsj.runhdu;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-public class AboutActivity extends AppCompatActivity {
+public class AboutActivity extends BaseActivity {
 
-    private TextView checkVerson;
+    private TextView checkVersion;
+    private TextView feedback;
+    private TextView help;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -32,13 +32,20 @@ public class AboutActivity extends AppCompatActivity {
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
 
-        checkVerson = (TextView) findViewById(R.id.tCheckVerson);
-        checkVerson.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                    Toast.makeText(AboutActivity.this, "已经是最新版本", Toast.LENGTH_SHORT).show();
-            }
+        checkVersion = (TextView) findViewById(R.id.check_version_about);
+        checkVersion.setOnClickListener(v -> {
+            checkUpdate(this);
+        });
+
+        feedback = (TextView) findViewById(R.id.feedback_about);
+        feedback.setOnClickListener(v -> {
+            Intent intent = new Intent(AboutActivity.this, FeedbackActivity.class);
+            startActivity(intent);
+        });
+
+        help = (TextView) findViewById(R.id.help_about);
+        help.setOnClickListener(v -> {
+            showComingSoonDialog();
         });
     }
-
 }

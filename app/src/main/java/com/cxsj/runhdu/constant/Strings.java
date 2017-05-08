@@ -1,10 +1,9 @@
 package com.cxsj.runhdu.constant;
 
 /**
- * Created by Sail on 2017/4/12 0012.
- * Constant strings.
+ * Created by Sail on 2017/4/27 0027.
+ * 字符串常量
  */
 
 public class Strings {
-
 }

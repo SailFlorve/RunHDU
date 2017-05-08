@@ -1,14 +1,22 @@
 package com.cxsj.runhdu.sport;
 
+import com.cxsj.runhdu.utils.ZipUtil;
+
 import org.litepal.crud.DataSupport;
 
 public class RunningInfo extends DataSupport {
+
+    private int id;
+
+    private String year;
+
+    private String month;
 
     private String date;
 
     private String startTime;
 
-    private String endTime;
+    private String duration;
 
     private int steps;
 
@@ -18,14 +26,35 @@ public class RunningInfo extends DataSupport {
 
     private float speed;
 
-    public RunningInfo(String date, String sTime, String eTime, int steps, int dis, int energy, float speed) {
+    private String trailList;
+
+    public RunningInfo(String year, String month, String date, String startTime, String duration, int steps, int distance, int energy, float speed, String trailList) {
+        this.year = year;
+        this.month = month;
         this.date = date;
-        this.startTime = sTime;
-        this.endTime = eTime;
+        this.startTime = startTime;
+        this.duration = duration;
         this.steps = steps;
-        this.distance = dis;
+        this.distance = distance;
         this.energy = energy;
         this.speed = speed;
+        this.trailList = ZipUtil.compress(trailList);
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    public String getMonth() {
+        return month;
+    }
+
+    public void setMonth(String month) {
+        this.month = month;
     }
 
     public String getDate() {
@@ -44,12 +73,12 @@ public class RunningInfo extends DataSupport {
         this.startTime = startTime;
     }
 
-    public String getEndTime() {
-        return endTime;
+    public String getDuration() {
+        return duration;
     }
 
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
     public int getSteps() {
@@ -82,5 +111,17 @@ public class RunningInfo extends DataSupport {
 
     public void setSpeed(float speed) {
         this.speed = speed;
+    }
+
+    public String getTrailList() {
+        return ZipUtil.decompress(trailList);
+    }
+
+    public void setTrailList(String trailList) {
+        this.trailList = ZipUtil.compress(trailList);
+    }
+
+    public int getId() {
+        return id;
     }
 }

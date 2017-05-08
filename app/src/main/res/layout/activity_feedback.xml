@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/feedback_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title="意见反馈">
+
+    </android.support.v7.widget.Toolbar>
+
+    <EditText
+        android:id="@+id/feedback_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/border_blue"
+        android:hint="输入反馈信息..." />
+
+    <EditText
+        android:id="@+id/feedback_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/border_blue"
+        android:hint="您的QQ..." />
+
+    <com.dd.CircularProgressButton
+        android:id="@+id/feedback_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFF"
+        app:cpb_selectorIdle="@drawable/normal_selector"
+        app:cpb_textIdle="提交反馈"
+        app:cpb_textError="重试"
+        app:cpb_textComplete="感谢您的反馈"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="75dp"
+        android:layout_marginRight="75dp"/>
+</LinearLayout>

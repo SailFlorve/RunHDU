@@ -118,8 +118,8 @@ public class SunnyRunActivity extends AppCompatActivity {
         loginLayout.setVisibility(View.VISIBLE);
         refreshLayout.setRefreshing(true);
         HttpUtil.load(URLs.LOGIN_SUNNY_RUN)
-                .addParams("username", usernameText.getEditText().getText().toString())
-                .addParams("password", pwText.getEditText().getText().toString())
+                .addParam("username", usernameText.getEditText().getText().toString())
+                .addParam("password", pwText.getEditText().getText().toString())
                 .post(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {

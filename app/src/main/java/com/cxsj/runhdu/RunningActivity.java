@@ -1,9 +1,7 @@
 package com.cxsj.runhdu;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.SystemClock;
@@ -17,6 +15,7 @@ import android.view.View;
 import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -34,19 +33,29 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.dd.CircularProgressButton;
 import com.cxsj.runhdu.constant.Types;
+import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.sport.RunningInfo;
-import com.cxsj.runhdu.sport.StepSensorAcceleration;
-import com.cxsj.runhdu.sport.StepSensorBase;
-import com.cxsj.runhdu.sport.StepSensorPedometer;
+import com.cxsj.runhdu.sensor.StepSensorAcceleration;
+import com.cxsj.runhdu.sensor.StepSensorBase;
+import com.cxsj.runhdu.sensor.StepSensorPedometer;
+import com.cxsj.runhdu.utils.HttpUtil;
+import com.cxsj.runhdu.utils.Prefs;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.ImageNumberDisplay;
+import com.dd.CircularProgressButton;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
-public class RunningActivity extends AppCompatActivity implements StepSensorBase.StepCallback {
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+public class RunningActivity extends AppCompatActivity
+        implements StepSensorBase.StepCallback {
 
     private LinearLayout rootLayout;
     private CircularProgressButton startButton;
@@ -69,32 +78,40 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
 
     private int locTimes = 0;//定位的次数
     private int runningStatus = 0;//0:未开始跑步 1：正在跑步 2.已经跑完
-    private boolean isValid = true;
+    private boolean isSyncing = false;
+    private boolean isUpload = true;
+    private boolean runWithoutGPS = false;
     private int satelliteNum;
     private PowerManager.WakeLock wakeLock;//唤醒锁
 
     private String startTime;
-    private String endTime;
     private String sensorMode = "未使用传感器";
-    private int steps;
-    private int energy;
-    private int distance;
+    private StringBuilder pointListBuilder = new StringBuilder();
+
+    private Prefs prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_running);
-        acquireWakeLock();
-        init();
+        prefs = new Prefs(this);
+        //acquireWakeLock();
+        initView();
+        initSettings();
         checkGPS();
         initMapLocation();
+
         startButton.setOnClickListener(v -> {
             if (startButton.getProgress() == 0) {
                 startRunning();
             } else {
-                startButton.setProgress(0);
-                stopRunning();
+                new AlertDialog.Builder(RunningActivity.this)
+                        .setTitle("结束跑步")
+                        .setMessage("你确定要结束跑步吗？")
+                        .setPositiveButton("确定", (dialog, which) -> stopRunning())
+                        .setNegativeButton("取消", (d, w) -> {
+                        }).create().show();
             }
         });
     }
@@ -107,20 +124,30 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
             stepSensor = null;
         }
         client.stop();
-        releaseWakeLock();
+        //releaseWakeLock();
+    }
+
+    private void initSettings() {
+        locTime = (int) (Double.parseDouble(
+                (String) prefs.get("locate_rate", "1.5")) * 1000);
+        isUpload = (boolean) prefs.get("sync_data", true);
+        boolean showLog = (boolean) prefs.get("show_debug_log", false);
+        if (showLog) latLngText.setVisibility(View.VISIBLE);
+        else latLngText.setVisibility(View.GONE);
+        runWithoutGPS = (boolean) prefs.get("only_gps_run", false);
     }
 
     @Override
     public void onBackPressed() {
         if (runningStatus == 1) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(RunningActivity.this);
-            dialog.setTitle("正在跑步").setMessage("如果退出，数据将会丢失。你确定退出吗？");
-            dialog.setPositiveButton("确定", (d, which) -> {
-                RunningActivity.super.onBackPressed();
-            });
-            dialog.setNegativeButton("取消", (d, which) -> {
+            dialog.setTitle("正在跑步").setMessage(R.string.exit_ensure);
+            dialog.setPositiveButton("确定", (dialog1, which) -> RunningActivity.super.onBackPressed());
+            dialog.setNegativeButton("取消", (dialog12, which) -> {
             });
             dialog.create().show();
+        } else if (isSyncing) {
+            Toast.makeText(this, "正在同步数据，请稍等...", Toast.LENGTH_SHORT).show();
         } else {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
@@ -138,11 +165,12 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
     }
 
     //初始化变量
-    private void init() {
+
+    private void initView() {
 
         client = new LocationClient(getApplicationContext());
         client.registerLocationListener(new RunningActivity.MyLocationListener());
-        rootLayout = (LinearLayout) findViewById(R.id.root_layout);
+        rootLayout = (LinearLayout) findViewById(R.id.running_root_layout);
         mapView = (MapView) findViewById(R.id.bmapView);
         startButton = (CircularProgressButton) findViewById(R.id.cpb_button);
         latLngText = (TextView) findViewById(R.id.lat_lng_text);
@@ -158,13 +186,14 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
         timer = (Chronometer) findViewById(R.id.timer);
         baiduMap = mapView.getMap();
         startButton.setClickable(false);
+        startButton.setIndeterminateProgressMode(true);
     }
 
     /**
      * 打开activity时把地图移动到现在所在的位置
      */
     private void initMapLocation() {
-        initLocation(1500);
+        initLocation(2500);
         client.start();
     }
 
@@ -177,29 +206,31 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
     }
 
     private void startRunning() {
-        if (!Utility.isNetworkAvailable(getApplicationContext())) {
-            AlertDialog.Builder dialog = new AlertDialog.Builder(RunningActivity.this);
-            dialog.setTitle("没有网络").setMessage("请连接网络后，再开始跑步。");
-            dialog.setPositiveButton("知道了", (d, which) -> {
-            });
-            dialog.create().show();
-            return;
+        if (isUpload) {
+            if (!Utility.isNetworkAvailable(getApplicationContext())) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(RunningActivity.this);
+                dialog.setTitle("没有网络").setMessage(R.string.internet_not_connect);
+                dialog.setPositiveButton("知道了", (dialog1, which) -> {
+                });
+                dialog.create().show();
+                return;
+            }
         }
+        if (!runWithoutGPS) {
+            if (!checkGPS()) {
+                return;
+            }
 
-        if (!checkGPS()) {
-            return;
+            //如果卫星数量小于最小允许跑步的卫星数，不允许跑步
+            if (satelliteNum <= 5) {
+                AlertDialog.Builder dialog = new AlertDialog.Builder(RunningActivity.this);
+                dialog.setTitle("GPS无法工作").setMessage(R.string.no_gps);
+                dialog.setPositiveButton("知道了", (dialog12, which) -> {
+                });
+                dialog.create().show();
+                return;
+            }
         }
-
-        //如果卫星数量小于最小允许跑步的卫星数，不允许跑步
-        if (satelliteNum <= 5) {
-            AlertDialog.Builder dialog = new AlertDialog.Builder(RunningActivity.this);
-            dialog.setTitle("GPS无法工作").setMessage("GPS信号较弱或无信号。请走到开阔地带再开始跑步。");
-            dialog.setPositiveButton("知道了", (d, which) -> {
-            });
-            dialog.create().show();
-            return;
-        }
-
         timer.setBase(SystemClock.elapsedRealtime());//计时器清零
         int hour = (int) ((SystemClock.elapsedRealtime() - timer.getBase()) / 1000 / 60);
         timer.setFormat("0" + String.valueOf(hour) + ":%s");
@@ -208,6 +239,7 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
         startButton.setProgress(100);
         runningStatus = 1;
         pointList.clear();//开始跑步前，把点列表清空
+        pointListBuilder = new StringBuilder();
         initLocation(locTime);
         client.start();
         startTime = Utility.getTime(Types.TYPE_CURRENT_TIME);
@@ -217,27 +249,27 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
     }
 
     private void stopRunning() {
-
         runningStatus = 2;
         timer.stop();
+        client.stop();
 
         startButton.setClickable(false);
         startButton.setIdleText("跑步完成");
-        client.stop();
+        startButton.setProgress(0);
 
         if (!pointList.isEmpty()) {
             addMarker(pointList.get(pointList.size() - 1), R.drawable.ic_loc_end);
         }
 
         msUpdate = MapStatusUpdateFactory.newMapStatus(
-                new MapStatus.Builder().zoom(18).build()
+                new MapStatus.Builder().zoom(17).build()
         );
         baiduMap.setMapStatus(msUpdate);
 
         locTimes = 0;//重置定位次数
 
         stepSensor.unregisterStep();
-        saveToDatabase();
+        saveRunData();
 
         // 计算平均速度
         float speed = Integer.parseInt(distanceNumber.getNumber()) / getSeconds();
@@ -250,6 +282,22 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
         int minutes = Integer.parseInt(times[1]);
         int seconds = Integer.parseInt(times[2]);
         return hours * 3600 + minutes * 60 + seconds;
+    }
+
+    private void addPoint(LatLng point) {
+        LatLng lastPoint;
+        if (pointList.size() > 0) {
+            lastPoint = pointList.get(pointList.size() - 1);
+            if (lastPoint.latitude == point.latitude
+                    && lastPoint.longitude == point.longitude) {
+                return;
+            }
+        }
+        pointList.add(point);
+        pointListBuilder.append(point.longitude)
+                .append(",")
+                .append(point.latitude)
+                .append(",");
     }
 
     private void registerStepSensor() {
@@ -273,45 +321,95 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
 
     }
 
-    private void saveToDatabase() {
+    private void saveRunData() {
         //跑步信息保存数据库
-        distance = Integer.parseInt(distanceNumber.getNumber());
-        if (distance < 20) {
-            isValid = false;
-            startButton.setClickable(false);
-            startButton.setErrorText("跑步无效");
-            startButton.setProgress(-1);
-            new AlertDialog.Builder(this)
-                    .setTitle("跑步无效")
-                    .setCancelable(false)
-                    .setMessage("跑步路程太短，本次跑步无效。")
-                    .setPositiveButton("知道了", (d, which) -> {
-                    }).show();
-            return;
+        int distance = Integer.parseInt(distanceNumber.getNumber());
+        if (!runWithoutGPS) {
+            if (distance < 20) {
+                startButton.setClickable(false);
+                startButton.setErrorText("跑步无效");
+                startButton.setProgress(-1);
+                new AlertDialog.Builder(this)
+                        .setTitle("跑步无效")
+                        .setCancelable(false)
+                        .setMessage(R.string.dis_not_enough)
+                        .setPositiveButton("知道了", (dialog, which) -> {
+                        }).show();
+                return;
+            }
         }
-        endTime = Utility.getTime(Types.TYPE_CURRENT_TIME);
-        steps = Integer.parseInt(stepNumber.getNumber());
-        energy = Integer.parseInt(energyNumber.getNumber());
+        int steps = Integer.parseInt(stepNumber.getNumber());
+        int energy = Integer.parseInt(energyNumber.getNumber());
+        float speed = Float.parseFloat(speedNumber.getText().toString());
+
         RunningInfo runningInfo = new RunningInfo(
-                Utility.getTime(Types.TYPE_MONTH_DATE),
+                Utility.getTime(Calendar.YEAR),
+                Utility.getTime(Types.TYPE_MONTH),
+                Utility.getTime(Calendar.DATE),
                 startTime,
-                endTime,
+                timer.getText().toString(),
                 steps,
                 distance,
                 energy,
-                0);
+                speed,
+                pointListBuilder.toString()
+        );
         runningInfo.save();
+        if (isUpload) updateToService(runningInfo);
+    }
+
+    private void updateToService(RunningInfo runningInfo) {
+        isSyncing = true;
+        HttpUtil.load(URLs.UPLOAD_RUN_INFO)
+                .addParam("userName", (String) prefs.get("username", "0"))
+                .addParam("year", runningInfo.getYear())
+                .addParam("month", runningInfo.getMonth())
+                .addParam("date", runningInfo.getDate())
+                .addParam("startTime", runningInfo.getStartTime())
+                .addParam("duration", runningInfo.getDuration())
+                .addParam("steps", String.valueOf(runningInfo.getSteps()))
+                .addParam("distance", String.valueOf(runningInfo.getDistance()))
+                .addParam("energy", String.valueOf(runningInfo.getEnergy()))
+                .addParam("speed", String.valueOf(runningInfo.getSpeed()))
+                .addParam("trailList", runningInfo.getTrailList())
+                .post(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        isSyncing = false;
+                        runOnUiThread(() -> Snackbar.make(
+                                rootLayout, "上传本次跑步数据失败。", Snackbar.LENGTH_LONG)
+                                .setAction("重试", v -> updateToService(runningInfo)).show());
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        isSyncing = false;
+                        runOnUiThread(() -> {
+                            String result = "";
+                            try {
+                                result = response.body().string();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            if (!result.equals("true")) {
+                                Snackbar.make(rootLayout, "上传本次跑步数据失败。", Snackbar.LENGTH_LONG)
+                                        .setAction("重试", v -> updateToService(runningInfo)).show();
+                            } else {
+                                Snackbar.make(rootLayout, "跑步数据上传成功。", Snackbar.LENGTH_LONG)
+                                        .setAction("退出", v -> onBackPressed()).show();
+                            }
+                        });
+                    }
+                });
     }
 
     /**
      * 把地图移动到坐标位置
      */
     private void moveToLocation(LatLng latLng) {
-        MapStatus mapStatus = new MapStatus.Builder().target(latLng).zoom(19).build();
+        MapStatus mapStatus = new MapStatus.Builder().target(latLng).zoom(18).build();
         msUpdate = MapStatusUpdateFactory.newMapStatus(mapStatus);
-        if (msUpdate != null) {
-            baiduMap.setMapStatus(msUpdate);
-        }
+        baiduMap.setMapStatus(msUpdate);
     }
 
     /**
@@ -340,10 +438,21 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
         //画路径线
         polyline = null;
         if (pointList.size() >= 2 && pointList.size() < 10000) {
-            polyline = new PolylineOptions().width(6).color(Color.RED).points(pointList);//路径折线
-        }
-        if (polyline != null) {
+            polyline = new PolylineOptions()
+                    .width(10)
+                    .color(R.color.colorPrimary)
+                    .zIndex(0)
+                    .points(pointList);
             baiduMap.addOverlay(polyline);//添加Marker
+        } else if (pointList.size() >= 10000) {
+            stopRunning();
+            new AlertDialog.Builder(this)
+                    .setTitle("超时提示")
+                    .setMessage(R.string.over_time)
+                    .setPositiveButton(R.string.got_it, (dialog, which) -> {
+                    })
+                    .create().show();
+
         }
     }
 
@@ -360,7 +469,7 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
             PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
             wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "PostLocationService");
             if (null != wakeLock) {
-                wakeLock.acquire();
+                wakeLock.acquire(10 * 60 * 1000L /*10 minutes*/);
             }
         }
     }
@@ -374,13 +483,15 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
     }
 
     private boolean checkGPS() {
+        if (runWithoutGPS) return true;
         if (!Utility.isGPSOpen(getApplicationContext())) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(RunningActivity.this);
-            dialog.setTitle("GPS未开启").setMessage("请开启GPS后，再开始跑步。");
-            dialog.setPositiveButton("知道了", (d, w) -> {
+            dialog.setTitle("GPS未开启").setMessage(R.string.not_open_gps);
+            dialog.setPositiveButton("知道了", (dialog1, which) -> {
+
             });
 
-            dialog.setNegativeButton("去设置", (d, w) -> {
+            dialog.setNegativeButton("去设置", (dialog12, which) -> {
                 Intent intent = new Intent
                         (Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 startActivity(intent);
@@ -398,7 +509,7 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
         energyNumber.setNumber(String.valueOf((int) (stepNum * 0.09)));
     }
 
-    public class MyLocationListener implements BDLocationListener {
+    private class MyLocationListener implements BDLocationListener {
         @Override
         public void onReceiveLocation(final BDLocation bdLocation) {
             if (bdLocation == null) return;
@@ -406,7 +517,9 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
             final LatLng latLng =
                     new LatLng(bdLocation.getLatitude(), bdLocation.getLongitude());
             final StringBuilder builder = new StringBuilder();
-            builder.append("第" + (++locTimes) + "次定位，类型")
+            builder.append("第")
+                    .append(++locTimes)
+                    .append("次定位，类型")
                     .append(type)
                     .append("，卫星数")
                     .append(bdLocation.getSatelliteNumber())
@@ -417,22 +530,24 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
                     .append("，")
                     .append("纬度 ")
                     .append(latLng.latitude)
-                    .append("\n" + sensorMode);
+                    .append("\n")
+                    .append(sensorMode);
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    latLngText.setText(builder.toString());
-                    //开始跑步后，才显示速度和里程并保存轨迹点集
-                    if (runningStatus == 1) {
-                        if (type != 61) return;
-                        speedNumber.setText(Utility.formatDecimal(bdLocation.getSpeed() / 3.6, 2));//速度数字
-                        distanceNumber.setNumber(String.valueOf(Utility.getRunningDistance(pointList)));//路程数字
-                        double dis = Double.parseDouble(distanceNumber.getNumber());
-                        pointList.add(latLng);
-                        //跑步前的定位中，保存卫星数量;如果不是卫星定位，则等待
-                    } else if (runningStatus == 0) {
-                        satelliteNum = bdLocation.getSatelliteNumber();
+            runOnUiThread(() -> {
+                latLngText.setText(builder.toString());
+                //开始跑步后，才显示速度和里程并保存轨迹点集
+                if (runningStatus == 1) {
+                    if (type != 61
+                            || bdLocation.getRadius() > 20) return;
+                    speedNumber.setText(Utility.formatDecimal(bdLocation.getSpeed() / 3.6, 2));//速度数字
+                    distanceNumber.setNumber(String.valueOf(Utility.getRunningDistance(pointList)));//路程数字
+
+                    // TODO:轨迹纠偏
+                    addPoint(latLng);
+                } else if (runningStatus == 0) {
+                    //跑步前的定位中，保存卫星数量;如果不是卫星定位，则等待
+                    satelliteNum = bdLocation.getSatelliteNumber();
+                    if (!runWithoutGPS) {
                         if (type != 61) {
                             switch (type) {
                                 case 62:
@@ -452,6 +567,9 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
                                             }).show();
                                     client.stop();
                                     break;
+                                case 505:
+                                    startButton.setErrorText("KEY错误");
+                                    break;
                                 default:
                                     startButton.setErrorText("等待定位");
                                     break;
@@ -464,36 +582,9 @@ public class RunningActivity extends AppCompatActivity implements StepSensorBase
                             startButton.setClickable(true);
                         }
                     }
-                    drawCurrentPoint(latLng);
                 }
+                drawCurrentPoint(latLng);
             });
-
-//            //跑步前的定位中，如果出现定位错误，弹出对话框
-//            if (!isRunningStart && (bdLocation.getLocType() != 61 && bdLocation.getLocType() != 161)) {
-//                final AlertDialog.Builder dialog = new AlertDialog.Builder(RunningActivity.this);
-//                dialog.setTitle("无法定位").setMessage("请检查网络连接，或确认授予了定位权限。错误码" + bdLocation.getLocType());
-//                dialog.setPositiveButton("知道了", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        finish();
-//                    }
-//                });
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        dialog.create().show();
-//                    }
-//                });
-//            }
-
-            //进行一次定位后，才可以点击跑步按钮。
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    startButton.setEnabled(true);
-//                    startButton.setIdleText("开始跑步");
-//                }
-//            });
         }
 
         @Override

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/BlackMD"
+    android:orientation="vertical"
+    tools:context="com.cxsj.runhdu.RunDetailsActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/details_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/BlackMD"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_collapseMode="pin"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:title="详细信息">
+
+    </android.support.v7.widget.Toolbar>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5">
+
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/map_view_details"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:background="#b4000000"
+            android:divider="@drawable/divider"
+            android:dividerPadding="5dp"
+            android:orientation="horizontal"
+            android:paddingBottom="15dp"
+            android:paddingTop="15dp"
+            android:showDividers="middle">
+
+            <com.cxsj.runhdu.view.NumberView
+                android:id="@+id/date_text_details"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                app:numberDesText="跑步日期"
+                app:numberDesTextColor="#fff"
+                app:numberText="1月1日"
+                app:numberTextColor="#FFF"
+                app:numberUnitText=""
+                app:numberUnitTextColor="#b4ffffff" />
+
+            <com.cxsj.runhdu.view.NumberView
+                android:id="@+id/start_time_text_details"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                app:numberDesText="开始时间"
+                app:numberDesTextColor="#fff"
+                app:numberText="00:00"
+                app:numberTextColor="#FFF"
+                app:numberUnitText=""
+                app:numberUnitTextColor="#b4ffffff" />
+
+            <com.cxsj.runhdu.view.NumberView
+                android:id="@+id/duration_details"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:numberDesText="持续时间"
+                app:numberDesTextColor="#fff"
+                app:numberText="00:00:00"
+                app:numberTextColor="#FFF"
+                app:numberUnitText=""
+                app:numberUnitTextColor="#b4ffffff" />
+
+
+            <com.cxsj.runhdu.view.NumberView
+                android:id="@+id/speed_text_details"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:scaleX="1"
+                app:numberDesText="平均速度"
+                app:numberDesTextColor="#fff"
+                app:numberText="0.00"
+                app:numberTextColor="#FFF"
+                app:numberUnitText="M/s"
+                app:numberUnitTextColor="#b4ffffff" />
+        </LinearLayout>
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="15dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_weight="1.2"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/dis_text_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleX="0.9"
+                android:text="0"
+                android:textColor="#FFF"
+                android:textSize="40sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:text="KM"
+                android:textColor="#FFF" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="30dp"
+            android:background="#82ffffff" />
+
+        <com.cxsj.runhdu.view.NumberView
+            android:id="@+id/step_text_details"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            app:numberDesText="步数"
+            app:numberDesTextColor="#fff"
+            app:numberText="0"
+            app:numberTextColor="#FFF"
+            app:numberUnitText="步"
+            app:numberUnitTextColor="#b4ffffff" />
+
+        <com.cxsj.runhdu.view.NumberView
+            android:id="@+id/energy_details"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            app:numberDesText="消耗"
+            app:numberDesTextColor="#fff"
+            app:numberText="0"
+            app:numberTextColor="#FFF"
+            app:numberUnitText="千卡"
+            app:numberUnitTextColor="#b4ffffff" />
+    </LinearLayout>
+
+</LinearLayout>

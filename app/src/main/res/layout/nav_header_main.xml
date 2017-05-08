@@ -8,38 +8,42 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
+        android:id="@+id/menu_bg_img"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/menu_bg"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop"
+        android:src="@drawable/menu_bg" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:background="#78000000"
+        android:gravity="center"
+        android:orientation="horizontal"
         android:paddingBottom="5dp"
-        android:paddingTop="5dp"
         android:paddingLeft="15dp"
-        android:paddingRight="15dp">
+        android:paddingRight="15dp"
+        android:paddingTop="5dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            app:civ_border_width="1dp"
-            app:civ_border_color="#ffffffff"
-            android:src="@drawable/photo"/>
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:src="@drawable/photo"
+            app:civ_border_color="#FFF"
+            app:civ_border_width="1dp" />
 
         <TextView
             android:id="@+id/welcome_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="早上好，test !"
-            android:textColor="#ffffff"
             android:layout_gravity="center"
-            android:layout_margin="15dp"/>
+            android:layout_margin="15dp"
+            android:text="早上好，test !"
+            android:textColor="#ffffff" />
 
     </LinearLayout>
 

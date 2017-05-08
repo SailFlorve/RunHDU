@@ -1,18 +1,20 @@
 package com.cxsj.runhdu.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v7.app.AlertDialog;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.cxsj.runhdu.constant.Types;
+import com.cxsj.runhdu.gson.Running;
+import com.google.gson.Gson;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -93,7 +95,7 @@ public class Utility {
     }
 
     /**
-     * @param d 需要处理的数字
+     * @param d   需要处理的数字
      * @param num 保留位数(只能是1或者2)
      * @return 保留num位小数后的字符串
      */
@@ -107,22 +109,6 @@ public class Utility {
     }
 
     /**
-     * 获取AlertDialog.Builder实例。
-     *
-     * @param context
-     * @param title
-     * @param message
-     * @return
-     */
-    public static AlertDialog.Builder getDialogBuilder(Context context, String title, String message) {
-        AlertDialog.Builder b = new AlertDialog.Builder(context);
-        b.setTitle(title);
-        b.setMessage(message);
-        b.setCancelable(false);
-        return b;
-    }
-
-    /**
      * @param type 获取的时间类型，
      *             Types.TYPE_AM_PM：返回上午/下午/晚上
      *             Types.TYPE_MONTH_DATE：返回日期，例如2月15日
@@ -130,6 +116,7 @@ public class Utility {
      *             其他类型：Calendar.TYPE
      * @return 类型字符串
      */
+    @SuppressLint("WrongConstant")
     public static String getTime(int type) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -150,6 +137,8 @@ public class Utility {
             return new SimpleDateFormat("M月d日", Locale.CHINA).format(new Date());
         } else if (type == Types.TYPE_CURRENT_TIME) {
             return new SimpleDateFormat("HH:mm", Locale.CHINA).format(new Date());
+        } else if (type == Types.TYPE_MONTH) {
+            return String.valueOf(calendar.get(Calendar.MONTH) + 1);
         } else {
             return String.valueOf(calendar.get(type));
         }
@@ -157,13 +146,14 @@ public class Utility {
 
     /**
      * 返回集合里是否全部为同一个数据。
-     * @param list 检测的list
+     *
+     * @param list  检测的list
      * @param value 值
-     * @param <T> 集合泛型
+     * @param <T>   集合泛型
      * @return 是否为同一个数据。
      */
     public static <T> boolean isAllSame(List<T> list, T value) {
-        if(list.isEmpty()) return false;
+        if (list.isEmpty()) return false;
         for (T t : list) {
             if (t != value) {
                 return false;
@@ -173,27 +163,20 @@ public class Utility {
     }
 
     /**
-     * 返回两个时间差
-     * @param oldTime 较早的时间
-     * @param newTime 新的时间
+     * 返回计时器时间字符串的分钟数量。
      * @return 两个时间间隔的分钟数
      */
-    public static int getTimeDiff(String oldTime, String newTime) {
-        SimpleDateFormat df = new SimpleDateFormat("HH:mm", Locale.CHINA);
+    public static int getMinutes(String time) {
+        String[] times = time.split(":");
+        int minutes = Integer.parseInt(times[1]);
+        int hours = Integer.parseInt(times[0]);
+        int seconds = Integer.parseInt(times[2]);
+        return hours * 60 + minutes + seconds / 60;
+    }
 
-        Date now = null;
-        Date past = null;
-        try {
-            now = df.parse(newTime);
-            past = df.parse(oldTime);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return 0;
-        }
-        long l = now.getTime() - past.getTime();
-        long day = l / (24 * 60 * 60 * 1000);
-        long hour = (l / (60 * 60 * 1000) - day * 24);
-        long min = ((l / (60 * 1000)) - day * 24 * 60 - hour * 60);
-        return (int) min;
+    public static Running handleRunningResponse(String response) {
+        if (TextUtils.isEmpty(response)) return null;
+        return new Gson().fromJson(response, Running.class);
+
     }
 }

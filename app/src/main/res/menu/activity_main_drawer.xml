@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group>
-            <item
-                android:id="@+id/sport_status"
-                android:icon="@drawable/ic_sport"
-                android:title="我的运动" />
-            <item
-                android:id="@+id/sunlight_long_run"
-                android:icon="@drawable/ic_sunlight_run"
-                android:title="阳光长跑" />
-            <item
-                android:id="@+id/sport_moments"
-                android:icon="@drawable/ic_moments"
-                android:title="运动圈" />
+        <item
+            android:id="@+id/sport_status"
+            android:icon="@drawable/ic_sport"
+            android:title="@string/title_activity_main" />
+        <item
+            android:id="@+id/sunlight_long_run"
+            android:icon="@drawable/ic_sunlight_run"
+            android:title="阳光长跑" />
+        <item
+            android:id="@+id/sport_moments"
+            android:icon="@drawable/ic_moments"
+            android:title="运动圈" />
     </group>
     <item android:title="社交">
         <menu>
@@ -31,6 +31,10 @@
     <item android:title="其他">
         <menu>
             <item
+                android:icon="@drawable/ic_lab"
+                android:id="@+id/enter_lab"
+                android:title="实验室" />
+            <item
                 android:id="@+id/settings"
                 android:icon="@drawable/ic_settings"
                 android:title="设置" />
@@ -42,9 +46,6 @@
                 android:id="@+id/quit"
                 android:icon="@drawable/ic_exit"
                 android:title="退出" />
-            <item
-                android:id="@+id/clear"
-                android:title="清除数据"/>
         </menu>
     </item>
 

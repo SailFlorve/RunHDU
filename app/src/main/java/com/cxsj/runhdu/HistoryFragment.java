@@ -31,7 +31,7 @@ public class HistoryFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.history_fragment, null, false);
+        View view = inflater.inflate(R.layout.fragment_history, null, false);
         allSteps = (NumberView) view.findViewById(R.id.all_steps);
         allEnergy = (NumberView) view.findViewById(R.id.all_energies);
         allDis = (NumberView) view.findViewById(R.id.all_distances);
@@ -68,26 +68,38 @@ public class HistoryFragment extends Fragment {
             String date = info.getDate();
             if (!date.equals(oldDate)) runDays++;
             oldDate = date;
-            allTimeNum += Utility.getTimeDiff(info.getStartTime(), info.getEndTime());
+            allTimeNum += Utility.getMinutes(info.getDuration());
+
         }
 
         if (runDays != 0) {
             averTimesNum = (double) allTimesNum / runDays;
         }
 
-        if (allStepsNum > 10000) {
-            allSteps.setText(Utility.formatDecimal(allStepsNum / 10000.0, 2) + "万");
-        } else {
-            allSteps.setText(String.valueOf(allStepsNum));
-        }
-        allEnergy.setText(String.valueOf(allEnergyNum));
-        allDis.setText(Utility.formatDecimal(allDisNum / 1000, 2));
-        averSteps.setText(Utility.formatDecimal(averStepsNum, 1));
-        averEnergy.setText(Utility.formatDecimal(averEnergyNum, 1));
-        averDis.setText(Utility.formatDecimal(averDisNum / 1000, 2));
+        allSteps.setText(handleBigInt(allStepsNum));
+        allEnergy.setText(handleBigInt(allEnergyNum));
+        allDis.setText(Utility.formatDecimal(allDisNum / 1000, 1));
+        averSteps.setText(handleBigDouble(averStepsNum));
+        averEnergy.setText(handleBigDouble(averEnergyNum));
+        averDis.setText(Utility.formatDecimal(averDisNum / 1000, 1));
         allTimes.setText(String.valueOf(allTimesNum));
         averTimes.setText(Utility.formatDecimal(averTimesNum, 1));
         allTime.setText(Utility.formatDecimal(allTimeNum / 60.0, 1));
+    }
 
+    private String handleBigInt(int num) {
+        if (num > 10000) {
+            return Utility.formatDecimal(num / 10000.0, 2) + "万";
+        } else {
+            return String.valueOf(num);
+        }
+    }
+
+    private String handleBigDouble(double num) {
+        if (num > 10000) {
+            return Utility.formatDecimal(num / 10000.0, 2) + "万";
+        } else {
+            return Utility.formatDecimal(num, 1);
+        }
     }
 }

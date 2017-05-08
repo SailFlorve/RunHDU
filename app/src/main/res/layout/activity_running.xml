@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    android:id="@+id/root_layout"
+    android:id="@+id/running_root_layout"
     tools:context="com.cxsj.runhdu.MainActivity"
     android:keepScreenOn="true">
 
@@ -19,7 +19,6 @@
         android:title="开始跑步"
         app:layout_collapseMode="pin"
         app:popupTheme="@style/AppTheme.PopupOverlay">
-
     </android.support.v7.widget.Toolbar>
 
     <RelativeLayout

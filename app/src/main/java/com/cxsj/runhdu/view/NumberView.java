@@ -27,8 +27,6 @@ public class NumberView extends LinearLayout {
     private int desColor;
     private int unitColor;
 
-    private float numberSize;
-
     public NumberView(Context context) {
         super(context);
         initView();
@@ -92,10 +90,6 @@ public class NumberView extends LinearLayout {
 
     public void setUnitColor(int unitColor) {
         unitTextView.setTextColor(unitColor);
-    }
-
-    public void setNumberSize(float size) {
-        numberTextView.setTextSize(size);
     }
 
     public String getText() {

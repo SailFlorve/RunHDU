@@ -4,12 +4,13 @@ import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.dd.CircularProgressButton;
@@ -30,7 +31,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText usernameText;
     private TextInputLayout usernameInputLayout;
     private TextInputLayout pwInputLayout;
-    private ScrollView scrollView;
     private Prefs prefs;
 
     @Override
@@ -42,10 +42,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         usernameText = (EditText) findViewById(R.id.username_text);
         usernameInputLayout = (TextInputLayout) findViewById(R.id.username_input_layout);
         pwInputLayout = (TextInputLayout) findViewById(R.id.pw_input_layout);
-        scrollView = (ScrollView) findViewById(R.id.scroll_view);
         loginButton.setIndeterminateProgressMode(true);
         prefs = new Prefs(this);
-
+        setSupportActionBar((Toolbar) findViewById(R.id.login_toolbar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         loginButton.setOnClickListener(this);
@@ -62,57 +62,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     loginButton.setProgress(1);
                     loginButton.setClickable(false);
                     HttpUtil.load(URLs.LOGIN)
-                            .addParams("name", username)
-                            .addParams("password", password)
+                            .addParam("name", username)
+                            .addParam("password", password)
                             .post(new Callback() {
                                 @Override
                                 public void onFailure(Call call, IOException e) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            pwInputLayout.setError("网络连接失败。");
-                                            loginButton.setProgress(0);
-                                            loginButton.setClickable(true);
-                                        }
+                                    runOnUiThread(() -> {
+                                        pwInputLayout.setError("网络连接失败。");
+                                        loginButton.setProgress(0);
+                                        loginButton.setClickable(true);
                                     });
                                 }
 
                                 @Override
                                 public void onResponse(Call call, Response response) throws IOException {
                                     final String result = response.body().string();
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            checkReturn(result);
-                                        }
-                                    });
+                                    runOnUiThread(() -> checkReturn(result));
 
                                 }
                             });
                 }
                 break;
-
-            case R.id.username_text:
-                new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(200);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    scrollView.fullScroll(ScrollView.FOCUS_DOWN);
-                                }
-                            });
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }.start();
-                break;
-
             default:
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private boolean checkUsername(String username, String password) {
@@ -182,17 +163,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             usernameInputLayout.setEnabled(false);
             prefs.put("username", usernameInputLayout.getEditText().getText().toString());
             loginButton.setProgress(100);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(1000);
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        ActivityManager.finishAll();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            new Thread(() -> {
+                try {
+                    Thread.sleep(1000);
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    ActivityManager.finishAll();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }).start();
         } else {

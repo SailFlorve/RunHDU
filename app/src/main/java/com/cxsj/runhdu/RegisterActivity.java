@@ -4,12 +4,13 @@ import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.cxsj.runhdu.constant.URLs;
@@ -28,7 +29,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextInputLayout usernameInputLayout;
     private TextInputLayout pwInputLayout;
     private TextInputLayout pwEnsureLayout;
-    private ScrollView scrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +39,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         usernameInputLayout = (TextInputLayout) findViewById(R.id.username_input_layout);
         pwInputLayout = (TextInputLayout) findViewById(R.id.pw_input_layout);
         pwEnsureLayout = (TextInputLayout) findViewById(R.id.pw_ensure_input_layout);
-        scrollView = (ScrollView) findViewById(R.id.scroll_view);
-        scrollView.setHorizontalFadingEdgeEnabled(false);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        setSupportActionBar((Toolbar) findViewById(R.id.register_toolbar));
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         registerButton.setOnClickListener(this);
     }
@@ -56,8 +57,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
                 if (checkInputs(username, password, passwordEnsure)) {
                     HttpUtil.load(URLs.REGISTER)
-                            .addParams("name", username)
-                            .addParams("password",password)
+                            .addParam("name", username)
+                            .addParam("password",password)
                             .post(new Callback() {
                                 @Override
                                 public void onFailure(Call call, IOException e) {
@@ -78,6 +79,15 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private boolean checkInputs(String username, String password, String passwordEnsure) {

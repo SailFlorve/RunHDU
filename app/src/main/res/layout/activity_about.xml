@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:paddingTop="10dp"
     android:background="?attr/colorPrimary">
 
     <android.support.v7.widget.Toolbar
@@ -15,6 +14,7 @@
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
     </android.support.v7.widget.Toolbar>
+
     <ImageView
         android:id="@+id/app_logo"
         android:layout_width="90dp"
@@ -34,35 +34,35 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:divider="@drawable/divider"
+        android:divider="@drawable/divider_horizontal"
         android:orientation="vertical"
         android:paddingTop="60dp"
         android:paddingBottom="20dp"
         android:showDividers="middle">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/feedback_about"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="联系方式"
+            android:padding="15dp"
+            android:text="意见反馈"
             android:textSize="16sp"
             android:background="#FFFFFF"/>
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/help_about"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:padding="15dp"
             android:text="使用帮助"
             android:textSize="16sp"
             android:background="#FFFFFF"/>
         <TextView
-            android:id="@+id/tCheckVerson"
+            android:id="@+id/check_version_about"
             android:clickable="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:padding="15dp"
             android:text="检查更新"
             android:textSize="16sp"
             android:background="#FFFFFF"/>
@@ -74,7 +74,7 @@
         android:textSize="12sp"
         android:gravity="center"
         android:textColor="#fff"
-        android:text="创新实践实验性作品,欢迎使用反馈"/>
+        android:text="创新实践"/>
 </LinearLayout>
 
 

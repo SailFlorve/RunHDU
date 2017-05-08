@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="数据展示">
+        <ListPreference
+            android:defaultValue="5000"
+            android:entries="@array/target_steps"
+            android:entryValues="@array/target_steps_value"
+            android:inputType="number"
+            android:key="target_steps"
+            android:summary="%s"
+            android:title="每日目标步数" />
+
+        <ListPreference
+            android:defaultValue="30"
+            android:entries="@array/chart_num"
+            android:entryValues="@array/chart_num_value"
+            android:key="chart_column_num"
+            android:summary="%s"
+            android:title="柱状图显示天数" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="数据同步">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="sync_data"
+            android:summary="同步已开启。进入APP以及跑步完成后将会进行同步。"
+            android:summaryOff="同步已关闭，将不会进行跑步数据同步及上传跑步数据到服务器。"
+            android:title="云同步" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="跑步设置">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="show_debug_log"
+            android:summary="开启后，跑步界面将会显示定位情况和计步传感器使用情况。"
+            android:title="显示信息" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="only_gps_run"
+            android:summary="开启后，无GPS定位时也可以跑步，但不会记录轨迹、速度和路程信息。"
+            android:title="允许无GPS时跑步" />
+
+        <ListPreference
+            android:defaultValue="1.5"
+            android:entries="@array/locate_time"
+            android:entryValues="@array/locate_time_value"
+            android:key="locate_rate"
+            android:summary="%s"
+            android:title="GPS定位频率" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="账号设置">
+        <Preference
+            android:key="exit_login"
+            android:summary="退出当前账号，并回到欢迎界面。"
+            android:title="退出账号" />
+        <Preference
+            android:key="clear_data"
+            android:summary="清除本地及服务器的跑步数据。无法找回，建议谨慎操作。"
+            android:title="清除跑步数据" />
+    </PreferenceCategory>
+</PreferenceScreen>

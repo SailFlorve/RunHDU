@@ -10,4 +10,5 @@
     <style name="RunningActivityTheme" parent="AppTheme">
         <item name="android:statusBarColor">@color/BlackMD</item>
     </style>
+
 </resources>

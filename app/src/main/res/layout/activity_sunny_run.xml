@@ -122,7 +122,7 @@
                             android:layout_marginLeft="30dp"
                             android:layout_marginRight="30dp"
                             android:gravity="center"
-                            android:text="@string/sunlight_running_login_tips" />
+                            android:text="@string/login_tips_sunny_run" />
                     </LinearLayout>
                 </ScrollView>
             </LinearLayout>

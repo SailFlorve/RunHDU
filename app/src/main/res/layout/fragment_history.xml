@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/history_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:columnCount="3"
+                app:rowCount="3">
+
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/all_steps"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/border"
+                    app:layout_columnWeight="1"
+                    app:numberDesText="总步数"
+                    app:numberText="0"
+                    app:numberUnitText="" />
+
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/all_energies"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/border"
+                    app:layout_columnWeight="1"
+                    app:numberDesText="总能量"
+                    app:numberText="0"
+                    app:numberUnitText="千卡" />
+
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/all_distances"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/border"
+                    app:layout_columnWeight="1"
+                    app:numberDesText="总里程"
+                    app:numberText="0"
+                    app:numberUnitText="km" />
+
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/day_ave_step"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/border"
+                    app:layout_columnWeight="1"
+                    app:numberDesText="平均步数"
+                    app:numberText="0"
+                    app:numberUnitText="" />
+
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/day_ave_energy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/border"
+                    app:layout_columnWeight="1"
+                    app:numberDesText="平均能量"
+                    app:numberText="0"
+                    app:numberUnitText="千卡" />
+
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/day_ave_dis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/border"
+                    app:layout_columnWeight="1"
+                    app:numberDesText="平均里程"
+                    app:numberText="0"
+                    app:numberUnitText="km" />
+
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/all_run_times"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/border"
+                    app:layout_columnWeight="1"
+                    app:numberDesText="总跑步次数"
+                    app:numberText="0"
+                    app:numberUnitText="次" />
+
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/day_ave_times"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/border"
+                    app:layout_columnWeight="1"
+                    app:numberDesText="日均跑步次数"
+                    app:numberText="0"
+                    app:numberUnitText="次" />
+
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/all_run_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="6dp"
+                    android:background="@drawable/border"
+                    app:layout_columnWeight="1"
+                    app:numberDesText="总跑步时长"
+                    app:numberText="0"
+                    app:numberUnitText="h" />
+            </android.support.v7.widget.GridLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

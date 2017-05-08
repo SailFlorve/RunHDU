@@ -1,5 +1,6 @@
 package com.cxsj.runhdu.utils;
 
+import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -11,9 +12,10 @@ import okhttp3.Request;
  */
 
 public class HttpUtil {
+    private static RequestManager manager;
 
     public static RequestManager load(String url) {
-        RequestManager manager = new RequestManager();
+        manager = new RequestManager();
         manager.url(url);
         return manager;
     }
@@ -21,22 +23,27 @@ public class HttpUtil {
     public static class RequestManager {
         private Request.Builder requestBuilder = new Request.Builder();
         private FormBody.Builder formBuilder = new FormBody.Builder();
+        private Call call;
 
-        private RequestManager url(String url) {
+        private void url(String url) {
             formBuilder = new FormBody.Builder();
             requestBuilder = new Request.Builder();
 
             requestBuilder = requestBuilder.url(url);
-            return this;
+        }
+
+        private void cancel() {
+            if (call != null) {
+                call.cancel();
+            }
         }
 
         public RequestManager addHeader(String key, String value) {
             requestBuilder.addHeader(key, value);
-            StringBuilder stringBuilder = new StringBuilder();
             return this;
         }
 
-        public RequestManager addParams(String key, String value) {
+        public RequestManager addParam(String key, String value) {
             formBuilder = formBuilder.add(key, value);
             return this;
         }
@@ -46,7 +53,7 @@ public class HttpUtil {
                     .followRedirects(false)
                     .followSslRedirects(false)
                     .build();
-            ;
+
             Request request = requestBuilder.post(formBuilder.build()).build();
             client.newCall(request).enqueue(callback);
         }
@@ -54,7 +61,8 @@ public class HttpUtil {
         public void get(Callback callback) {
             OkHttpClient client = new OkHttpClient.Builder().build();
             Request request = requestBuilder.build();
-            client.newCall(request).enqueue(callback);
+            call = client.newCall(request);
+            call.enqueue(callback);
         }
     }
 }
