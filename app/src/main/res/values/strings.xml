@@ -17,6 +17,7 @@
     <string name="not_open_gps">请开启GPS后，再开始跑步。</string>
     <string name="over_time">跑步用时过长，已经自动结束跑步。</string>
     <string name="title_activity_settings">设置</string>
+    <string name="sunny_run_tips">Tips: 绑定的学号可以随时更换。你可以随时在右上方菜单的关于界面中检查更新。</string>
     <string-array name="update_rate">
         <item>一小时</item>
         <item>三小时</item>

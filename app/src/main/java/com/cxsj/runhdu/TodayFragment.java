@@ -16,8 +16,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.cxsj.runhdu.adapters.RecyclerViewSectionAdapter;
 import com.cxsj.runhdu.sport.RunningInfo;
 import com.cxsj.runhdu.sport.RunningInfoSection;
-
-import org.litepal.crud.DataSupport;
+import com.cxsj.runhdu.utils.QueryUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +68,7 @@ public class TodayFragment extends Fragment {
                 RunningInfoSection section = (RunningInfoSection) adapter.getItem(position);
                 if (section.runningInfo == null) return;
                 Intent intent = new Intent(getContext(), RunDetailsActivity.class);
-                intent.putExtra("id", section.runningInfo.getId());
+                intent.putExtra("runId", section.runningInfo.getRunId());
                 startActivity(intent);
             }
         });
@@ -108,7 +107,7 @@ public class TodayFragment extends Fragment {
         infoList.clear();
         viewAdapter.notifyDataSetChanged();
 
-        List<RunningInfo> list = DataSupport.findAll(RunningInfo.class);
+        List<RunningInfo> list = QueryUtil.findAllOrder();
         if (!list.isEmpty()) {
             neverRunLayout.setVisibility(View.GONE);
         } else {

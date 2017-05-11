@@ -3,8 +3,9 @@ package com.cxsj.runhdu;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,15 +22,23 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.cxsj.runhdu.sport.RunningInfo;
+import com.cxsj.runhdu.utils.QueryUtil;
+import com.cxsj.runhdu.utils.SyncUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.NumberView;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class RunDetailsActivity extends AppCompatActivity {
+public class RunDetailsActivity extends BaseActivity {
 
     private TextView disText;
     private NumberView stepNumber;
@@ -41,10 +50,10 @@ public class RunDetailsActivity extends AppCompatActivity {
     private MapView mapView;
     private BaiduMap baiduMap;
 
-    private int id = 0;
+    private String id = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_run_details);
@@ -60,28 +69,49 @@ public class RunDetailsActivity extends AppCompatActivity {
         mapView = (MapView) findViewById(R.id.map_view_details);
         mapView.showZoomControls(false);
         baiduMap = mapView.getMap();
-        setSupportActionBar((Toolbar) findViewById(R.id.details_toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        addToolbar(R.id.details_toolbar, true);
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
-            id = bundle.getInt("id", 0);
+            id = bundle.getString("runId", "");
         }
-
+        if (TextUtils.isEmpty(id)) finish();
         setAllData();
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.run_details_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.delete_run_item:
+                new AlertDialog.Builder(this)
+                        .setTitle("删除跑步记录")
+                        .setMessage("你确定删除此条跑步信息吗？")
+                        .setPositiveButton("删除", (dialog, which) -> {
+                            requestDeleteItem();
+                        })
+                        .setNegativeButton("不删除", (dialog, which) -> {
+                        }).create().show();
+                break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void setAllData() {
-        RunningInfo info = DataSupport.find(RunningInfo.class, id);
+        List<RunningInfo> infoList = QueryUtil.find("runId = ?", id);
+        RunningInfo info = infoList.get(0);
+
         if (info == null) return;
         disText.setText(Utility.formatDecimal(info.getDistance() / 1000.0, 2));
         stepNumber.setText(String.valueOf(info.getSteps()));
@@ -137,7 +167,7 @@ public class RunDetailsActivity extends AppCompatActivity {
         if (pointList.size() >= 2 && pointList.size() < 10000) {
             polyline = new PolylineOptions()
                     .width(10)
-                    .color(ContextCompat.getColor(this,R.color.colorPrimary))
+                    .color(ContextCompat.getColor(this, R.color.colorPrimary))
                     .zIndex(0)
                     .points(pointList);
             baiduMap.addOverlay(polyline);//添加Marker
@@ -149,5 +179,34 @@ public class RunDetailsActivity extends AppCompatActivity {
         MarkerOptions overlay = new MarkerOptions().position(point)
                 .icon(locBitmap).zIndex(9).draggable(false);//地图Marker标记
         baiduMap.addOverlay(overlay);
+    }
+
+    private void deleteLocalItem() {
+        DataSupport.deleteAll(RunningInfo.class.getSimpleName(), "runId = ?", id);
+        toActivity(this, MainActivity.class);
+        finish();
+    }
+
+    private void requestDeleteItem() {
+        if (isSyncOn) {
+            showProgressDialog("正在同步删除至服务器...");
+            SyncUtil.deleteSingleLocalAndServerData(username, id, new SyncUtil.SyncDataCallback() {
+                @Override
+                public void onSyncFailure(String msg) {
+                    closeProgressDialog();
+                    Toast.makeText(RunDetailsActivity.this, "网络连接错误，删除失败。", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onSyncSuccess() {
+                    closeProgressDialog();
+                    Toast.makeText(RunDetailsActivity.this, "删除成功。", Toast.LENGTH_SHORT).show();
+                    deleteLocalItem();
+                }
+            });
+        } else {
+            deleteLocalItem();
+            Toast.makeText(RunDetailsActivity.this, "删除成功。", Toast.LENGTH_SHORT).show();
+        }
     }
 }

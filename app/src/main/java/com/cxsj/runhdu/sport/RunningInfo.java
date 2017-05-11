@@ -6,7 +6,10 @@ import org.litepal.crud.DataSupport;
 
 public class RunningInfo extends DataSupport {
 
-    private int id;
+
+    private String runId;
+
+    private String runMode;
 
     private String year;
 
@@ -28,7 +31,23 @@ public class RunningInfo extends DataSupport {
 
     private String trailList;
 
-    public RunningInfo(String year, String month, String date, String startTime, String duration, int steps, int distance, int energy, float speed, String trailList) {
+    public RunningInfo() {
+    }
+
+    public RunningInfo(String runId,
+                       String runMode,
+                       String year,
+                       String month,
+                       String date,
+                       String startTime,
+                       String duration,
+                       int steps,
+                       int distance,
+                       int energy,
+                       float speed,
+                       String trailList) {
+        this.runId = runId;
+        this.runMode = runMode;
         this.year = year;
         this.month = month;
         this.date = date;
@@ -117,11 +136,27 @@ public class RunningInfo extends DataSupport {
         return ZipUtil.decompress(trailList);
     }
 
+    public String getCompressedTrailList() {
+        return trailList;
+    }
+
     public void setTrailList(String trailList) {
         this.trailList = ZipUtil.compress(trailList);
     }
 
-    public int getId() {
-        return id;
+    public String getRunId() {
+        return runId;
+    }
+
+    public void setRunId(String runId) {
+        this.runId = runId;
+    }
+
+    public String getRunMode() {
+        return runMode;
+    }
+
+    public void setRunMode(String runMode) {
+        this.runMode = runMode;
     }
 }

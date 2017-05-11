@@ -4,67 +4,89 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
-    android:clickable="true"
     android:foreground="?android:attr/selectableItemBackground"
     app:cardCornerRadius="2dp"
     app:cardElevation="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/sun_run_time_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:textColor="@color/TextTitle" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_marginTop="5dp"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-
-            <com.cxsj.runhdu.view.NumberView
-                android:id="@+id/sun_run_time"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:numberDesText="时段"
-                app:numberText="上午"
-                app:numberUnitText="" />
+                android:orientation="horizontal">
 
-            <com.cxsj.runhdu.view.NumberView
-                android:id="@+id/sun_run_dis"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:numberDesText="路程(m)"
-                app:numberText="0"
-                app:numberUnitText="" />
+                <TextView
+                    android:id="@+id/sun_run_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:textColor="@color/TextTitle" />
 
-            <com.cxsj.runhdu.view.NumberView
-                android:id="@+id/sun_run_speed"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:numberDesText="速度(m/s)"
-                app:numberText="0"
-                app:numberUnitText="" />
+                <TextView
+                    android:id="@+id/sun_run_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/TextTitle" />
 
-            <ImageView
-                android:id="@+id/sun_run_valid"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_valid" />
+                android:layout_marginTop="10dp"
+                android:divider="@drawable/line"
+                android:dividerPadding="5dp"
+                android:orientation="horizontal"
+                android:showDividers="middle">
+
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/sun_run_time"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.85"
+                    app:numberDesText="时段"
+                    app:numberText="上午"
+                    app:numberUnitText="" />
+
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/sun_run_dis"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:numberDesText="路程"
+                    app:numberText="0"
+                    app:numberUnitText="m" />
+
+                <com.cxsj.runhdu.view.NumberView
+                    android:id="@+id/sun_run_speed"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.2"
+                    app:numberDesText="速度"
+                    app:numberText="0"
+                    app:numberUnitText="m/s" />
+
+
+            </LinearLayout>
         </LinearLayout>
+
+        <ImageView
+            android:id="@+id/sun_run_valid"
+            android:layout_width="70dp"
+            android:layout_height="61dp"
+            android:layout_gravity="bottom"
+            android:layout_margin="5dp"
+            android:src="@drawable/ic_valid" />
     </LinearLayout>
 </android.support.v7.widget.CardView>

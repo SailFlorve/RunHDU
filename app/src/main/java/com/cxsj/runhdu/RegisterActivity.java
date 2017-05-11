@@ -23,7 +23,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
+public class RegisterActivity extends BaseActivity implements View.OnClickListener {
 
     private Button registerButton;
     private TextInputLayout usernameInputLayout;
@@ -31,8 +31,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextInputLayout pwEnsureLayout;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        ActivityManager.addActivity(this);
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         registerButton = (Button) findViewById(R.id.register_button);
@@ -40,10 +39,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         pwInputLayout = (TextInputLayout) findViewById(R.id.pw_input_layout);
         pwEnsureLayout = (TextInputLayout) findViewById(R.id.pw_ensure_input_layout);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-        setSupportActionBar((Toolbar) findViewById(R.id.register_toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        addToolbar(R.id.register_toolbar, true);
         registerButton.setOnClickListener(this);
     }
 
@@ -58,7 +54,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 if (checkInputs(username, password, passwordEnsure)) {
                     HttpUtil.load(URLs.REGISTER)
                             .addParam("name", username)
-                            .addParam("password",password)
+                            .addParam("password", password)
                             .post(new Callback() {
                                 @Override
                                 public void onFailure(Call call, IOException e) {
@@ -79,15 +75,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 }
                 break;
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private boolean checkInputs(String username, String password, String passwordEnsure) {
@@ -161,8 +148,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             Toast.makeText(this, "注册失败。", Toast.LENGTH_SHORT).show();
         } else if (res.contains("true")) {
             Toast.makeText(this, "注册成功。", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-            startActivity(intent);
+            toActivity(RegisterActivity.this, LoginActivity.class);
             finish();
         } else {
             Toast.makeText(this, "服务器未知错误。", Toast.LENGTH_SHORT).show();

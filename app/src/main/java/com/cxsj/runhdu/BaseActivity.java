@@ -2,17 +2,24 @@ package com.cxsj.runhdu;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.support.annotation.IdRes;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.gson.UpdateInfo;
+import com.cxsj.runhdu.utils.ActivityManager;
 import com.cxsj.runhdu.utils.HttpUtil;
 import com.cxsj.runhdu.utils.Prefs;
 import com.google.gson.Gson;
@@ -31,48 +38,36 @@ import okhttp3.Response;
 
 @SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity {
-    private final String TAG = "BaseActivity";
+    private Context mContext;
+    private ProgressDialog progressDialog;
+    protected Prefs prefs;
+    protected String username;
+    protected boolean isSyncOn = true;
+    protected final String TAG = "BaseActivity";
 
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        Log.d(TAG, "onCreate: ");
-        super.onCreate(savedInstanceState, persistentState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ActivityManager.addActivity(this);
+        Log.d(TAG, "onCreate: 执行了基类构造函数");
+        prefs = new Prefs(this);
+        username = (String) prefs.get("username", null);
+        isSyncOn = (boolean) prefs.get("sync_data", true);
+    }
+
+    protected void addToolbar(int toolbarResId, boolean haveBackButton) {
+        setSupportActionBar((Toolbar) findViewById(toolbarResId));
+        if (haveBackButton) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     @Override
-    protected void onRestart() {
-        Log.d(TAG, "onRestart: ");
-        super.onRestart();
-    }
-
-    @Override
-    protected void onResume() {
-        Log.d(TAG, "onResume: ");
-        super.onResume();
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.d(TAG, "onDestroy: ");
-        super.onDestroy();
-    }
-
-    @Override
-    protected void onStart() {
-        Log.d(TAG, "onStart: ");
-        super.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        Log.d(TAG, "onStop: ");
-        super.onStop();
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        Log.d(TAG, "onNewIntent: ");
-        super.onNewIntent(intent);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     protected void checkUpdate(Context context) {
@@ -98,7 +93,7 @@ public class BaseActivity extends AppCompatActivity {
                         } catch (JsonSyntaxException e) {
                             e.printStackTrace();
                         }
-                        if(info==null) return;
+                        if (info == null) return;
                         String currentVersion = getResources().getString(R.string.current_version);
                         String ignoreVersion = (String) prefs.get("ignore_version", "");
                         UpdateInfo finalInfo = info;
@@ -142,6 +137,7 @@ public class BaseActivity extends AppCompatActivity {
                 });
     }
 
+
     protected void showComingSoonDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("敬请期待")
@@ -149,5 +145,30 @@ public class BaseActivity extends AppCompatActivity {
                 .setPositiveButton("十分期待", (dialog, which) -> {
                 }).create().show();
     }
-}
 
+    protected void showProgressDialog(String text) {
+        if (progressDialog == null) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("正在同步数据...");
+            progressDialog.setCanceledOnTouchOutside(false);
+        }
+        progressDialog.show();
+    }
+
+    protected void closeProgressDialog() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+    }
+
+    protected void exitLogin() {
+        prefs.put("username", "");
+        ActivityManager.finishAll();
+        toActivity(this, WelcomeActivity.class);
+    }
+
+    protected void toActivity(Context context, Class<?> cls) {
+        Intent intent = new Intent(context, cls);
+        startActivity(intent);
+    }
+}

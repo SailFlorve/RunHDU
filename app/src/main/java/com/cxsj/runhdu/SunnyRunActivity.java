@@ -1,11 +1,9 @@
 package com.cxsj.runhdu;
 
 import android.content.Context;
-import android.os.Looper;
+import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -22,13 +20,14 @@ import android.widget.Toast;
 
 import com.cxsj.runhdu.adapters.SunnyRunRecyclerViewAdapter;
 import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.utils.HttpUtil;
+import com.cxsj.runhdu.gson.StudentInfo;
 import com.cxsj.runhdu.sport.SunnyRunInfo;
+import com.cxsj.runhdu.utils.HttpUtil;
 import com.cxsj.runhdu.utils.Prefs;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,49 +38,41 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class SunnyRunActivity extends AppCompatActivity {
+public class SunnyRunActivity extends BaseActivity {
 
     private RecyclerView sunnyRunRecyclerView;
     private SunnyRunRecyclerViewAdapter adapter;
     private TextView listTopText;
     private TextInputLayout usernameText;
-    private TextInputLayout pwText;
     private Button loginButton;
     private SwipeRefreshLayout refreshLayout;
     private LinearLayout loginLayout;
-    private Prefs prefs;
     private List<SunnyRunInfo> infoList = new ArrayList<>();
-
-    private final String TAG = "SunnyRunActivity";
+    private StudentInfo studentInfo;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sunny_run);
-        prefs = new Prefs(this);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.sunny_run_activity_bar);
-        usernameText = (TextInputLayout) findViewById(R.id.username_edit_text);
-        pwText = (TextInputLayout) findViewById(R.id.pw_edit_text);
+        usernameText = (TextInputLayout) findViewById(R.id.sunny_run_username_edit_text);
         listTopText = (TextView) findViewById(R.id.sun_list_top_text);
-        loginButton = (Button) findViewById(R.id.login_button);
+        loginButton = (Button) findViewById(R.id.sunny_run_login_button);
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.sunny_refresh);
-        loginLayout = (LinearLayout) findViewById(R.id.login_layout);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("阳光长跑");
+        loginLayout = (LinearLayout) findViewById(R.id.sunny_run_login_layout);
+        addToolbar(R.id.sunny_run_toolbar, true);
         refreshLayout.setEnabled(false);
 
         initRecyclerView();
-        checkCookie();
+        checkLogin();
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //收回输入法
-                InputMethodManager imm = (InputMethodManager)
-                        getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(refreshLayout.getWindowToken(), 0);
-                requestCookie();
+        loginButton.setOnClickListener(v -> {
+            //收回输入法
+            InputMethodManager imm = (InputMethodManager)
+                    getApplicationContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(refreshLayout.getWindowToken(), 0);
+            if (checkInput()) {
+                prefs.put("sunny_run_username", usernameText.getEditText().getText().toString());
+                getData();
             }
         });
     }
@@ -94,68 +85,35 @@ public class SunnyRunActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-        }
-        if (item.getItemId() == R.id.cancel_login) {
-            cancelLogin();
-        }
-        if (item.getItemId() == R.id.refresh_sun_list) {
-            checkCookie();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+
+            case R.id.cancel_login:
+                cancelLogin();
+                break;
+
+            case R.id.refresh_sun_list:
+                if (refreshLayout.isRefreshing()) return true;
+                if (loginLayout.getVisibility() != View.VISIBLE) {
+                    clearData();
+                    checkLogin();
+                }
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void checkCookie() {
-        if (TextUtils.isEmpty((String) prefs.get("cookie", null))) {
-            loginLayout.setVisibility(View.VISIBLE);
+    //检查是否已经登录
+    private void checkLogin() {
+        loginLayout.setVisibility(View.INVISIBLE);
+        usernameText.getEditText().setText((String) prefs.get("sunny_run_username", ""));
+        if ((boolean) prefs.get("sunny_run_is_login", false)) {
+            getData();
         } else {
-            getListFromHtml();
+            loginLayout.setVisibility(View.VISIBLE);
         }
-    }
-
-    private void requestCookie() {
-        loginLayout.setVisibility(View.VISIBLE);
-        refreshLayout.setRefreshing(true);
-        HttpUtil.load(URLs.LOGIN_SUNNY_RUN)
-                .addParam("username", usernameText.getEditText().getText().toString())
-                .addParam("password", pwText.getEditText().getText().toString())
-                .post(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        Looper.loop();
-                        Toast.makeText(SunnyRunActivity.this, "网络连接失败", Toast.LENGTH_SHORT).show();
-                        refreshLayout.setRefreshing(false);
-                        Looper.prepare();
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        Log.d(TAG, response.body().string());
-                        String setCookie = response.header("Set-Cookie");
-                        if (setCookie != null) {
-                            Log.d("setCookie", setCookie);
-                            prefs.put("cookie", setCookie.split(";")[0]);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    getListFromHtml();
-                                }
-                            });
-                        } else {
-                            runOnUiThread(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            pwText.setError("用户名或密码错误");
-                                            refreshLayout.setRefreshing(false);
-                                        }
-                                    }
-                            );
-
-                        }
-                    }
-                });
     }
 
     private void initRecyclerView() {
@@ -168,90 +126,108 @@ public class SunnyRunActivity extends AppCompatActivity {
     }
 
     private void cancelLogin() {
-        usernameText.getEditText().setText(null);
-        pwText.getEditText().setText(null);
-        pwText.setErrorEnabled(false);
-        prefs.put("cookie", "");
-        checkCookie();
+        refreshLayout.setRefreshing(false);
+        prefs.put("sunny_run_is_login", false);
+        loginLayout.setVisibility(View.VISIBLE);
+        clearData();
     }
 
-    private void getListFromHtml() {
-        Log.d("1", (String) prefs.get("cookie", null));
+    private void getData() {
+        queryStudentInfo((String) prefs.get("sunny_run_username", ""));
+    }
+
+    private void queryStudentInfo(final String username) {
         refreshLayout.setRefreshing(true);
-        loginLayout.setVisibility(View.GONE);
-        infoList.clear();
-        adapter.notifyDataSetChanged();
-        HttpUtil.load(URLs.QUERY_SUNNY_RUN)
-                .addHeader("cookie", (String) prefs.get("cookie", null))
+        HttpUtil.load(URLs.SUNNY_RUN_INFO_API + username)
                 .get(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SunnyRunActivity.this, "网络连接失败", Toast.LENGTH_SHORT).show();
-                                refreshLayout.setRefreshing(false);
-                            }
+                        runOnUiThread(() -> {
+                            Toast.makeText(SunnyRunActivity.this, "网络连接失败", Toast.LENGTH_SHORT).show();
+                            refreshLayout.setRefreshing(false);
                         });
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        String str = response.body().string();
-                        Log.i(TAG, str);
-                        Document doc = Jsoup.parse(str);
-                        final String name;
-                        int validNum = 0;
-                        try {
-                            name = doc.getElementsByClass("nav navbar-nav navbar-right")
-                                    .get(0).select("li").get(0).select("a").text();
-                        } catch (Exception e) {
-                            runOnUiThread(new Runnable() {
-                                              @Override
-                                              public void run() {
-                                                  Toast.makeText(SunnyRunActivity.this,
-                                                          "出现异常，请重试。", Toast.LENGTH_SHORT).show();
-                                                  cancelLogin();
-                                                  refreshLayout.setRefreshing(false);
-                                              }
-                                          }
-                            );
-                            return;
-                        }
-
-                        Elements trs = doc.select("table").select("tr");
-                        for (int i = 0; i < trs.size(); i++) {
-                            Elements tds = trs.get(i).select("td");
-                            String[] strings = new String[tds.size()];
-                            for (int j = 0; j < tds.size(); j++) {
-                                String text = tds.get(j).text();
-                                strings[j] = text.split("m")[0].trim();
-                                if (tds.get(j).select("span").size() > 0) {
-                                    Log.d("name", tds.get(j).select("span").get(0).className());
-                                    if (tds.get(j).select("span").get(0).className().contains("ok")) {
-                                        strings[j] = "ok";
-                                        validNum++;
-                                    } else {
-                                        strings[j] = "no";
-                                    }
-                                }
-                            }
-                            if (strings.length >= 6) {
-                                infoList.add(new SunnyRunInfo(strings[0], strings[1], strings[2], strings[3], strings[4], strings[5]));
-                            }
-                        }
-                        Collections.reverse(infoList);
-                        final int finalValidNum = validNum;
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                listTopText.setText(name + "同学，你已经跑了" + finalValidNum + "次。");
-                                adapter.notifyDataSetChanged();
+                        Gson gson = new Gson();
+                        studentInfo = gson.fromJson(response.body().string(), StudentInfo.class);
+                        Log.d(TAG, "onResponse: " + studentInfo.getName());
+                        runOnUiThread(() -> {
+                            if ("该用户不存在".equals(studentInfo.getState())) {
                                 refreshLayout.setRefreshing(false);
+                                usernameText.setError("学号不存在。");
+                                cancelLogin();
+                            } else {
+                                prefs.put("sunny_run_username", username);
+                                getListFromAPI();
                             }
                         });
-
                     }
                 });
+
+    }
+
+    private void getListFromAPI() {
+        refreshLayout.setRefreshing(true);
+        loginLayout.setVisibility(View.INVISIBLE);
+        clearData();
+        HttpUtil.load(URLs.SUNNY_RUN_QUERY_API + prefs.get("sunny_run_username", ""))
+                .get(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(SunnyRunActivity.this, "请检查网络。", Toast.LENGTH_SHORT).show();
+                            refreshLayout.setRefreshing(false);
+                        });
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        int times = 0;
+                        JsonParser parser = new JsonParser();
+                        JsonArray jsonArray = parser.parse(response.body().string()).getAsJsonArray();
+                        Gson gson = new Gson();
+                        for (JsonElement info : jsonArray) {
+                            //使用GSON，直接转成Bean对象
+                            SunnyRunInfo runInfo = gson.fromJson(info, SunnyRunInfo.class);
+                            runInfo.setNumber(String.valueOf(++times));
+                            infoList.add(runInfo);
+                        }
+                        prefs.put("sunny_run_is_login", true);
+                        Collections.reverse(infoList);
+                        runOnUiThread(() -> {
+                            adapter.notifyDataSetChanged();
+                            listTopText.setText(String.format("%s同学，你已经跑了%s次，共%s米。",
+                                    studentInfo.getName(), studentInfo.getValidTimes(), studentInfo.getMileages()));
+                            refreshLayout.setRefreshing(false);
+                        });
+                    }
+                });
+    }
+
+    private void clearData() {
+        infoList.clear();
+        adapter.notifyDataSetChanged();
+        listTopText.setText("");
+    }
+
+    private boolean checkInput() {
+        usernameText.setErrorEnabled(false);
+        String username = usernameText.getEditText().getText().toString();
+        if (TextUtils.isEmpty(username)) {
+            usernameText.setError("学号不能为空。");
+            return false;
+        }
+
+//        if (TextUtils.isEmpty(password)) {
+//            pwText.setError("密码不能为空。");
+//            return false;
+//        }
+//        if (password.contains(" ")) {
+//            pwText.setError("密码中有非法字符。");
+//            return false;
+//        }
+        return true;
     }
 }

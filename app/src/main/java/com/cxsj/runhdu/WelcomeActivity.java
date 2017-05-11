@@ -11,26 +11,22 @@ import com.cxsj.runhdu.utils.ActivityManager;
 import com.cxsj.runhdu.utils.AnimationUtil;
 import com.cxsj.runhdu.utils.Prefs;
 
-public class WelcomeActivity extends AppCompatActivity {
+public class WelcomeActivity extends BaseActivity {
 
     private Button loginButton;
     private Button registerButton;
-    private Prefs prefs;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (!isTaskRoot()) {
             finish();
             return;
         }
-
         ActivityManager.addActivity(this);
-        prefs = new Prefs(this);
-        if (!TextUtils.isEmpty((String) prefs.get("username", null))) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+
+        if (!TextUtils.isEmpty(username)) {
+            toActivity(this, MainActivity.class);
             ActivityManager.finishAll();
         }
 
@@ -44,16 +40,14 @@ public class WelcomeActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(WelcomeActivity.this, LoginActivity.class);
-                startActivity(intent);
+                toActivity(WelcomeActivity.this, LoginActivity.class);
             }
         });
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(WelcomeActivity.this, RegisterActivity.class);
-                startActivity(intent);
+                toActivity(WelcomeActivity.this, RegisterActivity.class);
             }
         });
     }

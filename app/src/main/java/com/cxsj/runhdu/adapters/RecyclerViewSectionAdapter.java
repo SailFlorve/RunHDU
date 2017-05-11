@@ -43,8 +43,8 @@ public class RecyclerViewSectionAdapter extends BaseSectionQuickAdapter<RunningI
         helper.setText(R.id.run_distance_text, distanceKM);
         helper.setText(R.id.run_date_text, runningInfo.getDate());
         helper.setText(R.id.run_start_time_text, runningInfo.getStartTime());
-        helper.setText(R.id.run_speed_text, String.valueOf(runningInfo.getSpeed()));
+        helper.setText(R.id.run_mode_text, runningInfo.getRunMode());
         helper.setText(R.id.run_duration_text, runningInfo.getDuration());
-        helper.setText(R.id.run_energy_text, String.valueOf(runningInfo.getEnergy()));
+        helper.setText(R.id.run_steps_text, String.valueOf(runningInfo.getSteps()));
     }
 }

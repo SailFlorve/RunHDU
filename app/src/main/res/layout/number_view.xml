@@ -11,8 +11,7 @@
     <TextView
         android:id="@+id/number_des"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="3dp" />
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -21,6 +20,8 @@
 
         <TextView
             android:id="@+id/number"
+            android:textScaleX="0.9"
+            android:scaleY="0.9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#000"
@@ -28,6 +29,8 @@
 
         <TextView
             android:id="@+id/number_unit"
+            android:textScaleX="0.85"
+            android:scaleY="0.9"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp" />

@@ -18,18 +18,17 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class FeedbackActivity extends AppCompatActivity {
+public class FeedbackActivity extends BaseActivity {
 
     private EditText feedbackText;
     private EditText contactText;
     private CircularProgressButton feedbackButton;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.feedback_toolbar);
-        setSupportActionBar(toolbar);
+        addToolbar(R.id.feedback_toolbar, true);
         feedbackText = (EditText) findViewById(R.id.feedback_text);
         contactText = (EditText) findViewById(R.id.feedback_contact);
         feedbackButton = (CircularProgressButton) findViewById(R.id.feedback_button);
@@ -42,11 +41,11 @@ public class FeedbackActivity extends AppCompatActivity {
                 Toast.makeText(this, "请输入反馈信息！", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if(TextUtils.isEmpty(contactStr)) contactStr = "0";
+            if (TextUtils.isEmpty(contactStr)) contactStr = "0";
             feedbackButton.setProgress(50);
             HttpUtil.load(URLs.FEEDBACK_URL)
-                    .addParam("feedbackInformation",feedbackStr)
-                    .addParam("contactWay",contactStr)
+                    .addParam("feedbackInformation", feedbackStr)
+                    .addParam("contactWay", contactStr)
                     .post(new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {

@@ -2,9 +2,7 @@ package com.cxsj.runhdu;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -25,7 +23,6 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -39,20 +36,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.cxsj.runhdu.adapters.MyFragmentPagerAdapter;
 import com.cxsj.runhdu.constant.Types;
-import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.gson.Running;
 import com.cxsj.runhdu.sport.RunningInfo;
-import com.cxsj.runhdu.utils.HttpUtil;
-import com.cxsj.runhdu.utils.Prefs;
+import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.utils.ScreenShot;
+import com.cxsj.runhdu.utils.SyncUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.GradeProgressView;
-import com.google.gson.Gson;
 
 import org.litepal.LitePal;
 import org.litepal.LitePalDB;
-import org.litepal.crud.DataSupport;
-import org.litepal.exceptions.DataSupportException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -76,9 +68,6 @@ import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.ColumnChartView;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -105,18 +94,14 @@ public class MainActivity extends BaseActivity
     private LinearLayout chartView;
     private ProgressDialog progressDialog;
 
-    private String username;
     private List<String> mTitle = new ArrayList<>();
     private List<Fragment> mFragment = new ArrayList<>();
     private List<RunningInfo> runningInfoList = new ArrayList<>();
     private List<String> chartLabels = new ArrayList<>();
     private List<Float> chartValues = new ArrayList<>();
 
-    private Prefs prefs;
-    private boolean isUpload = true;
     private int chartColumnNum;//图表显示的列数
     private float targetSteps;
-    public static Activity mainActivity;
 
 //    private enum CollapsingToolbarLayoutState {
 //        EXPANDED,
@@ -125,12 +110,10 @@ public class MainActivity extends BaseActivity
 //    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        prefs = new Prefs(this);
-        mainActivity = this;
-        //AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appBar);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.getMenu().getItem(0).setChecked(true);
 
@@ -151,7 +134,7 @@ public class MainActivity extends BaseActivity
         dataDescription = (TextView) findViewById(R.id.data_description);
         progressView = (FrameLayout) findViewById(R.id.progress_view_layout);
         chartView = (LinearLayout) findViewById(R.id.chart_view_layout);
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        addToolbar(R.id.toolbar_main, false);
 
         menuButton.setOnClickListener(this);
         fab.setOnClickListener(this);
@@ -159,8 +142,6 @@ public class MainActivity extends BaseActivity
         menuBgImg.setOnClickListener(this);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //检查用户名是否存在
-        username = (String) prefs.get("username", null);
         if (TextUtils.isEmpty(username)) exitLogin();
 
         //初始化数据库
@@ -168,9 +149,9 @@ public class MainActivity extends BaseActivity
         LitePal.use(litePalDB);
 
         initSettings();
+        initView();
         checkUpdate(this);
         checkServerData();
-        initView();
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -186,12 +167,10 @@ public class MainActivity extends BaseActivity
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
 
@@ -208,10 +187,9 @@ public class MainActivity extends BaseActivity
                 String day = String.valueOf(calendar.get(Calendar.DATE));
 
                 int dis = 0;
-                runningInfoList = DataSupport.where(
+                runningInfoList = QueryUtil.findOrder(
                         "year = ? and month = ? and date = ?",
-                        year, month, day)
-                        .find(RunningInfo.class);
+                        year, month, day);
                 for (RunningInfo info : runningInfoList) {
                     dis += info.getDistance();
                 }
@@ -233,68 +211,45 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onDestroy() {
-        showProgressDialog(false);
+        closeProgressDialog();
         super.onDestroy();
     }
 
     //检查网络数据
     private void checkServerData() {
-        if (!isUpload) return;
-        showProgressDialog(true);
+        if (!isSyncOn) return;
+        showProgressDialog("正在获取服务器信息...");
         //获取服务器端的跑步次数
         Log.d("次数", username);
 
-        HttpUtil.load(URLs.GET_RUN_TIMES)
-                .addParam("userName", username)
-                .post(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        runOnUiThread(() -> {
-                            showProgressDialog(false);
-                            showSnackBar("同步失败，请检查网络。");
-                        });
-                    }
+        SyncUtil.checkServerData(username, new SyncUtil.checkDataCallback() {
+            @Override
+            public void onCheckFailure(String msg) {
+                closeProgressDialog();
+                showSnackBar(msg);
+            }
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        int serverTimes = 0;
-                        try {
-                            serverTimes = Integer.parseInt(response.body().string());
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
-                            showSnackBar("查询次数返回格式错误。");
-                        }
-
-                        int localTimes = DataSupport.count(RunningInfo.class);
-                        int finalServerTimes = serverTimes;
-                        runOnUiThread(() -> {
-                            showProgressDialog(false);
-                            if (finalServerTimes == localTimes) {
-                                return;
-                            } else if (finalServerTimes > localTimes) {
-                                new AlertDialog.Builder(MainActivity.this)
-                                        .setTitle("同步数据")
-                                        .setMessage("服务器数据多于本地数据，是否从服务器同步数据到本地？")
-                                        .setPositiveButton("同步", (dialog, which) -> {
-                                            syncFromServer();
-                                        })
-                                        .setNegativeButton("不同步", (dialog, which) -> {
-                                        }).create().show();
-                            } else {
-                                new AlertDialog.Builder(MainActivity.this)
-                                        .setTitle("同步数据")
-                                        .setMessage("本地数据多于服务器数据，是否从本地上传数据到服务器？")
-                                        .setPositiveButton("上传", (dialog, which) -> {
-                                            uploadToServer();
-                                        })
-                                        .setNegativeButton("不上传", (dialog, which) -> {
-                                        }).create().show();
-                            }
-                        });
-
-                    }
-                });
-
+            @Override
+            public void onCheckSuccess(int serverTimes, int localTimes) {
+                closeProgressDialog();
+                if (serverTimes != localTimes) {
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("同步数据")
+                            .setMessage(String.format("本地数据与服务器不一致：\n" +
+                                    "本地数据：%d条；\n" +
+                                    "服务器数据：%d条。\n" +
+                                    "请选择操作：", localTimes, serverTimes))
+                            .setPositiveButton("服务器数据同步至本地", (dialog, which) -> {
+                                syncFromServer();
+                            })
+                            .setNegativeButton("本地数据上传至服务器", (dialog, which) -> {
+                                uploadToServer();
+                            })
+                            .setNeutralButton("以后再说", (dialog, which) -> {
+                            }).create().show();
+                }
+            }
+        });
     }
 
     @SuppressLint("SetTextI18n")
@@ -348,7 +303,7 @@ public class MainActivity extends BaseActivity
         targetSteps = Float.parseFloat(
                 (String) prefs.get("target_steps", "5000")
         );
-        isUpload = (boolean) prefs.get("sync_data", true);
+        isSyncOn = (boolean) prefs.get("sync_data", true);
     }
 
     private void setMainData() {
@@ -372,12 +327,11 @@ public class MainActivity extends BaseActivity
     private void setProgressView() {
         circleProgress.setProgress(0);
         //从数据库里读出数据。
-        runningInfoList = DataSupport
-                .where("year = ? and month = ? and date = ?",
-                        Utility.getTime(Calendar.YEAR),
-                        Utility.getTime(Types.TYPE_MONTH),
-                        Utility.getTime(Calendar.DATE))
-                .find(RunningInfo.class);
+        runningInfoList = QueryUtil.findOrder(
+                "year = ? and month = ? and date = ?",
+                Utility.getTime(Calendar.YEAR),
+                Utility.getTime(Types.TYPE_MONTH),
+                Utility.getTime(Calendar.DATE));
         int steps = 0;
         int times = 0;
         int dis = 0;
@@ -405,12 +359,10 @@ public class MainActivity extends BaseActivity
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd", Locale.CHINA);
         for (int i = 0; i < chartColumnNum; i++) {
             chartLabels.add(sdf.format(c.getTime()));
-            runningInfoList = DataSupport
-                    .where("year = ? and month = ? and date = ?",
-                            String.valueOf(c.get(Calendar.YEAR)),
-                            String.valueOf(c.get(Calendar.MONTH) + 1),
-                            String.valueOf(c.get(Calendar.DATE)))
-                    .find(RunningInfo.class);
+            runningInfoList = QueryUtil.findOrder("year = ? and month = ? and date = ?",
+                    String.valueOf(c.get(Calendar.YEAR)),
+                    String.valueOf(c.get(Calendar.MONTH) + 1),
+                    String.valueOf(c.get(Calendar.DATE)));
             int steps = 0;
             for (RunningInfo info : runningInfoList) {
                 steps += info.getSteps();
@@ -453,17 +405,14 @@ public class MainActivity extends BaseActivity
 
     @Override
     protected void onNewIntent(Intent intent) {
-        checkServerData();
-        initSettings();
-        setAllData();
         super.onNewIntent(intent);
+        initSettings();
+        checkServerData();
+        setAllData();
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
-        Intent intent;
         int id = item.getItemId();
         switch (id) {
             case R.id.sport_status:
@@ -472,27 +421,19 @@ public class MainActivity extends BaseActivity
                 finish();
                 break;
             case R.id.sunlight_long_run:
-                intent = new Intent(MainActivity.this, SunnyRunActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.enter_lab:
-                intent = new Intent(this, TestActivity.class);
-                startActivity(intent);
+                toActivity(MainActivity.this, SunnyRunActivity.class);
                 break;
             case R.id.share:
-                sharedScreenShot();
+                ScreenShot.takeAndShare(this);
                 break;
             case R.id.about:
-                intent = new Intent(MainActivity.this, AboutActivity.class);
-                startActivity(intent);
+                toActivity(MainActivity.this, AboutActivity.class);
                 break;
             case R.id.settings:
-                intent = new Intent(this, SettingsActivity.class);
-                startActivity(intent);
+                toActivity(this, SettingsActivity.class);
                 break;
             default:
                 showComingSoonDialog();
-
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -506,7 +447,7 @@ public class MainActivity extends BaseActivity
                 drawerLayout.openDrawer(GravityCompat.START);
                 break;
             case R.id.fab:
-                requestPermission();
+                checkRunPermission();
                 break;
             case R.id.menu_bg_img:
             case R.id.profile_image:
@@ -534,7 +475,7 @@ public class MainActivity extends BaseActivity
 
     //开启跑步Activity，此方法包括一些跑步条件检查
     public void startRunActivity() {
-        if (isUpload) {
+        if (isSyncOn) {
             if (!Utility.isNetworkAvailable(getApplicationContext())) {
                 Snackbar.make(collapsingToolbarLayout, R.string.internet_not_connect, Snackbar.LENGTH_LONG)
                         .setAction("知道了", v -> {
@@ -542,11 +483,10 @@ public class MainActivity extends BaseActivity
                 return;
             }
         }
-        Intent intent = new Intent(MainActivity.this, RunningActivity.class);
-        startActivity(intent);
+        toActivity(MainActivity.this, RunningActivity.class);
     }
 
-    private void requestPermission() {
+    private void checkRunPermission() {
         List<String> permissionList = new ArrayList<>();
         if (ContextCompat.checkSelfPermission
                 (MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -688,146 +628,50 @@ public class MainActivity extends BaseActivity
         }
     }
 
-    private void exitLogin() {
-        prefs.put("username", "");
-        Intent intent = new Intent(this, WelcomeActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    private void showProgressDialog(boolean isShow) {
-        if (isShow) {
-            if (progressDialog == null) {
-                progressDialog = new ProgressDialog(this);
-                progressDialog.setMessage("正在同步数据...");
-                progressDialog.setCancelable(false);
-                progressDialog.setCanceledOnTouchOutside(false);
-                progressDialog.setButton(DialogInterface.BUTTON_POSITIVE,
-                        "后台运行", (dialog, which) -> {
-                        });
-            }
-            progressDialog.show();
-        } else {
-            if (progressDialog != null) {
-                progressDialog.dismiss();
-            }
-        }
-    }
-
     private void showSnackBar(String text) {
         Snackbar.make(collapsingToolbarLayout,
-                text, Snackbar.LENGTH_LONG).show();
+                text, Snackbar.LENGTH_LONG)
+                .setAction("知道了", v -> {
+                }).show();
     }
 
-    //同步从服务器得到的数据到本地
+    //同步从服务器得到的数据到本地并显示
     private void syncFromServer() {
-        showProgressDialog(true);
-        HttpUtil.load(URLs.GET_RUN_INFO)
-                .addParam("userName", username)
-                .post(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        runOnUiThread(() -> {
-                            showProgressDialog(false);
-                            showSnackBar("同步数据失败。");
-                        });
+        showProgressDialog("正在从服务器同步...");
 
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        showProgressDialog(false);
-                        String result = response.body().string();
-                        runOnUiThread(() -> {
-                            Running running = new Gson().fromJson(result, Running.class);
-                            saveRunningToDatabaseAndShow(running);
-                        });
-                    }
-                });
-    }
-
-    private void saveRunningToDatabaseAndShow(Running running) {
-        DataSupport.deleteAll(RunningInfo.class);
-        List<RunningInfo> serverInfo = running.dataList;
-        for (RunningInfo info : serverInfo) {
-            try {
-                info.saveThrows();
-            } catch (DataSupportException e) {
-                showSnackBar("保存到数据库时发生错误。");
-                e.printStackTrace();
+        SyncUtil.syncFromServer(username, new SyncUtil.SyncDataCallback() {
+            @Override
+            public void onSyncFailure(String msg) {
+                closeProgressDialog();
+                showSnackBar(msg);
             }
-        }
-        showSnackBar("从服务器同步数据成功。");
-        setAllData();
+
+            @Override
+            public void onSyncSuccess() {
+                closeProgressDialog();
+                showSnackBar("同步成功。");
+                setAllData();
+            }
+        });
     }
 
     //把本地的数据同步至服务器
     private void uploadToServer() {
-        showProgressDialog(true);
+        showProgressDialog("正在上传至服务器...");
 
-        Running running = new Running();
-        running.username = username;
-        List<RunningInfo> infoList = DataSupport.findAll(RunningInfo.class);
-        running.times = infoList.size();
-        running.dataList = infoList;
-        String json = new Gson().toJson(running);
-        HttpUtil.load(URLs.UPLOAD_ALL_INFO)
-                .addParam("json", json)
-                .post(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        runOnUiThread(() -> {
-                            showProgressDialog(false);
-                            showSnackBar("上传数据失败，请检查网络。");
-                        });
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        showProgressDialog(false);
-                        String result = "";
-                        try {
-                            result = response.body().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        String finalResult = result;
-                        runOnUiThread(() -> {
-                            Log.d("1", finalResult);
-                            if (finalResult.equals("true")) {
-                                showSnackBar("上传跑步数据成功！");
-                            } else {
-                                showSnackBar("上传数据失败，返回不正确。");
-                            }
-                        });
-                    }
-                });
-    }
-
-    private void sharedScreenShot() {
-        new Thread(new Runnable() {
+        SyncUtil.uploadAllToServer(username, new SyncUtil.SyncDataCallback() {
             @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                runOnUiThread(() -> {
-                    String imagePath = ScreenShot.shoot(MainActivity.this);
-                    Intent intent = new Intent(Intent.ACTION_SEND);
-                    File file = new File(imagePath);
-                    intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-                    intent.setType("image/jpeg");
-                    Intent chooser = Intent.createChooser(intent, "分享运动数据");
-                    if (intent.resolveActivity(getPackageManager()) != null) {
-                        startActivity(chooser);
-                    }
-                });
-
+            public void onSyncFailure(String msg) {
+                closeProgressDialog();
+                showSnackBar(msg);
             }
-        }).start();
 
+            @Override
+            public void onSyncSuccess() {
+                closeProgressDialog();
+                showSnackBar("上传成功。");
+            }
+        });
     }
 
     private void saveProfile(Bitmap bitmap) {
@@ -848,26 +692,5 @@ public class MainActivity extends BaseActivity
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //保存到服务器
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();// outputstream
-//        bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
-//        byte[] profileBytes = baos.toByteArray();// 转为byte数组
-//        String imgStr = Base64.encodeToString(profileBytes, Base64.DEFAULT);
-//        HttpUtil.load(URLs.UPLOAD_PROFILE)
-//                .addParam("UserName", username)
-//                .addParam("Image", imgStr)
-//                .post(new Callback() {
-//                    @Override
-//                    public void onFailure(Call call, IOException e) {
-//                        runOnUiThread(() ->
-//                                Toast.makeText(MainActivity.this, "同步头像失败。", Toast.LENGTH_SHORT).show());
-//                    }
-//
-//                    @Override
-//                    public void onResponse(Call call, Response response) throws IOException {
-//                        runOnUiThread(() ->
-//                                Toast.makeText(MainActivity.this, "同步头像成功。", Toast.LENGTH_SHORT).show());
-//                    }
-//                });
     }
 }

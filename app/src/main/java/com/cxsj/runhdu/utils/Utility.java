@@ -2,9 +2,12 @@ package com.cxsj.runhdu.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
+import android.support.annotation.IntDef;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -15,6 +18,9 @@ import com.cxsj.runhdu.constant.Types;
 import com.cxsj.runhdu.gson.Running;
 import com.google.gson.Gson;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -139,6 +145,8 @@ public class Utility {
             return new SimpleDateFormat("HH:mm", Locale.CHINA).format(new Date());
         } else if (type == Types.TYPE_MONTH) {
             return String.valueOf(calendar.get(Calendar.MONTH) + 1);
+        } else if (type == Types.TYPE_STRING_FORM) {
+            return new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA).format(new Date());
         } else {
             return String.valueOf(calendar.get(type));
         }
@@ -164,6 +172,7 @@ public class Utility {
 
     /**
      * 返回计时器时间字符串的分钟数量。
+     *
      * @return 两个时间间隔的分钟数
      */
     public static int getMinutes(String time) {
@@ -172,11 +181,5 @@ public class Utility {
         int hours = Integer.parseInt(times[0]);
         int seconds = Integer.parseInt(times[2]);
         return hours * 60 + minutes + seconds / 60;
-    }
-
-    public static Running handleRunningResponse(String response) {
-        if (TextUtils.isEmpty(response)) return null;
-        return new Gson().fromJson(response, Running.class);
-
     }
 }

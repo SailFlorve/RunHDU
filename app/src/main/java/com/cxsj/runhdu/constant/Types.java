@@ -20,4 +20,5 @@ public class Types {
     public final static int MANUAL_UPDATE = 1011;
     public final static int AUTO_UPDATE = 1012;
     public final static int TYPE_SAVE_PROFILE = 1013;
+    public final static int TYPE_STRING_FORM=1014;
 }

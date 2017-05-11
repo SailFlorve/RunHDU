@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cxsj.runhdu.sport.RunningInfo;
+import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.NumberView;
 
@@ -61,7 +62,7 @@ public class HistoryFragment extends Fragment {
         double averTimesNum = 0;
         double allTimeNum = 0;
 
-        list = DataSupport.findAll(RunningInfo.class);
+        list = QueryUtil.findAllOrder();
         String oldDate = null;
         int runDays = 0;
         for (RunningInfo info : list) {

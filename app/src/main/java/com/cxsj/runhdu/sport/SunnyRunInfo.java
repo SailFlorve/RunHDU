@@ -2,15 +2,15 @@ package com.cxsj.runhdu.sport;
 
 public class SunnyRunInfo {
 
-    private String valid;
+    private boolean isValid;
 
     private String date;
 
-    private String time;
+    private String domain;
 
-    private String distance;
+    private String mileage;
 
-    private String speed;
+    private double speed;
 
     private String number;
 
@@ -18,22 +18,15 @@ public class SunnyRunInfo {
 
     }
 
-    public SunnyRunInfo(String number, String date, String time, String distance, String speed, String valid) {
+    public SunnyRunInfo(String number, String date, String time, String distance, double speed, boolean valid) {
         this.date = date;
-        this.distance = distance;
+        this.mileage = distance;
         this.number = number;
         this.speed = speed;
-        this.time = time;
-        this.valid = valid;
+        this.domain = time;
+        this.isValid = valid;
     }
 
-    public String getValid() {
-        return valid;
-    }
-
-    public void setValid(String valid) {
-        this.valid = valid;
-    }
 
     public String getDate() {
         return date;
@@ -43,29 +36,22 @@ public class SunnyRunInfo {
         this.date = date;
     }
 
-    public String getTime() {
-        return time;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
 
-    public String getDistance() {
-        return distance;
+    public String getMileage() {
+        return mileage;
     }
 
-    public void setDistance(String distance) {
-        this.distance = distance;
+    public void setMileage(String mileage) {
+        this.mileage = mileage;
     }
 
-    public String getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(String speed) {
-        this.speed = speed;
-    }
 
     public String getNumber() {
         return number;
@@ -73,5 +59,21 @@ public class SunnyRunInfo {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public boolean isValid() {
+        return isValid;
+    }
+
+    public void setValid(boolean valid) {
+        isValid = valid;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
     }
 }

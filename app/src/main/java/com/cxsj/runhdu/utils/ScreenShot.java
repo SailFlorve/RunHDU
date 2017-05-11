@@ -1,12 +1,18 @@
 package com.cxsj.runhdu.utils;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 
+import com.cxsj.runhdu.MainActivity;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -75,17 +81,34 @@ public class ScreenShot {
     }
 
     // 程序入口
-    public static String shoot(Activity a) {
+    private static String shoot(Activity a) {
         String strFileName = a.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
                 + String.valueOf(System.currentTimeMillis()) + ".png";
         ScreenShot.savePic(ScreenShot.takeScreenShot(a), strFileName);
         return strFileName;
     }
 
-    public static String shoot(View v) {
-        String strFileName = v.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                + String.valueOf(System.currentTimeMillis()) + ".png";
-        ScreenShot.savePic(ScreenShot.takeScreenShot(v), strFileName);
-        return strFileName;
+    public static void takeAndShare(Activity activity) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                activity.runOnUiThread(() -> {
+                    String imagePath = ScreenShot.shoot(activity);
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                    File file = new File(imagePath);
+                    intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+                    intent.setType("image/jpeg");
+                    Intent chooser = Intent.createChooser(intent, "分享运动数据");
+                    if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                        activity.startActivity(chooser);
+                    }
+                });
+            }
+        }).start();
     }
 }

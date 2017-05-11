@@ -14,23 +14,10 @@ public class AboutActivity extends BaseActivity {
     private TextView help;
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        setSupportActionBar((Toolbar) findViewById(R.id.about_toolbar));
-        ActionBar actionbar = getSupportActionBar();
-        actionbar.setDisplayHomeAsUpEnabled(true);
+        addToolbar(R.id.about_toolbar, true);
 
         checkVersion = (TextView) findViewById(R.id.check_version_about);
         checkVersion.setOnClickListener(v -> {
@@ -39,8 +26,7 @@ public class AboutActivity extends BaseActivity {
 
         feedback = (TextView) findViewById(R.id.feedback_about);
         feedback.setOnClickListener(v -> {
-            Intent intent = new Intent(AboutActivity.this, FeedbackActivity.class);
-            startActivity(intent);
+            toActivity(AboutActivity.this, FeedbackActivity.class);
         });
 
         help = (TextView) findViewById(R.id.help_about);

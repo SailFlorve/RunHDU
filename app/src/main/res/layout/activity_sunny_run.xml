@@ -8,21 +8,23 @@
     android:fitsSystemWindows="true">
 
     <LinearLayout
-        android:id="@+id/activity_sunlight_running"
+        android:id="@+id/activity_sunny_run_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/sunny_run_activity_bar"
+            android:id="@+id/sunny_run_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             android:fitsSystemWindows="true"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:title="阳光长跑"
+            app:title="阳光长跑"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:titleTextColor="#fff">
+
         </android.support.v7.widget.Toolbar>
 
         <FrameLayout
@@ -30,7 +32,7 @@
             android:layout_height="match_parent">
 
             <LinearLayout
-                android:id="@+id/sunlight_running_layout"
+                android:id="@+id/sunny_run_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -39,21 +41,20 @@
                     android:id="@+id/sun_list_top_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/TextTitle"
-                    android:layout_margin="5dp" />
+                    android:layout_margin="5dp"
+                    android:textColor="@color/TextTitle" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/sunny_run_list"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    >
+                    android:layout_height="match_parent">
 
                 </android.support.v7.widget.RecyclerView>
 
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/login_layout"
+                android:id="@+id/sunny_run_login_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#F5F5F5"
@@ -76,12 +77,12 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:orientation="vertical"
-                        android:padding="15dp"
-                        android:gravity="center">
+                        android:padding="15dp">
 
                         <android.support.design.widget.TextInputLayout
-                            android:id="@+id/username_edit_text"
+                            android:id="@+id/sunny_run_username_edit_text"
                             android:layout_width="200dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="15dp">
@@ -90,14 +91,15 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:hint="学号"
-                                android:inputType="number"/>
+                                android:inputType="number" />
                         </android.support.design.widget.TextInputLayout>
 
                         <android.support.design.widget.TextInputLayout
-                            android:id="@+id/pw_edit_text"
+                            android:id="@+id/sunny_run_pw_edit_text"
                             android:layout_width="200dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="15dp">
+                            android:layout_marginTop="15dp"
+                            android:visibility="gone">
 
                             <EditText
                                 android:layout_width="match_parent"
@@ -107,7 +109,7 @@
                         </android.support.design.widget.TextInputLayout>
 
                         <Button
-                            android:id="@+id/login_button"
+                            android:id="@+id/sunny_run_login_button"
                             android:layout_width="200dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="35dp"
@@ -118,11 +120,11 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="15dp"
                             android:layout_marginLeft="30dp"
                             android:layout_marginRight="30dp"
+                            android:layout_marginTop="15dp"
                             android:gravity="center"
-                            android:text="@string/login_tips_sunny_run" />
+                            android:text="@string/sunny_run_tips" />
                     </LinearLayout>
                 </ScrollView>
             </LinearLayout>

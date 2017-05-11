@@ -38,8 +38,8 @@
             android:divider="@drawable/divider"
             android:dividerPadding="5dp"
             android:orientation="horizontal"
-            android:paddingBottom="15dp"
-            android:paddingTop="15dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
             android:showDividers="middle">
 
             <com.cxsj.runhdu.view.NumberView
@@ -108,6 +108,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_margin="5dp"
             android:layout_weight="1.2"
             android:gravity="center_horizontal"

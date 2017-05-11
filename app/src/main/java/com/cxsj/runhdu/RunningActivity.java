@@ -8,9 +8,7 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.LinearLayout;
@@ -34,27 +32,20 @@ import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.cxsj.runhdu.constant.Types;
-import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.sport.RunningInfo;
 import com.cxsj.runhdu.sensor.StepSensorAcceleration;
 import com.cxsj.runhdu.sensor.StepSensorBase;
 import com.cxsj.runhdu.sensor.StepSensorPedometer;
-import com.cxsj.runhdu.utils.HttpUtil;
-import com.cxsj.runhdu.utils.Prefs;
+import com.cxsj.runhdu.utils.SyncUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.ImageNumberDisplay;
 import com.dd.CircularProgressButton;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
-
-public class RunningActivity extends AppCompatActivity
+public class RunningActivity extends BaseActivity
         implements StepSensorBase.StepCallback {
 
     private LinearLayout rootLayout;
@@ -78,8 +69,9 @@ public class RunningActivity extends AppCompatActivity
 
     private int locTimes = 0;//定位的次数
     private int runningStatus = 0;//0:未开始跑步 1：正在跑步 2.已经跑完
+    private boolean isOutdoor = false;
     private boolean isSyncing = false;
-    private boolean isUpload = true;
+
     private boolean runWithoutGPS = false;
     private int satelliteNum;
     private PowerManager.WakeLock wakeLock;//唤醒锁
@@ -88,14 +80,11 @@ public class RunningActivity extends AppCompatActivity
     private String sensorMode = "未使用传感器";
     private StringBuilder pointListBuilder = new StringBuilder();
 
-    private Prefs prefs;
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_running);
-        prefs = new Prefs(this);
         //acquireWakeLock();
         initView();
         initSettings();
@@ -130,7 +119,6 @@ public class RunningActivity extends AppCompatActivity
     private void initSettings() {
         locTime = (int) (Double.parseDouble(
                 (String) prefs.get("locate_rate", "1.5")) * 1000);
-        isUpload = (boolean) prefs.get("sync_data", true);
         boolean showLog = (boolean) prefs.get("show_debug_log", false);
         if (showLog) latLngText.setVisibility(View.VISIBLE);
         else latLngText.setVisibility(View.GONE);
@@ -149,25 +137,14 @@ public class RunningActivity extends AppCompatActivity
         } else if (isSyncing) {
             Toast.makeText(this, "正在同步数据，请稍等...", Toast.LENGTH_SHORT).show();
         } else {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            toActivity(this, MainActivity.class);
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     //初始化变量
 
     private void initView() {
-
         client = new LocationClient(getApplicationContext());
         client.registerLocationListener(new RunningActivity.MyLocationListener());
         rootLayout = (LinearLayout) findViewById(R.id.running_root_layout);
@@ -178,10 +155,7 @@ public class RunningActivity extends AppCompatActivity
         distanceNumber = (ImageNumberDisplay) findViewById(R.id.distance_text);
         stepNumber = (ImageNumberDisplay) findViewById(R.id.running_step);
         energyNumber = (ImageNumberDisplay) findViewById(R.id.running_energy);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.running_toolbar);
-        toolbar.setTitle("开始跑步");
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        addToolbar(R.id.running_toolbar, true);
 
         timer = (Chronometer) findViewById(R.id.timer);
         baiduMap = mapView.getMap();
@@ -206,7 +180,7 @@ public class RunningActivity extends AppCompatActivity
     }
 
     private void startRunning() {
-        if (isUpload) {
+        if (isSyncOn) {
             if (!Utility.isNetworkAvailable(getApplicationContext())) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(RunningActivity.this);
                 dialog.setTitle("没有网络").setMessage(R.string.internet_not_connect);
@@ -343,6 +317,8 @@ public class RunningActivity extends AppCompatActivity
         float speed = Float.parseFloat(speedNumber.getText().toString());
 
         RunningInfo runningInfo = new RunningInfo(
+                Utility.getTime(Types.TYPE_STRING_FORM),
+                isOutdoor ? "室内跑步" : "室外跑步",
                 Utility.getTime(Calendar.YEAR),
                 Utility.getTime(Types.TYPE_MONTH),
                 Utility.getTime(Calendar.DATE),
@@ -354,53 +330,28 @@ public class RunningActivity extends AppCompatActivity
                 speed,
                 pointListBuilder.toString()
         );
+
         runningInfo.save();
-        if (isUpload) updateToService(runningInfo);
+        if (isSyncOn) updateToServer(runningInfo);
     }
 
-    private void updateToService(RunningInfo runningInfo) {
+    private void updateToServer(RunningInfo runningInfo) {
         isSyncing = true;
-        HttpUtil.load(URLs.UPLOAD_RUN_INFO)
-                .addParam("userName", (String) prefs.get("username", "0"))
-                .addParam("year", runningInfo.getYear())
-                .addParam("month", runningInfo.getMonth())
-                .addParam("date", runningInfo.getDate())
-                .addParam("startTime", runningInfo.getStartTime())
-                .addParam("duration", runningInfo.getDuration())
-                .addParam("steps", String.valueOf(runningInfo.getSteps()))
-                .addParam("distance", String.valueOf(runningInfo.getDistance()))
-                .addParam("energy", String.valueOf(runningInfo.getEnergy()))
-                .addParam("speed", String.valueOf(runningInfo.getSpeed()))
-                .addParam("trailList", runningInfo.getTrailList())
-                .post(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        isSyncing = false;
-                        runOnUiThread(() -> Snackbar.make(
-                                rootLayout, "上传本次跑步数据失败。", Snackbar.LENGTH_LONG)
-                                .setAction("重试", v -> updateToService(runningInfo)).show());
-                    }
+        Log.d(TAG, "saveRunData: " + runningInfo.getRunId());
+        SyncUtil.uploadSingleToServer(username, runningInfo, new SyncUtil.SyncDataCallback() {
+            @Override
+            public void onSyncFailure(String msg) {
+                Snackbar.make(rootLayout, msg, Snackbar.LENGTH_LONG)
+                        .setAction("重试", v -> updateToServer(runningInfo)).show();
+            }
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        isSyncing = false;
-                        runOnUiThread(() -> {
-                            String result = "";
-                            try {
-                                result = response.body().string();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            if (!result.equals("true")) {
-                                Snackbar.make(rootLayout, "上传本次跑步数据失败。", Snackbar.LENGTH_LONG)
-                                        .setAction("重试", v -> updateToService(runningInfo)).show();
-                            } else {
-                                Snackbar.make(rootLayout, "跑步数据上传成功。", Snackbar.LENGTH_LONG)
-                                        .setAction("退出", v -> onBackPressed()).show();
-                            }
+            @Override
+            public void onSyncSuccess() {
+                Snackbar.make(rootLayout, "上传跑步数据成功。", Snackbar.LENGTH_SHORT)
+                        .setAction("知道了", v -> {
                         });
-                    }
-                });
+            }
+        });
     }
 
     /**
@@ -445,7 +396,7 @@ public class RunningActivity extends AppCompatActivity
                     .points(pointList);
             baiduMap.addOverlay(polyline);//添加Marker
         } else if (pointList.size() >= 10000) {
-            stopRunning();
+            startButton.callOnClick();
             new AlertDialog.Builder(this)
                     .setTitle("超时提示")
                     .setMessage(R.string.over_time)
@@ -541,7 +492,7 @@ public class RunningActivity extends AppCompatActivity
                             || bdLocation.getRadius() > 20) return;
                     speedNumber.setText(Utility.formatDecimal(bdLocation.getSpeed() / 3.6, 2));//速度数字
                     distanceNumber.setNumber(String.valueOf(Utility.getRunningDistance(pointList)));//路程数字
-
+                    isOutdoor = true;
                     // TODO:轨迹纠偏
                     addPoint(latLng);
                 } else if (runningStatus == 0) {

@@ -6,6 +6,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.cxsj.runhdu.R;
 import com.cxsj.runhdu.sport.SunnyRunInfo;
+import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.NumberView;
 
 import java.util.List;
@@ -22,17 +23,19 @@ public class SunnyRunRecyclerViewAdapter extends BaseQuickAdapter<SunnyRunInfo, 
 
     @Override
     protected void convert(BaseViewHolder helper, SunnyRunInfo item) {
-        helper.setText(R.id.sun_run_time_date, "第" + item.getNumber() + "次 | " + item.getDate());
+        helper.setText(R.id.sun_run_number, "No." + item.getNumber());
+        helper.setText(R.id.sun_run_date, item.getDate());
 
-        NumberView time = (NumberView) helper.getView(R.id.sun_run_time);
-        NumberView dis = (NumberView) helper.getView(R.id.sun_run_dis);
-        NumberView speed = (NumberView) helper.getView(R.id.sun_run_speed);
-        time.setText(item.getTime());
-        dis.setText(item.getDistance());
-        speed.setText(item.getSpeed());
+        NumberView time = helper.getView(R.id.sun_run_time);
+        NumberView dis = helper.getView(R.id.sun_run_dis);
+        NumberView speed = helper.getView(R.id.sun_run_speed);
 
-        ImageView valid = (ImageView) helper.getView(R.id.sun_run_valid);
-        if (item.getValid().equals("ok")) {
+        time.setText(item.getDomain());
+        dis.setText(item.getMileage());
+        speed.setText(Utility.formatDecimal(item.getSpeed(), 2));
+
+        ImageView valid = helper.getView(R.id.sun_run_valid);
+        if (item.isValid()) {
             valid.setImageResource(R.drawable.ic_valid);
         } else {
             valid.setImageResource(R.drawable.ic_invalid);

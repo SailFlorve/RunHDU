@@ -25,17 +25,15 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
     private CircularProgressButton loginButton;
     private EditText usernameText;
     private TextInputLayout usernameInputLayout;
     private TextInputLayout pwInputLayout;
-    private Prefs prefs;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        ActivityManager.addActivity(this);
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         loginButton = (CircularProgressButton) findViewById(R.id.login_button);
@@ -43,13 +41,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         usernameInputLayout = (TextInputLayout) findViewById(R.id.username_input_layout);
         pwInputLayout = (TextInputLayout) findViewById(R.id.pw_input_layout);
         loginButton.setIndeterminateProgressMode(true);
-        prefs = new Prefs(this);
-        setSupportActionBar((Toolbar) findViewById(R.id.login_toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        addToolbar(R.id.login_toolbar, true);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         loginButton.setOnClickListener(this);
         usernameText.setOnClickListener(this);
+
+        if (!TextUtils.isEmpty(username)) {
+            usernameText.setText(username);
+        }
     }
 
     @Override
@@ -85,15 +85,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             default:
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private boolean checkUsername(String username, String password) {
@@ -166,8 +157,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             new Thread(() -> {
                 try {
                     Thread.sleep(1000);
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    toActivity(LoginActivity.this, MainActivity.class);
                     ActivityManager.finishAll();
                 } catch (Exception e) {
                     e.printStackTrace();
