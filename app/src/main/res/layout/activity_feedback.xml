@@ -24,7 +24,8 @@
         android:layout_marginRight="15dp"
         android:layout_marginTop="30dp"
         android:background="@drawable/border_blue"
-        android:hint="输入反馈信息..." />
+        android:hint="输入反馈信息..."
+        android:textSize="14sp" />
 
     <EditText
         android:id="@+id/feedback_contact"
@@ -34,19 +35,20 @@
         android:layout_marginRight="15dp"
         android:layout_marginTop="15dp"
         android:background="@drawable/border_blue"
-        android:hint="您的QQ..." />
+        android:hint="您的QQ..."
+        android:textSize="14sp" />
 
     <com.dd.CircularProgressButton
         android:id="@+id/feedback_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="75dp"
+        android:layout_marginRight="75dp"
+        android:layout_marginTop="30dp"
         android:textColor="#FFF"
         app:cpb_selectorIdle="@drawable/normal_selector"
-        app:cpb_textIdle="提交反馈"
+        app:cpb_textComplete="已收到您的反馈"
         app:cpb_textError="重试"
-        app:cpb_textComplete="感谢您的反馈"
-        android:layout_gravity="center"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="75dp"
-        android:layout_marginRight="75dp"/>
+        app:cpb_textIdle="提交反馈" />
 </LinearLayout>

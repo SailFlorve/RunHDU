@@ -1,20 +1,15 @@
 package com.cxsj.runhdu;
 
-import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.utils.ActivityManager;
 import com.cxsj.runhdu.utils.HttpUtil;
 
 import java.io.IOException;
@@ -39,7 +34,7 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
         pwInputLayout = (TextInputLayout) findViewById(R.id.pw_input_layout);
         pwEnsureLayout = (TextInputLayout) findViewById(R.id.pw_ensure_input_layout);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        addToolbar(R.id.register_toolbar, true);
+        setToolbar(R.id.register_toolbar, true);
         registerButton.setOnClickListener(this);
     }
 

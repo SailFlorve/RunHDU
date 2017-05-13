@@ -31,6 +31,10 @@
     <item android:title="其他">
         <menu>
             <item
+                android:title="实验功能"
+                android:id="@+id/lab"
+                android:icon="@drawable/ic_lab"/>
+            <item
                 android:id="@+id/settings"
                 android:icon="@drawable/ic_settings"
                 android:title="设置" />

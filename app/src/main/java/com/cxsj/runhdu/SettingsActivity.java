@@ -15,7 +15,7 @@ public class SettingsActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        addToolbar(R.id.toolbar_settings, true);
+        setToolbar(R.id.toolbar_settings, true);
         if (savedInstanceState == null) {
             SettingFragment settingFragment = new SettingFragment();
             getFragmentManager().beginTransaction()

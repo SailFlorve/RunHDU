@@ -1,10 +1,7 @@
 package com.cxsj.runhdu;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -28,7 +25,7 @@ public class FeedbackActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_feedback);
-        addToolbar(R.id.feedback_toolbar, true);
+        setToolbar(R.id.feedback_toolbar, true);
         feedbackText = (EditText) findViewById(R.id.feedback_text);
         contactText = (EditText) findViewById(R.id.feedback_contact);
         feedbackButton = (CircularProgressButton) findViewById(R.id.feedback_button);
@@ -61,15 +58,8 @@ public class FeedbackActivity extends BaseActivity {
                             String result = response.body().string();
                             runOnUiThread(() -> {
                                 if (result.equals("true")) {
+                                    feedbackButton.setClickable(false);
                                     feedbackButton.setProgress(100);
-                                    new Thread(() -> {
-                                        try {
-                                            Thread.sleep(1000);
-                                            finish();
-                                        } catch (InterruptedException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }).start();
                                 } else {
                                     feedbackButton.setProgress(0);
                                     feedbackButton.setIdleText("失败，点击重试");

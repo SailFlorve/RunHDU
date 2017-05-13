@@ -2,6 +2,7 @@ package com.cxsj.runhdu.utils;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.cxsj.runhdu.RunDetailsActivity;
@@ -26,6 +27,7 @@ import okhttp3.Response;
 
 public class SyncUtil {
 
+    private static final String TAG = "SyncUtil";
     private static Handler mHandler = new Handler(Looper.getMainLooper());
 
     public interface checkDataCallback {
@@ -50,17 +52,17 @@ public class SyncUtil {
                     @Override
                     public void onFailure(Call call, IOException e) {
                         mHandler.post(() -> callback.onCheckFailure("网络连接失败。"));
-
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         int serverTimes;
                         String result = response.body().string();
+                        Log.d(TAG, "onResponse: 返回检查次数" + result);
                         try {
                             serverTimes = Integer.parseInt(result);
                         } catch (NumberFormatException e) {
-                            mHandler.post(() -> callback.onCheckFailure("返回格式有误。"));
+                            mHandler.post(() -> callback.onCheckFailure("返回格式有误。" + result));
                             e.printStackTrace();
                             return;
                         }
@@ -146,7 +148,7 @@ public class SyncUtil {
                     public void onResponse(Call call, Response response) throws IOException {
                         String result = response.body().string();
                         mHandler.post(() -> {
-                            if (!result.equals("true")) {
+                            if (result.equals("true")) {
                                 callback.onSyncSuccess();
                             } else {
                                 callback.onSyncFailure("返回错误，上传失败。");

@@ -12,6 +12,7 @@ import android.support.annotation.IdRes;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,13 +50,19 @@ public class BaseActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityManager.addActivity(this);
-        Log.d(TAG, "onCreate: 执行了基类构造函数");
         prefs = new Prefs(this);
-        username = (String) prefs.get("username", null);
+        username = (String) prefs.get("username", "");
         isSyncOn = (boolean) prefs.get("sync_data", true);
+
     }
 
-    protected void addToolbar(int toolbarResId, boolean haveBackButton) {
+    @Override
+    protected void onDestroy() {
+        ActivityManager.removeActivity(this);
+        super.onDestroy();
+    }
+
+    protected void setToolbar(int toolbarResId, boolean haveBackButton) {
         setSupportActionBar((Toolbar) findViewById(toolbarResId));
         if (haveBackButton) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

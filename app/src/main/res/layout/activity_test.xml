@@ -4,19 +4,45 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.cxsj.runhdu.TestActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.cxsj.runhdu.TestActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_test"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title="实验功能">
+
+    </android.support.v7.widget.Toolbar>
 
     <Button
-        android:id="@+id/lab_button"
+        android:id="@+id/GZip_compress_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="压缩" />
+        android:layout_margin="5dp"
+        android:background="?attr/colorPrimary"
+        android:text="GZip压缩"
+        android:textColor="#FFF" />
+
+    <Button
+        android:id="@+id/zip_compress_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="?attr/colorPrimary"
+        android:text="Zip压缩"
+        android:textColor="#FFF" />
+
+    <TextView
+        android:id="@+id/compress_info_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <EditText
         android:id="@+id/lab_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="输入压缩..."/>
-
+        android:hint="输入压缩..." />
 </LinearLayout>

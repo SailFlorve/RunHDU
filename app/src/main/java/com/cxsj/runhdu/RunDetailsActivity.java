@@ -29,13 +29,7 @@ import com.cxsj.runhdu.view.NumberView;
 
 import org.litepal.crud.DataSupport;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RunDetailsActivity extends BaseActivity {
@@ -69,7 +63,7 @@ public class RunDetailsActivity extends BaseActivity {
         mapView = (MapView) findViewById(R.id.map_view_details);
         mapView.showZoomControls(false);
         baiduMap = mapView.getMap();
-        addToolbar(R.id.details_toolbar, true);
+        setToolbar(R.id.details_toolbar, true);
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();

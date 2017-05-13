@@ -37,6 +37,7 @@ import com.bumptech.glide.Glide;
 import com.cxsj.runhdu.adapters.MyFragmentPagerAdapter;
 import com.cxsj.runhdu.constant.Types;
 import com.cxsj.runhdu.sport.RunningInfo;
+import com.cxsj.runhdu.utils.ActivityManager;
 import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.utils.ScreenShot;
 import com.cxsj.runhdu.utils.SyncUtil;
@@ -134,7 +135,7 @@ public class MainActivity extends BaseActivity
         dataDescription = (TextView) findViewById(R.id.data_description);
         progressView = (FrameLayout) findViewById(R.id.progress_view_layout);
         chartView = (LinearLayout) findViewById(R.id.chart_view_layout);
-        addToolbar(R.id.toolbar_main, false);
+        setToolbar(R.id.toolbar_main, false);
 
         menuButton.setOnClickListener(this);
         fab.setOnClickListener(this);
@@ -280,6 +281,11 @@ public class MainActivity extends BaseActivity
     }
 
     private void initSettings() {
+        //用户名为空时，跳转到WelcomeActivity
+        if (TextUtils.isEmpty(username)) {
+            ActivityManager.finishAll();
+            toActivity(this, WelcomeActivity.class);
+        }
         //设置头像
         String fileName = (String) prefs.get("profile_path", null);
         if (!TextUtils.isEmpty(fileName)) {
@@ -419,6 +425,9 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.quit:
                 finish();
+                break;
+            case R.id.lab:
+                toActivity(this, TestActivity.class);
                 break;
             case R.id.sunlight_long_run:
                 toActivity(MainActivity.this, SunnyRunActivity.class);

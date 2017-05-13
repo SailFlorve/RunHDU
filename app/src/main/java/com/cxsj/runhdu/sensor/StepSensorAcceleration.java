@@ -59,7 +59,10 @@ public class StepSensorAcceleration extends StepSensorBase {
     private int CountTimeState = 0;
     public static int TEMP_STEP = 0;
     private int lastStep = -1;
-    //用x、y、z轴三个维度算出的平均值
+
+    /**
+     * 用x、y、z轴三个维度算出的平均值
+     */
     public static float average = 0;
     private Timer timer;
     // 倒计时3.5秒，3.5秒内不会显示计步，用于屏蔽细微波动

@@ -6,7 +6,6 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -23,7 +22,6 @@ import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.gson.StudentInfo;
 import com.cxsj.runhdu.sport.SunnyRunInfo;
 import com.cxsj.runhdu.utils.HttpUtil;
-import com.cxsj.runhdu.utils.Prefs;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -59,7 +57,7 @@ public class SunnyRunActivity extends BaseActivity {
         loginButton = (Button) findViewById(R.id.sunny_run_login_button);
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.sunny_refresh);
         loginLayout = (LinearLayout) findViewById(R.id.sunny_run_login_layout);
-        addToolbar(R.id.sunny_run_toolbar, true);
+        setToolbar(R.id.sunny_run_toolbar, true);
         refreshLayout.setEnabled(false);
 
         initRecyclerView();

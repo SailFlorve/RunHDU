@@ -1,13 +1,9 @@
 package com.cxsj.runhdu;
 
-import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -17,7 +13,6 @@ import com.dd.CircularProgressButton;
 import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.utils.HttpUtil;
 import com.cxsj.runhdu.utils.ActivityManager;
-import com.cxsj.runhdu.utils.Prefs;
 
 import java.io.IOException;
 
@@ -41,7 +36,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         usernameInputLayout = (TextInputLayout) findViewById(R.id.username_input_layout);
         pwInputLayout = (TextInputLayout) findViewById(R.id.pw_input_layout);
         loginButton.setIndeterminateProgressMode(true);
-        addToolbar(R.id.login_toolbar, true);
+        setToolbar(R.id.login_toolbar, true);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         loginButton.setOnClickListener(this);

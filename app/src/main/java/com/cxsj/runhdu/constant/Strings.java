@@ -6,4 +6,6 @@ package com.cxsj.runhdu.constant;
  */
 
 public class Strings {
+    public static final String RUN_OUTDOORS = "户外跑步";
+    public static final String RUN_INDOORS = "室内跑步";
 }

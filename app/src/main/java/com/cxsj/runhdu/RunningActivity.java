@@ -31,6 +31,7 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.cxsj.runhdu.constant.Strings;
 import com.cxsj.runhdu.constant.Types;
 import com.cxsj.runhdu.sport.RunningInfo;
 import com.cxsj.runhdu.sensor.StepSensorAcceleration;
@@ -155,7 +156,7 @@ public class RunningActivity extends BaseActivity
         distanceNumber = (ImageNumberDisplay) findViewById(R.id.distance_text);
         stepNumber = (ImageNumberDisplay) findViewById(R.id.running_step);
         energyNumber = (ImageNumberDisplay) findViewById(R.id.running_energy);
-        addToolbar(R.id.running_toolbar, true);
+        setToolbar(R.id.running_toolbar, true);
 
         timer = (Chronometer) findViewById(R.id.timer);
         baiduMap = mapView.getMap();
@@ -318,7 +319,7 @@ public class RunningActivity extends BaseActivity
 
         RunningInfo runningInfo = new RunningInfo(
                 Utility.getTime(Types.TYPE_STRING_FORM),
-                isOutdoor ? "室内跑步" : "室外跑步",
+                isOutdoor ? Strings.RUN_OUTDOORS : Strings.RUN_INDOORS,
                 Utility.getTime(Calendar.YEAR),
                 Utility.getTime(Types.TYPE_MONTH),
                 Utility.getTime(Calendar.DATE),
@@ -341,15 +342,17 @@ public class RunningActivity extends BaseActivity
         SyncUtil.uploadSingleToServer(username, runningInfo, new SyncUtil.SyncDataCallback() {
             @Override
             public void onSyncFailure(String msg) {
+                isSyncing = false;
                 Snackbar.make(rootLayout, msg, Snackbar.LENGTH_LONG)
                         .setAction("重试", v -> updateToServer(runningInfo)).show();
             }
 
             @Override
             public void onSyncSuccess() {
+                isSyncing = false;
                 Snackbar.make(rootLayout, "上传跑步数据成功。", Snackbar.LENGTH_SHORT)
                         .setAction("知道了", v -> {
-                        });
+                        }).show();
             }
         });
     }

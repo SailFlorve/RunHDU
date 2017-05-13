@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -23,8 +24,8 @@ public class WelcomeActivity extends BaseActivity {
             finish();
             return;
         }
-        ActivityManager.addActivity(this);
 
+        //用户名不为空时，执行登录，跳转到MainActivity
         if (!TextUtils.isEmpty(username)) {
             toActivity(this, MainActivity.class);
             ActivityManager.finishAll();
