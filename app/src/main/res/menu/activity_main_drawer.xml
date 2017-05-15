@@ -13,14 +13,16 @@
         <item
             android:id="@+id/sport_moments"
             android:icon="@drawable/ic_moments"
-            android:title="运动圈" />
+            android:title="运动圈"
+            android:visible="false" />
     </group>
     <item android:title="社交">
         <menu>
             <item
                 android:id="@+id/send_moments"
                 android:icon="@drawable/ic_friends"
-                android:title="好友" />
+                android:title="好友"
+                android:visible="false" />
             <item
                 android:id="@+id/share"
                 android:icon="@drawable/ic_menu_share"
@@ -31,9 +33,10 @@
     <item android:title="其他">
         <menu>
             <item
-                android:title="实验功能"
                 android:id="@+id/lab"
-                android:icon="@drawable/ic_lab"/>
+                android:icon="@drawable/ic_lab"
+                android:title="实验功能"
+                android:visible="false" />
             <item
                 android:id="@+id/settings"
                 android:icon="@drawable/ic_settings"

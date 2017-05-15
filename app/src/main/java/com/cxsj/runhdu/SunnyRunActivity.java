@@ -19,8 +19,8 @@ import android.widget.Toast;
 
 import com.cxsj.runhdu.adapters.SunnyRunRecyclerViewAdapter;
 import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.gson.StudentInfo;
-import com.cxsj.runhdu.sport.SunnyRunInfo;
+import com.cxsj.runhdu.model.gson.StudentInfo;
+import com.cxsj.runhdu.model.sport.SunnyRunInfo;
 import com.cxsj.runhdu.utils.HttpUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

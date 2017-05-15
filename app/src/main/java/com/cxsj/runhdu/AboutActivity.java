@@ -27,7 +27,7 @@ public class AboutActivity extends BaseActivity {
 
         help = (TextView) findViewById(R.id.help_about);
         help.setOnClickListener(v -> {
-            showComingSoonDialog();
+            toActivity(AboutActivity.this, HelpActivity.class);
         });
     }
 }

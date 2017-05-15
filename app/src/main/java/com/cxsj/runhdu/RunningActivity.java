@@ -33,7 +33,7 @@ import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.cxsj.runhdu.constant.Strings;
 import com.cxsj.runhdu.constant.Types;
-import com.cxsj.runhdu.sport.RunningInfo;
+import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.sensor.StepSensorAcceleration;
 import com.cxsj.runhdu.sensor.StepSensorBase;
 import com.cxsj.runhdu.sensor.StepSensorPedometer;

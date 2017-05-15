@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cxsj.runhdu.sport.RunningInfo;
+import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.NumberView;

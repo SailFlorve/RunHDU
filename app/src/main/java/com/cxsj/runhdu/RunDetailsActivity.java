@@ -21,7 +21,7 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.cxsj.runhdu.sport.RunningInfo;
+import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.utils.SyncUtil;
 import com.cxsj.runhdu.utils.Utility;

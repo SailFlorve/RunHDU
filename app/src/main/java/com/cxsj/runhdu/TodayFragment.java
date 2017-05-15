@@ -14,8 +14,8 @@ import android.widget.LinearLayout;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.cxsj.runhdu.adapters.RecyclerViewSectionAdapter;
-import com.cxsj.runhdu.sport.RunningInfo;
-import com.cxsj.runhdu.sport.RunningInfoSection;
+import com.cxsj.runhdu.model.sport.RunningInfo;
+import com.cxsj.runhdu.model.sport.RunningInfoSection;
 import com.cxsj.runhdu.utils.QueryUtil;
 
 import java.util.ArrayList;

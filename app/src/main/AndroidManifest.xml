@@ -83,6 +83,7 @@
 
         <activity android:name=".TestActivity" />
         <activity android:name=".FeedbackActivity"></activity>
+        <activity android:name=".HelpActivity" />
     </application>
 
 </manifest>

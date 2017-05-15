@@ -3,12 +3,10 @@ package com.cxsj.runhdu.utils;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.cxsj.runhdu.RunDetailsActivity;
 import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.gson.Running;
-import com.cxsj.runhdu.sport.RunningInfo;
+import com.cxsj.runhdu.model.gson.Running;
+import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.google.gson.Gson;
 
 import org.litepal.crud.DataSupport;
@@ -188,26 +186,18 @@ public class SyncUtil {
                 .post(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.onSyncFailure("网络连接失败，无法删除服务器数据。");
-                            }
-                        });
+                        mHandler.post(() -> callback.onSyncFailure("网络连接失败，无法删除服务器数据。"));
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         String result = response.body().string();
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (result.equals("true")) {
-                                    DataSupport.deleteAll(RunningInfo.class);
-                                    callback.onSyncSuccess();
-                                } else {
-                                    callback.onSyncFailure("删除失败，返回错误。");
-                                }
+                        mHandler.post(() -> {
+                            if (result.equals("true")) {
+                                DataSupport.deleteAll(RunningInfo.class);
+                                callback.onSyncSuccess();
+                            } else {
+                                callback.onSyncFailure("删除失败，返回错误。");
                             }
                         });
                     }

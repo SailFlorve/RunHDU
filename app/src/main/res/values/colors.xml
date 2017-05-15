@@ -3,11 +3,9 @@
     <color name="colorPrimary">#1E88E5</color>
     <color name="colorPrimaryDark">#1976D2</color>
     <color name="colorAccent">#448AFF</color>
-    <color name="colorWelcomeBackground">#0396FA</color>
     <color name="TextSecondary">#808080</color>
     <color name="TextPrimary">#212121</color>
     <color name="TextTitle">#505050</color>
-    <color name="Line">#a1a1a1</color>
     <color name="BlackMD">#212121</color>
     <color name="colorStartRun">#4caf50</color>
     <color name="colorStartRunPressed">#388e3c</color>

@@ -2,25 +2,16 @@ package com.cxsj.runhdu.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Environment;
-import android.support.annotation.IntDef;
 import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
 import com.cxsj.runhdu.constant.Types;
-import com.cxsj.runhdu.gson.Running;
-import com.google.gson.Gson;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;

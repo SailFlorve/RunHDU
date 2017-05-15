@@ -1,6 +1,6 @@
-package com.cxsj.runhdu.gson;
+package com.cxsj.runhdu.model.gson;
 
-import com.cxsj.runhdu.sport.RunningInfo;
+import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;

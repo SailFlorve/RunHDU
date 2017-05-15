@@ -1,6 +1,6 @@
 package com.cxsj.runhdu.utils;
 
-import com.cxsj.runhdu.sport.RunningInfo;
+import com.cxsj.runhdu.model.sport.RunningInfo;
 
 import org.litepal.crud.DataSupport;
 

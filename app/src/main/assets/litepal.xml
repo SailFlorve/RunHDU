@@ -3,6 +3,6 @@
     <dbname value="RunHDU"/>
     <version value="5"/>
     <list>
-        <mapping class="com.cxsj.runhdu.sport.RunningInfo"/>
+        <mapping class="com.cxsj.runhdu.model.sport.RunningInfo"/>
     </list>
 </litepal>

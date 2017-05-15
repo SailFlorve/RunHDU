@@ -36,7 +36,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.cxsj.runhdu.adapters.MyFragmentPagerAdapter;
 import com.cxsj.runhdu.constant.Types;
-import com.cxsj.runhdu.sport.RunningInfo;
+import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.utils.ActivityManager;
 import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.utils.ScreenShot;
@@ -394,7 +394,7 @@ public class MainActivity extends BaseActivity
         v2.left = chartLabels.size() - 7;
         columnChart.setCurrentViewport(v2);
 
-        dataDescription.setText("此处显示30天内步数统计图\n点击柱形图，查看详细信息");
+        dataDescription.setText("点击柱形图，查看详细信息");
 
     }
 
