@@ -31,7 +31,7 @@ public class TestActivity extends BaseActivity {
         GzipButton.setOnClickListener(v -> {
             String str = text.getText().toString();
             String zipStr = ZipUtil.compress(str);
-            text.setText(String.format(zipStr));
+            text.setText(zipStr);
             compressInfoText.setText(String.format("压缩后%d", zipStr.length()));
             GzipButton.setClickable(false);
             zipButton.setClickable(false);
@@ -39,7 +39,7 @@ public class TestActivity extends BaseActivity {
         zipButton.setOnClickListener(v -> {
             String str = text.getText().toString();
             String zipStr = ZipUtil.compressForZip(str);
-            text.setText(String.format(zipStr));
+            text.setText(zipStr);
             compressInfoText.setText(String.format("压缩后%d", zipStr.length()));
             GzipButton.setClickable(false);
             zipButton.setClickable(false);

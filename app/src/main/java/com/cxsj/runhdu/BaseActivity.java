@@ -114,22 +114,20 @@ public class BaseActivity extends AppCompatActivity {
                                                 + finalInfo.latestVersion
                                                 + "\n\n"
                                                 + finalInfo.statement)
-                                        .setPositiveButton("立即升级", (dialog, which) -> {
-                                        })
-                                        .setNegativeButton("稍后提醒", (dialog, which) -> {
-                                        });
-                                if ((Activity) context instanceof MainActivity) {
+                                        .setPositiveButton("立即升级", null)
+                                        .setNegativeButton("稍后提醒", null);
+                                if (context instanceof MainActivity) {
                                     builder.setNeutralButton("忽略此版本", (dialog, which) -> {
                                         prefs.put("ignore_version", currentVersion);
                                     });
                                 }
                                 builder.create().show();
                             } else if (finalInfo.isUpdate.equals("false")) {
-                                if ((Activity) context instanceof AboutActivity) {
+                                if (context instanceof AboutActivity) {
                                     Toast.makeText(context, "未发现新版本。", Toast.LENGTH_SHORT).show();
                                 }
                             } else {
-                                if ((Activity) context instanceof AboutActivity) {
+                                if (context instanceof AboutActivity) {
                                     Toast.makeText(context, "服务器异常。", Toast.LENGTH_SHORT).show();
                                 }
                             }

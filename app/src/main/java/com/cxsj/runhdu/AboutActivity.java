@@ -16,9 +16,7 @@ public class AboutActivity extends BaseActivity {
         setToolbar(R.id.about_toolbar, true);
 
         checkVersion = (TextView) findViewById(R.id.check_version_about);
-        checkVersion.setOnClickListener(v -> {
-            checkUpdate(this);
-        });
+        checkVersion.setOnClickListener(v -> checkUpdate(this));
 
         feedback = (TextView) findViewById(R.id.feedback_about);
         feedback.setOnClickListener(v -> {
