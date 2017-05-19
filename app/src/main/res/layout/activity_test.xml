@@ -18,7 +18,7 @@
     </android.support.v7.widget.Toolbar>
 
     <Button
-        android:id="@+id/GZip_compress_button"
+        android:id="@+id/GZip_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
@@ -27,12 +27,21 @@
         android:textColor="#FFF" />
 
     <Button
-        android:id="@+id/zip_compress_button"
+        android:id="@+id/zip_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:background="?attr/colorPrimary"
         android:text="Zip压缩"
+        android:textColor="#FFF" />
+
+    <Button
+        android:id="@+id/md5_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="?attr/colorPrimary"
+        android:text="使用MD5加密"
         android:textColor="#FFF" />
 
     <TextView

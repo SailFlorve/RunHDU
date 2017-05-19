@@ -100,8 +100,7 @@ public class RunningActivity extends BaseActivity
                         .setTitle("结束跑步")
                         .setMessage("你确定要结束跑步吗？")
                         .setPositiveButton("确定", (dialog, which) -> stopRunning())
-                        .setNegativeButton("取消", (d, w) -> {
-                        }).create().show();
+                        .setNegativeButton("取消", null).create().show();
             }
         });
     }
@@ -129,12 +128,10 @@ public class RunningActivity extends BaseActivity
     @Override
     public void onBackPressed() {
         if (runningStatus == 1) {
-            AlertDialog.Builder dialog = new AlertDialog.Builder(RunningActivity.this);
-            dialog.setTitle("正在跑步").setMessage(R.string.exit_ensure);
-            dialog.setPositiveButton("确定", (dialog1, which) -> RunningActivity.super.onBackPressed());
-            dialog.setNegativeButton("取消", (dialog12, which) -> {
-            });
-            dialog.create().show();
+            new AlertDialog.Builder(RunningActivity.this)
+                    .setTitle("正在跑步").setMessage(R.string.exit_ensure)
+                    .setPositiveButton("确定", (dialog, which) -> RunningActivity.super.onBackPressed())
+                    .setNegativeButton("取消", null).create().show();
         } else if (isSyncing) {
             Toast.makeText(this, "正在同步数据，请稍等...", Toast.LENGTH_SHORT).show();
         } else {
@@ -185,8 +182,7 @@ public class RunningActivity extends BaseActivity
             if (!Utility.isNetworkAvailable(getApplicationContext())) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(RunningActivity.this);
                 dialog.setTitle("没有网络").setMessage(R.string.internet_not_connect);
-                dialog.setPositiveButton("知道了", (dialog1, which) -> {
-                });
+                dialog.setPositiveButton("知道了", null);
                 dialog.create().show();
                 return;
             }
@@ -200,8 +196,7 @@ public class RunningActivity extends BaseActivity
             if (satelliteNum <= 5) {
                 AlertDialog.Builder dialog = new AlertDialog.Builder(RunningActivity.this);
                 dialog.setTitle("GPS无法工作").setMessage(R.string.no_gps);
-                dialog.setPositiveButton("知道了", (dialog12, which) -> {
-                });
+                dialog.setPositiveButton("知道了", null);
                 dialog.create().show();
                 return;
             }
@@ -308,8 +303,7 @@ public class RunningActivity extends BaseActivity
                         .setTitle("跑步无效")
                         .setCancelable(false)
                         .setMessage(R.string.dis_not_enough)
-                        .setPositiveButton("知道了", (dialog, which) -> {
-                        }).show();
+                        .setPositiveButton("知道了", null).show();
                 return;
             }
         }
@@ -403,8 +397,7 @@ public class RunningActivity extends BaseActivity
             new AlertDialog.Builder(this)
                     .setTitle("超时提示")
                     .setMessage(R.string.over_time)
-                    .setPositiveButton(R.string.got_it, (dialog, which) -> {
-                    })
+                    .setPositiveButton(R.string.got_it, null)
                     .create().show();
 
         }
@@ -439,18 +432,14 @@ public class RunningActivity extends BaseActivity
     private boolean checkGPS() {
         if (runWithoutGPS) return true;
         if (!Utility.isGPSOpen(getApplicationContext())) {
-            AlertDialog.Builder dialog = new AlertDialog.Builder(RunningActivity.this);
-            dialog.setTitle("GPS未开启").setMessage(R.string.not_open_gps);
-            dialog.setPositiveButton("知道了", (dialog1, which) -> {
-
-            });
-
-            dialog.setNegativeButton("去设置", (dialog12, which) -> {
-                Intent intent = new Intent
-                        (Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivity(intent);
-            });
-            dialog.create().show();
+            new AlertDialog.Builder(RunningActivity.this)
+                    .setTitle("GPS未开启").setMessage(R.string.not_open_gps)
+                    .setPositiveButton("知道了", null)
+                    .setNegativeButton("去设置", (dialog, which) -> {
+                        Intent intent = new Intent
+                                (Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(intent);
+                    }).create().show();
             return false;
         } else {
             return true;

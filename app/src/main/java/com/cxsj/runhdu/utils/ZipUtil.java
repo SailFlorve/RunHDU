@@ -70,7 +70,7 @@ public class ZipUtil {
             ByteArrayInputStream in = new ByteArrayInputStream(t);
             GZIPInputStream gzip = new GZIPInputStream(in);
             byte[] buffer = new byte[1024];
-            int n = 0;
+            int n;
             while ((n = gzip.read(buffer, 0, buffer.length)) > 0) {
                 out.write(buffer, 0, n);
             }

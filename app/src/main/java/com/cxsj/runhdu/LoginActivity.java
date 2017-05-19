@@ -9,6 +9,8 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.cxsj.runhdu.utils.InputCheckHelper;
+import com.cxsj.runhdu.utils.MD5Util;
 import com.dd.CircularProgressButton;
 import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.utils.HttpUtil;
@@ -51,84 +53,49 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.login_button:
+                usernameInputLayout.setErrorEnabled(false);
+                pwInputLayout.setErrorEnabled(false);
+
                 String username = usernameInputLayout.getEditText().getText().toString();
                 String password = pwInputLayout.getEditText().getText().toString();
-                if (checkUsername(username, password)) {
-                    loginButton.setProgress(1);
-                    loginButton.setClickable(false);
-                    HttpUtil.load(URLs.LOGIN)
-                            .addParam("name", username)
-                            .addParam("password", password)
-                            .post(new Callback() {
-                                @Override
-                                public void onFailure(Call call, IOException e) {
-                                    runOnUiThread(() -> {
-                                        pwInputLayout.setError("网络连接失败。");
-                                        loginButton.setProgress(0);
-                                        loginButton.setClickable(true);
-                                    });
-                                }
+                InputCheckHelper.check(username, password, null, new InputCheckHelper.CheckCallback() {
+                    @Override
+                    public void onPass() {
+                        loginButton.setProgress(1);
+                        loginButton.setClickable(false);
+                        HttpUtil.load(URLs.LOGIN)
+                                .addParam("name", username)
+                                .addParam("password", MD5Util.encode(password))
+                                .post(new Callback() {
+                                    @Override
+                                    public void onFailure(Call call, IOException e) {
+                                        runOnUiThread(() -> {
+                                            pwInputLayout.setError("网络连接失败。");
+                                            loginButton.setProgress(0);
+                                            loginButton.setClickable(true);
+                                        });
+                                    }
 
-                                @Override
-                                public void onResponse(Call call, Response response) throws IOException {
-                                    final String result = response.body().string();
-                                    runOnUiThread(() -> checkReturn(result));
+                                    @Override
+                                    public void onResponse(Call call, Response response) throws IOException {
+                                        final String result = response.body().string();
+                                        runOnUiThread(() -> checkReturn(result));
+                                    }
+                                });
+                    }
 
-                                }
-                            });
-                }
+                    @Override
+                    public void onFailure(int which, String msg) {
+                        if (which == InputCheckHelper.ERR_USERNAME) {
+                            usernameInputLayout.setError(msg);
+                        } else if (which == InputCheckHelper.ERR_PASSWORD) {
+                            pwInputLayout.setError(msg);
+                        }
+                    }
+                });
                 break;
             default:
         }
-    }
-
-    private boolean checkUsername(String username, String password) {
-        usernameInputLayout.setErrorEnabled(false);
-        pwInputLayout.setErrorEnabled(false);
-
-        if (TextUtils.isEmpty(username)) {
-            usernameInputLayout.setError("用户名不能为空");
-            return false;
-        } else if (TextUtils.isEmpty(password)) {
-            pwInputLayout.setError("密码不能为空");
-            return false;
-        }
-
-        if (username.length() < 3 || username.length() > 8) {
-            usernameInputLayout.setError("用户名长度为3-8个字符。");
-            return false;
-        }
-
-        if (password.length() < 6 || password.length() > 20) {
-            pwInputLayout.setError("密码长度为6-20个字符。");
-            return false;
-        }
-
-        //检查用户名每个字符有效性
-        for (int i = 0; i < username.length(); i++) {
-            char c = username.charAt(i);
-            if (!((c >= 48 && c <= 57) ||
-                    (c >= 65 && c <= 90) ||
-                    (c >= 97 && c <= 122) ||
-                    (c == 95))) {
-                usernameInputLayout.setError("用户名只能包含数字、字母及下划线。");
-                return false;
-            }
-        }
-
-        //检查密码每个字符有效性
-        for (int i = 0; i < password.length(); i++) {
-            char c = password.charAt(i);
-            if (!((c >= 48 && c <= 57) ||
-                    (c >= 65 && c <= 90) ||
-                    (c >= 97 && c <= 122) ||
-                    (c == 95) ||
-                    (c == 64))) {
-                pwInputLayout.setError("密码只能包含数字、字母、下划线及@。");
-                return false;
-            }
-        }
-        return true;
     }
 
     private void checkReturn(String res) {
@@ -148,6 +115,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         } else if (res.contains("true")) {
             usernameInputLayout.setEnabled(false);
             prefs.put("username", usernameInputLayout.getEditText().getText().toString());
+            prefs.put("MD5Pw", pwInputLayout.getEditText().getText().toString());
             loginButton.setProgress(100);
             new Thread(() -> {
                 try {

@@ -1,7 +1,6 @@
 package com.cxsj.runhdu;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -72,15 +71,16 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void checkUpdate(Context context) {
-        Prefs prefs = new Prefs(context);
+        showProgressDialog("正在检查更新...");
         HttpUtil.load(URLs.UPDATE_URL)
                 .addParam("version2",
                         getResources().getString(R.string.current_version))
                 .post(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        if ((Activity) context instanceof AboutActivity) {
+                        if (context instanceof AboutActivity) {
                             runOnUiThread(() -> {
+                                closeProgressDialog();
                                 Toast.makeText(context, "连接更新服务器失败。", Toast.LENGTH_SHORT).show();
                             });
                         }
@@ -99,37 +99,41 @@ public class BaseActivity extends AppCompatActivity {
                         String ignoreVersion = (String) prefs.get("ignore_version", "");
                         UpdateInfo finalInfo = info;
                         runOnUiThread(() -> {
-                            if (finalInfo.isUpdate.equals("true")) {
-                                //如果MainActivity检查更新，且已忽略此版本
+                            closeProgressDialog();
+                            switch (finalInfo.isUpdate) {
+                                case "true":
+                                    //如果MainActivity检查更新，且已忽略此版本
 
-                                if ((Activity) context instanceof MainActivity
-                                        && ignoreVersion.equals(currentVersion)) return;
+                                    if (context instanceof MainActivity
+                                            && ignoreVersion.equals(currentVersion)) return;
 
 
-                                AlertDialog.Builder builder = new AlertDialog.Builder(context)
-                                        .setTitle("版本更新")
-                                        .setMessage("当前版本："
-                                                + getResources().getString(R.string.current_version)
-                                                + "\n最新版本："
-                                                + finalInfo.latestVersion
-                                                + "\n\n"
-                                                + finalInfo.statement)
-                                        .setPositiveButton("立即升级", null)
-                                        .setNegativeButton("稍后提醒", null);
-                                if (context instanceof MainActivity) {
-                                    builder.setNeutralButton("忽略此版本", (dialog, which) -> {
-                                        prefs.put("ignore_version", currentVersion);
-                                    });
-                                }
-                                builder.create().show();
-                            } else if (finalInfo.isUpdate.equals("false")) {
-                                if (context instanceof AboutActivity) {
-                                    Toast.makeText(context, "未发现新版本。", Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                if (context instanceof AboutActivity) {
-                                    Toast.makeText(context, "服务器异常。", Toast.LENGTH_SHORT).show();
-                                }
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                                            .setTitle("版本更新")
+                                            .setMessage("当前版本："
+                                                    + getResources().getString(R.string.current_version)
+                                                    + "\n最新版本："
+                                                    + finalInfo.latestVersion
+                                                    + "\n\n"
+                                                    + finalInfo.statement)
+                                            .setPositiveButton("立即升级", null)
+                                            .setNegativeButton("稍后提醒", null);
+                                    if (context instanceof MainActivity) {
+                                        builder.setNeutralButton("忽略此版本",
+                                                (dialog, which) -> prefs.put("ignore_version", currentVersion));
+                                    }
+                                    builder.create().show();
+                                    break;
+                                case "false":
+                                    if (context instanceof AboutActivity) {
+                                        Toast.makeText(context, "未发现新版本。", Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                default:
+                                    if (context instanceof AboutActivity) {
+                                        Toast.makeText(context, "服务器异常。", Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
                             }
                         });
                     }
@@ -141,15 +145,15 @@ public class BaseActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("敬请期待")
                 .setMessage("此功能正在开发中，敬请期待。")
-                .setPositiveButton("十分期待", (dialog, which) -> {
-                }).create().show();
+                .setPositiveButton("十分期待", null).create().show();
     }
 
     protected void showProgressDialog(String text) {
         if (progressDialog == null) {
             progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("正在同步数据...");
+            progressDialog.setMessage(text);
             progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.setCancelable(false);
         }
         progressDialog.show();
     }

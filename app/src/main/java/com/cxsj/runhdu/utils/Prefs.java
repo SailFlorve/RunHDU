@@ -34,17 +34,17 @@ public class Prefs {
         editor.apply();
     }
 
-    public Object get(String key, Object defaultObj) {
-        if (defaultObj instanceof Integer) {
-            return prefs.getInt(key, (int) defaultObj);
+    public Object get(String key, Object defaultValue) {
+        if (defaultValue instanceof Integer) {
+            return prefs.getInt(key, (int) defaultValue);
         }
 
-        if (defaultObj instanceof String || defaultObj == null) {
-            return prefs.getString(key, (String) defaultObj);
+        if (defaultValue instanceof String || defaultValue == null) {
+            return prefs.getString(key, (String) defaultValue);
         }
 
-        if (defaultObj instanceof Boolean) {
-            return prefs.getBoolean(key, (Boolean) defaultObj);
+        if (defaultValue instanceof Boolean) {
+            return prefs.getBoolean(key, (Boolean) defaultValue);
         }
         return null;
     }
