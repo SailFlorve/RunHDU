@@ -2,55 +2,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"
-        android:background="?attr/colorPrimary"
+        android:layout_weight="2.5"
         android:gravity="center"
         android:orientation="vertical">
+
         <ImageView
-            android:layout_width="192dp"
-            android:layout_height="192dp"
-            android:src="@drawable/ic_logo"/>
+            android:layout_width="168dp"
+            android:layout_height="168dp"
+            android:src="@drawable/ic_logo" />
+
         <TextView
-            android:gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="@string/app_description"
-            android:textColor="#fff"/>
+            android:textColor="#fff" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
-        android:background="?attr/colorPrimary"
-        android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
+
         <Button
             android:id="@+id/welcome_login_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="登录"
-            android:layout_marginRight="40dp"
-            android:layout_marginLeft="40dp"
             android:layout_marginBottom="15dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
             android:background="?attr/colorPrimaryDark"
+            android:text="登录"
             android:textColor="#fff"
             android:visibility="gone" />
+
         <Button
             android:id="@+id/welcome_register_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="注册"
-            android:layout_marginRight="40dp"
             android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
             android:background="?attr/colorPrimaryDark"
+            android:text="注册"
             android:textColor="#fff"
-            android:visibility="gone"/>
+            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>

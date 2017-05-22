@@ -35,12 +35,13 @@
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/MainActivityTheme" />
         <activity
             android:name=".WelcomeActivity"
             android:alwaysRetainTaskState="true"
             android:label="@string/title_activity_login"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/WelcomeActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -70,11 +71,12 @@
             android:label="@string/title_activity_settings" />
         <activity
             android:name=".RunDetailsActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/RunningActivityTheme" />
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="Q0DmxShaZqW6Fi7sYecp2xGcEPYdTt8p" />
+            android:value="fCRQGRdsEz9gG1sOkOW1oZtCGhlSDVGP" />
 
         <service
             android:name="com.baidu.location.f"
@@ -82,8 +84,22 @@
             android:process=":remote" />
 
         <activity android:name=".TestActivity" />
-        <activity android:name=".FeedbackActivity"></activity>
-        <activity android:name=".HelpActivity" />
+        <activity android:name=".FeedbackActivity" />
+
+        <activity
+            android:name=".HelpActivity"
+            android:screenOrientation="portrait" />
+
+        <service
+            android:name=".service.SocialService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <activity
+            android:name=".FriendActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
     </application>
 
 </manifest>

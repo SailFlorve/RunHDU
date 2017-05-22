@@ -13,9 +13,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="实验功能">
-
-    </android.support.v7.widget.Toolbar>
+        app:title="实验功能"/>
 
     <Button
         android:id="@+id/GZip_button"

@@ -15,8 +15,10 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 
+/**
+ * 显示进度条。
+ */
 public class GradeProgressView extends View {
-
 
     private static final String TAG = GradeProgressView.class.getSimpleName();
 

@@ -157,10 +157,10 @@ public class RunDetailsActivity extends BaseActivity {
         }
 
         //画路径线
-        PolylineOptions polyline = null;
+        PolylineOptions polyline;
         if (pointList.size() >= 2 && pointList.size() < 10000) {
             polyline = new PolylineOptions()
-                    .width(10)
+                    .width(6)
                     .color(ContextCompat.getColor(this, R.color.colorPrimary))
                     .zIndex(0)
                     .points(pointList);

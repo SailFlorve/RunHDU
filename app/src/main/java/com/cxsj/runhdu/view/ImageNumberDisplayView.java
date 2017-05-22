@@ -12,10 +12,10 @@ import com.cxsj.runhdu.R;
 
 /**
  * Created by Sail on 2017/4/15 0015.
- * Display number with image.
+ * 显示数字及其表示图片。
  */
 
-public class ImageNumberDisplay extends LinearLayout {
+public class ImageNumberDisplayView extends LinearLayout {
     private ImageView imageView;
     private TextView numberTextView;
     private TextView unitTextView;
@@ -26,24 +26,24 @@ public class ImageNumberDisplay extends LinearLayout {
     private String unit;
     private String des;
 
-    public ImageNumberDisplay(Context context) {
+    public ImageNumberDisplayView(Context context) {
         super(context);
         initView();
     }
 
-    public ImageNumberDisplay(Context context, AttributeSet attrs, int defStyle) {
+    public ImageNumberDisplayView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         initView();
     }
 
-    public ImageNumberDisplay(Context context, AttributeSet attrs) {
+    public ImageNumberDisplayView(Context context, AttributeSet attrs) {
         super(context, attrs);
         initView();
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ImageNumberDisplay);
-        number = a.getString(R.styleable.ImageNumberDisplay_number);
-        image_res = a.getResourceId(R.styleable.ImageNumberDisplay_imageSrc, R.drawable.ic_steps);
-        unit = a.getString(R.styleable.ImageNumberDisplay_unit);
-        des = a.getString(R.styleable.ImageNumberDisplay_description);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ImageNumberDisplayView);
+        number = a.getString(R.styleable.ImageNumberDisplayView_number);
+        image_res = a.getResourceId(R.styleable.ImageNumberDisplayView_imageSrc, R.drawable.ic_steps);
+        unit = a.getString(R.styleable.ImageNumberDisplayView_unit);
+        des = a.getString(R.styleable.ImageNumberDisplayView_description);
         setNumber(number);
         setImage(image_res);
         setUnit(unit);

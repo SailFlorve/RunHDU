@@ -2,6 +2,8 @@ package com.cxsj.runhdu.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -23,24 +25,6 @@ import java.util.Locale;
  * 工具类集合
  */
 public class Utility {
-    /**
-     * 获取手机IMEI
-     *
-     * @param context
-     * @return IMEI
-     */
-    public static String getDeviceId(Context context) {
-        String Imei = "NULL";
-        try {
-            Imei = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
-        } catch (Exception e) {
-            Toast.makeText(context, "获取IMEI码失败", Toast.LENGTH_SHORT);
-            Imei = "NULL";
-        }
-        return Imei;
-    }
-
-
     /**
      * GPS是否打开
      *
@@ -106,6 +90,8 @@ public class Utility {
     }
 
     /**
+     * 获取特定类型的时间的字符串表示
+     *
      * @param type 获取的时间类型，
      *             Types.TYPE_AM_PM：返回上午/下午/晚上
      *             Types.TYPE_MONTH_DATE：返回日期，例如2月15日
@@ -117,48 +103,32 @@ public class Utility {
     public static String getTime(int type) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        if (type == Types.TYPE_AM_PM) {
-            int hour = calendar.get(Calendar.HOUR_OF_DAY);
-            if (hour >= 6 && hour < 9) {
-                return "早上";
-            } else if (hour >= 9 && hour < 12) {
-                return "上午";
-            } else if (hour >= 12 && hour < 13) {
-                return "中午";
-            } else if (hour >= 13 && hour < 19) {
-                return "下午";
-            } else {
-                return "晚上";
-            }
-        } else if (type == Types.TYPE_MONTH_DATE) {
-            return new SimpleDateFormat("M月d日", Locale.CHINA).format(new Date());
-        } else if (type == Types.TYPE_CURRENT_TIME) {
-            return new SimpleDateFormat("HH:mm", Locale.CHINA).format(new Date());
-        } else if (type == Types.TYPE_MONTH) {
-            return String.valueOf(calendar.get(Calendar.MONTH) + 1);
-        } else if (type == Types.TYPE_STRING_FORM) {
-            return new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA).format(new Date());
-        } else {
-            return String.valueOf(calendar.get(type));
-        }
-    }
 
-    /**
-     * 返回集合里是否全部为同一个数据。
-     *
-     * @param list  检测的list
-     * @param value 值
-     * @param <T>   集合泛型
-     * @return 是否为同一个数据。
-     */
-    public static <T> boolean isAllSame(List<T> list, T value) {
-        if (list.isEmpty()) return false;
-        for (T t : list) {
-            if (t != value) {
-                return false;
-            }
+        switch (type) {
+            case Types.TYPE_AM_PM:
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                if (hour >= 6 && hour < 9) {
+                    return "早上";
+                } else if (hour >= 9 && hour < 12) {
+                    return "上午";
+                } else if (hour >= 12 && hour < 13) {
+                    return "中午";
+                } else if (hour >= 13 && hour < 19) {
+                    return "下午";
+                } else {
+                    return "晚上";
+                }
+            case Types.TYPE_MONTH_DATE:
+                return new SimpleDateFormat("M月d日", Locale.getDefault()).format(new Date());
+            case Types.TYPE_CURRENT_TIME:
+                return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date());
+            case Types.TYPE_MONTH:
+                return String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            case Types.TYPE_STRING_FORM:
+                return new SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(new Date());
+            default:
+                return String.valueOf(calendar.get(type));
         }
-        return true;
     }
 
     /**
@@ -172,5 +142,16 @@ public class Utility {
         int hours = Integer.parseInt(times[0]);
         int seconds = Integer.parseInt(times[2]);
         return hours * 60 + minutes + seconds / 60;
+    }
+
+    public static String getVersionName(Context context) {
+        try {
+            String pkName = context.getPackageName();
+            return context.getPackageManager().getPackageInfo(
+                    pkName, 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

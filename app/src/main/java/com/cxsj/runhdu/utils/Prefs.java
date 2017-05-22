@@ -20,6 +20,9 @@ public class Prefs {
     }
 
     public void put(String key, Object object) {
+        if (object == null) {
+            return;
+        }
         if (object instanceof Integer) {
             editor.putInt(key, (Integer) object);
         }

@@ -72,9 +72,7 @@ public class SettingsActivity extends BaseActivity {
                         .setPositiveButton("立刻清除", (dialog, which) -> {
                             clearData();
                         })
-                        .setNegativeButton("不清除", (dialog, which) -> {
-
-                        }).create().show();
+                        .setNegativeButton("不清除", null).create().show();
             }
             return true;
         }

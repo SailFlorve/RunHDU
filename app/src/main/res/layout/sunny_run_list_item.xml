@@ -63,6 +63,7 @@
                     android:id="@+id/sun_run_dis"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="3dp"
                     android:layout_weight="1"
                     app:numberDesText="路程"
                     app:numberText="0"

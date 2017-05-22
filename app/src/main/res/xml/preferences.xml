@@ -25,7 +25,7 @@
             android:key="sync_data"
             android:summary="同步已开启。进入APP以及跑步完成后将会进行同步。"
             android:summaryOff="同步已关闭，将不会进行跑步数据同步及上传跑步数据到服务器。"
-            android:title="云同步" />
+            android:title="跑步数据同步" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="跑步设置">

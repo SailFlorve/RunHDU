@@ -78,7 +78,7 @@
                 android:layout_marginTop="25dp"
                 android:textColor="#fff"
                 app:cpb_selectorIdle="@drawable/normal_selector"
-                app:cpb_textComplete="登陆成功"
+                app:cpb_textComplete="登录成功"
                 app:cpb_textError="重试"
                 app:cpb_textIdle="登录" />
         </LinearLayout>

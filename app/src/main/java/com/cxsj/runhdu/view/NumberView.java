@@ -11,7 +11,7 @@ import com.cxsj.runhdu.R;
 
 /**
  * Created by Sail on 2017/3/25 0025.
- * Show a number and its description.
+ * 显示数字以及它的描述和单位。
  */
 
 public class NumberView extends LinearLayout {

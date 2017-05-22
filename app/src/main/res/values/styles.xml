@@ -8,7 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
+    <style name="MainActivityTheme" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
@@ -25,5 +25,8 @@
     </style>
 
     <style name="RunningActivityTheme" parent="AppTheme"/>
+
+    <style name="WelcomeActivityTheme" parent="AppTheme">
+    </style>
 
 </resources>

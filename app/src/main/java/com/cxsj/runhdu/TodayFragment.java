@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.cxsj.runhdu.adapters.RecyclerViewSectionAdapter;
 import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.model.sport.RunningInfoSection;
@@ -62,15 +61,12 @@ public class TodayFragment extends Fragment {
         todayRecyclerView.setLayoutManager(layoutManager);
         todayRecyclerView.setAdapter(viewAdapter);
 
-        viewAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
-                RunningInfoSection section = (RunningInfoSection) adapter.getItem(position);
-                if (section.runningInfo == null) return;
-                Intent intent = new Intent(getContext(), RunDetailsActivity.class);
-                intent.putExtra("runId", section.runningInfo.getRunId());
-                startActivity(intent);
-            }
+        viewAdapter.setOnItemClickListener((adapter, view, position) -> {
+            RunningInfoSection section = (RunningInfoSection) adapter.getItem(position);
+            if (section.runningInfo == null) return;
+            Intent intent = new Intent(getContext(), RunDetailsActivity.class);
+            intent.putExtra("runId", section.runningInfo.getRunId());
+            startActivity(intent);
         });
     }
 
@@ -135,7 +131,6 @@ public class TodayFragment extends Fragment {
                 oldYear = year;
                 oldMonth = month;
                 times = 1;
-                tempList = null;
                 tempList = new ArrayList<>();
                 tempList.add(info);
             }

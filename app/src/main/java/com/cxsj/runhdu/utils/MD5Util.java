@@ -43,7 +43,7 @@ public class MD5Util {
         }
         String encodeStr = encodeOnce(str);
         for (int i = 0; i < ENCODE_TIMES - 1; i++) {
-            encodeStr = encodeOnce(str);
+            encodeStr = encodeOnce(encodeStr);
         }
         return encodeStr;
     }

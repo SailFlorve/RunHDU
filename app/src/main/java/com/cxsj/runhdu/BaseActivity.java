@@ -71,7 +71,6 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void checkUpdate(Context context) {
-        showProgressDialog("正在检查更新...");
         HttpUtil.load(URLs.UPDATE_URL)
                 .addParam("version2",
                         getResources().getString(R.string.current_version))
@@ -103,10 +102,8 @@ public class BaseActivity extends AppCompatActivity {
                             switch (finalInfo.isUpdate) {
                                 case "true":
                                     //如果MainActivity检查更新，且已忽略此版本
-
                                     if (context instanceof MainActivity
                                             && ignoreVersion.equals(currentVersion)) return;
-
 
                                     AlertDialog.Builder builder = new AlertDialog.Builder(context)
                                             .setTitle("版本更新")

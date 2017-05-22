@@ -1,5 +1,7 @@
 package com.cxsj.runhdu.utils;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -50,6 +52,7 @@ public class HttpUtil {
 
         public void post(Callback callback) {
             OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(3, TimeUnit.SECONDS)
                     .followRedirects(false)
                     .followSslRedirects(false)
                     .build();

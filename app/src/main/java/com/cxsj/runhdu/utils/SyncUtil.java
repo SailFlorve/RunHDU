@@ -1,14 +1,19 @@
 package com.cxsj.runhdu.utils;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
+import com.cxsj.runhdu.MainActivity;
 import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.model.gson.Running;
 import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
@@ -92,33 +97,47 @@ public class SyncUtil {
                 });
     }
 
-    public static void uploadAllToServer(String username, SyncDataCallback callback) {
+    public static void uploadAllToServer(Context context, String username, SyncDataCallback callback) {
         Running running = new Running();
         running.username = username;
         List<RunningInfo> infoList = QueryUtil.findAllOrder();
-        running.times = infoList.size();
-        running.dataList = infoList;
-        String json = new Gson().toJson(running);
-        HttpUtil.load(URLs.UPLOAD_ALL_INFO)
-                .addParam("json", json)
-                .post(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        mHandler.post(() -> callback.onSyncFailure("上传失败，未连接网络。"));
-                    }
+        if (infoList.isEmpty()) {
+            new AlertDialog.Builder(context)
+                    .setTitle("本地无数据")
+                    .setMessage("本地没有跑步数据，执行此操作将会清空服务器的数据。是否选择从服务器同步？")
+                    .setNegativeButton("继续", (dialog, which) -> {
+                        running.times = infoList.size();
+                        running.dataList = infoList;
+                        String json = new Gson().toJson(running);
+                        Log.d(TAG, json);
+                        HttpUtil.load(URLs.UPLOAD_ALL_INFO)
+                                .addParam("json", json)
+                                .post(new Callback() {
+                                    @Override
+                                    public void onFailure(Call call, IOException e) {
+                                        mHandler.post(() -> callback.onSyncFailure("上传失败，未连接网络。"));
+                                    }
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        String result = response.body().string();
-                        mHandler.post(() -> {
-                            if (result.equals("true")) {
-                                callback.onSyncSuccess();
-                            } else {
-                                callback.onSyncFailure("上传失败，返回格式错误。");
-                            }
-                        });
-                    }
-                });
+                                    @Override
+                                    public void onResponse(Call call, Response response) throws IOException {
+                                        String result = response.body().string();
+                                        mHandler.post(() -> {
+                                            if (result.equals("true")) {
+                                                callback.onSyncSuccess();
+                                            } else {
+                                                callback.onSyncFailure("上传失败，返回格式错误。");
+                                            }
+                                        });
+                                    }
+                                });
+                    })
+                    .setPositiveButton("从服务器同步", (dialog, which) -> {
+                        MainActivity mainActivity = (MainActivity) context;
+                        mainActivity.syncFromServer();
+                    })
+                    .setOnCancelListener(dialog -> mHandler.post(
+                            () -> callback.onSyncFailure(null))).create().show();
+        }
     }
 
     public static void uploadSingleToServer(String username, RunningInfo runningInfo, SyncDataCallback callback) {

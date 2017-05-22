@@ -37,6 +37,19 @@ public class InputCheckHelper {
      * @param callback       检查回调
      */
     public static void check(String username, String password, @Nullable String passwordEnsure, CheckCallback callback) {
+
+        String usernameMsg = checkUsername(username);
+        if (usernameMsg != null) {
+            callback.onFailure(ERR_USERNAME, usernameMsg);
+            return;
+        }
+
+        String passwordMsg = checkPassword(password);
+        if (passwordMsg != null) {
+            callback.onFailure(ERR_PASSWORD, passwordMsg);
+            return;
+        }
+
         //确认密码不为空时,检查有效性以及是否与密码一致
         if (passwordEnsure != null) {
             String passwordEnsureMsg = checkPassword(passwordEnsure);
@@ -51,18 +64,6 @@ public class InputCheckHelper {
             }
         }
 
-        String usernameMsg = checkUsername(username);
-        if (usernameMsg != null) {
-            callback.onFailure(ERR_USERNAME, usernameMsg);
-            return;
-        }
-
-        String passwordMsg = checkPassword(password);
-        if (passwordMsg != null) {
-            callback.onFailure(ERR_PASSWORD, passwordMsg);
-            return;
-        }
-
         callback.onPass();
     }
 
@@ -75,7 +76,7 @@ public class InputCheckHelper {
             return "用户名不能为空。";
         }
 
-        if (username.length() < 3 || username.length() > 8) {
+        if (username.length() < 3 || username.length() > 16) {
             return "用户名长度为3-8个字符。";
         }
 
@@ -91,7 +92,6 @@ public class InputCheckHelper {
 
         return null;
     }
-
 
     private static String checkPassword(String password) {
         if (TextUtils.isEmpty(password)) {

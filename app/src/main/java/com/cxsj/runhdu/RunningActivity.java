@@ -7,6 +7,7 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
+import com.baidu.mapapi.BMapManager;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
@@ -39,7 +41,7 @@ import com.cxsj.runhdu.sensor.StepSensorBase;
 import com.cxsj.runhdu.sensor.StepSensorPedometer;
 import com.cxsj.runhdu.utils.SyncUtil;
 import com.cxsj.runhdu.utils.Utility;
-import com.cxsj.runhdu.view.ImageNumberDisplay;
+import com.cxsj.runhdu.view.ImageNumberDisplayView;
 import com.dd.CircularProgressButton;
 
 import java.util.ArrayList;
@@ -53,9 +55,9 @@ public class RunningActivity extends BaseActivity
     private CircularProgressButton startButton;
     private TextView latLngText;
     private TextView speedNumber;
-    private ImageNumberDisplay distanceNumber;
-    private ImageNumberDisplay stepNumber;
-    private ImageNumberDisplay energyNumber;
+    private ImageNumberDisplayView distanceNumber;
+    private ImageNumberDisplayView stepNumber;
+    private ImageNumberDisplayView energyNumber;
     private Chronometer timer;
     private StepSensorBase stepSensor = null;
     private MapView mapView = null;
@@ -150,9 +152,9 @@ public class RunningActivity extends BaseActivity
         startButton = (CircularProgressButton) findViewById(R.id.cpb_button);
         latLngText = (TextView) findViewById(R.id.lat_lng_text);
         speedNumber = (TextView) findViewById(R.id.speed_text);
-        distanceNumber = (ImageNumberDisplay) findViewById(R.id.distance_text);
-        stepNumber = (ImageNumberDisplay) findViewById(R.id.running_step);
-        energyNumber = (ImageNumberDisplay) findViewById(R.id.running_energy);
+        distanceNumber = (ImageNumberDisplayView) findViewById(R.id.distance_text);
+        stepNumber = (ImageNumberDisplayView) findViewById(R.id.running_step);
+        energyNumber = (ImageNumberDisplayView) findViewById(R.id.running_energy);
         setToolbar(R.id.running_toolbar, true);
 
         timer = (Chronometer) findViewById(R.id.timer);
@@ -387,8 +389,8 @@ public class RunningActivity extends BaseActivity
         polyline = null;
         if (pointList.size() >= 2 && pointList.size() < 10000) {
             polyline = new PolylineOptions()
-                    .width(10)
-                    .color(R.color.colorPrimary)
+                    .width(6)
+                    .color(ContextCompat.getColor(this, R.color.colorPrimary))
                     .zIndex(0)
                     .points(pointList);
             baiduMap.addOverlay(polyline);//添加Marker

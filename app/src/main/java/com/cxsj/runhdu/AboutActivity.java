@@ -16,16 +16,17 @@ public class AboutActivity extends BaseActivity {
         setToolbar(R.id.about_toolbar, true);
 
         checkVersion = (TextView) findViewById(R.id.check_version_about);
-        checkVersion.setOnClickListener(v -> checkUpdate(this));
+        checkVersion.setOnClickListener(v -> {
+            showProgressDialog("正在检查更新...");
+            checkUpdate(this);
+        });
 
         feedback = (TextView) findViewById(R.id.feedback_about);
-        feedback.setOnClickListener(v -> {
-            toActivity(AboutActivity.this, FeedbackActivity.class);
-        });
+        feedback.setOnClickListener(v ->
+                toActivity(AboutActivity.this, FeedbackActivity.class));
 
         help = (TextView) findViewById(R.id.help_about);
-        help.setOnClickListener(v -> {
-            toActivity(AboutActivity.this, HelpActivity.class);
-        });
+        help.setOnClickListener(v ->
+                toActivity(AboutActivity.this, HelpActivity.class));
     }
 }

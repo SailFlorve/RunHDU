@@ -7,10 +7,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.cxsj.runhdu.utils.InputCheckHelper;
 import com.cxsj.runhdu.utils.MD5Util;
+import com.cxsj.runhdu.utils.StatusJsonCheckHelper;
 import com.dd.CircularProgressButton;
 import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.utils.HttpUtil;
@@ -100,37 +100,35 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     private void checkReturn(String res) {
         Log.i("Login", res);
-        if (res.contains("ERROR")) {
-            usernameInputLayout.setError("用户名不符合要求。");
-            loginButton.setProgress(0);
-            loginButton.setIdleText("重试");
-            loginButton.setClickable(true);
+        StatusJsonCheckHelper.check(res, new StatusJsonCheckHelper.CheckCallback() {
+            @Override
+            public void onPass() {
+                usernameInputLayout.setEnabled(false);
+                prefs.put("username", usernameInputLayout.getEditText().getText().toString());
+                prefs.put("MD5Pw", MD5Util.encode(pwInputLayout.getEditText().getText().toString()));
+                loginButton.setProgress(100);
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(1000);
+                        toActivity(LoginActivity.this, MainActivity.class);
+                        ActivityManager.finishAll();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+            }
 
-        } else if (res.contains("false")) {
-            pwInputLayout.setError("密码错误。");
-            loginButton.setProgress(0);
-            loginButton.setIdleText("重试");
-            loginButton.setClickable(true);
-
-        } else if (res.contains("true")) {
-            usernameInputLayout.setEnabled(false);
-            prefs.put("username", usernameInputLayout.getEditText().getText().toString());
-            prefs.put("MD5Pw", pwInputLayout.getEditText().getText().toString());
-            loginButton.setProgress(100);
-            new Thread(() -> {
-                try {
-                    Thread.sleep(1000);
-                    toActivity(LoginActivity.this, MainActivity.class);
-                    ActivityManager.finishAll();
-                } catch (Exception e) {
-                    e.printStackTrace();
+            @Override
+            public void onFailure(String msg, int which) {
+                if (which == 0) {
+                    usernameInputLayout.setError(msg);
+                } else {
+                    pwInputLayout.setError(msg);
                 }
-            }).start();
-        } else {
-            Toast.makeText(this, "服务器未知错误。", Toast.LENGTH_SHORT).show();
-            loginButton.setProgress(0);
-            loginButton.setIdleText("重试");
-            loginButton.setClickable(true);
-        }
+                loginButton.setProgress(0);
+                loginButton.setIdleText("重试");
+                loginButton.setClickable(true);
+            }
+        });
     }
 }

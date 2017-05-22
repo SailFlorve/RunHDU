@@ -12,14 +12,28 @@ import java.util.List;
  */
 
 public class QueryUtil {
+    /**
+     * 普通查找
+     * @param conditions 查找条件
+     * @return
+     */
     public static List<RunningInfo> find(String... conditions) {
         return DataSupport.where(conditions).find(RunningInfo.class);
     }
 
+    /**
+     * 按跑步时间排序查找
+     * @param conditions 查找条件
+     * @return
+     */
     public static List<RunningInfo> findOrder(String... conditions) {
         return DataSupport.where(conditions).order("runId").find(RunningInfo.class);
     }
 
+    /**
+     * 按跑步时间跑需，查找所有
+     * @return
+     */
     public static List<RunningInfo> findAllOrder() {
         return DataSupport.order("runId").find(RunningInfo.class);
     }

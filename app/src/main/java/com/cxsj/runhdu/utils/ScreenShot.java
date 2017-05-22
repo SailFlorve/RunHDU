@@ -89,26 +89,23 @@ public class ScreenShot {
     }
 
     public static void takeAndShare(Activity activity) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                activity.runOnUiThread(() -> {
-                    String imagePath = ScreenShot.shoot(activity);
-                    Intent intent = new Intent(Intent.ACTION_SEND);
-                    File file = new File(imagePath);
-                    intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-                    intent.setType("image/jpeg");
-                    Intent chooser = Intent.createChooser(intent, "分享运动数据");
-                    if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                        activity.startActivity(chooser);
-                    }
-                });
+        new Thread(() -> {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            activity.runOnUiThread(() -> {
+                String imagePath = shoot(activity);
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                File file = new File(imagePath);
+                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+                intent.setType("image/jpeg");
+                Intent chooser = Intent.createChooser(intent, "分享运动数据");
+                if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                    activity.startActivity(chooser);
+                }
+            });
         }).start();
     }
 }

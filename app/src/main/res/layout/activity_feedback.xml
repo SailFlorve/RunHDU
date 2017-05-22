@@ -25,7 +25,7 @@
         android:layout_marginTop="30dp"
         android:background="@drawable/border_blue"
         android:hint="输入反馈信息..."
-        android:textSize="14sp" />
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/feedback_contact"
@@ -36,7 +36,7 @@
         android:layout_marginTop="15dp"
         android:background="@drawable/border_blue"
         android:hint="您的QQ..."
-        android:textSize="14sp" />
+        android:textSize="16sp" />
 
     <com.dd.CircularProgressButton
         android:id="@+id/feedback_button"

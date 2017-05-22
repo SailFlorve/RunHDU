@@ -2,7 +2,6 @@ package com.cxsj.runhdu;
 
 import android.support.design.widget.TextInputLayout;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -13,6 +12,7 @@ import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.utils.HttpUtil;
 import com.cxsj.runhdu.utils.InputCheckHelper;
 import com.cxsj.runhdu.utils.MD5Util;
+import com.cxsj.runhdu.utils.StatusJsonCheckHelper;
 
 import java.io.IOException;
 
@@ -44,12 +44,18 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.register_button:
+                usernameInputLayout.setErrorEnabled(false);
+                pwInputLayout.setErrorEnabled(false);
+                pwEnsureLayout.setErrorEnabled(false);
+
                 String username = usernameInputLayout.getEditText().getText().toString();
                 String password = pwInputLayout.getEditText().getText().toString();
                 String passwordEnsure = pwEnsureLayout.getEditText().getText().toString();
+
                 InputCheckHelper.check(username, password, passwordEnsure, new InputCheckHelper.CheckCallback() {
                     @Override
                     public void onPass() {
+                        showProgressDialog("正在注册...");
                         HttpUtil.load(URLs.REGISTER)
                                 //传加密后的用户名and密码
                                 .addParam("name", username)
@@ -57,13 +63,20 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
                                 .post(new Callback() {
                                     @Override
                                     public void onFailure(Call call, IOException e) {
-                                        Toast.makeText(RegisterActivity.this, "网络连接失败。", Toast.LENGTH_SHORT).show();
+                                        runOnUiThread(() -> {
+                                            closeProgressDialog();
+                                            Toast.makeText(RegisterActivity.this,
+                                                    "网络连接失败。", Toast.LENGTH_SHORT).show();
+                                        });
                                     }
 
                                     @Override
                                     public void onResponse(Call call, Response response) throws IOException {
                                         final String res = response.body().string();
-                                        runOnUiThread(() -> checkReturn(res));
+                                        runOnUiThread(() -> {
+                                            closeProgressDialog();
+                                            checkReturn(res);
+                                        });
                                     }
                                 });
                     }
@@ -91,18 +104,22 @@ public class RegisterActivity extends BaseActivity implements View.OnClickListen
 
     private void checkReturn(String res) {
         Log.i("TAG", res);
-        if (res.contains("ERROR")) {
-            usernameInputLayout.setError("用户名和密码不符合要求。");
-        } else if (res.contains("FALSE")) {
-            usernameInputLayout.setError("用户名已经存在。");
-        } else if (res.contains("false")) {
-            Toast.makeText(this, "注册失败。", Toast.LENGTH_SHORT).show();
-        } else if (res.contains("true")) {
-            Toast.makeText(this, "注册成功。", Toast.LENGTH_SHORT).show();
-            toActivity(RegisterActivity.this, LoginActivity.class);
-            finish();
-        } else {
-            Toast.makeText(this, "服务器未知错误。", Toast.LENGTH_SHORT).show();
-        }
+        StatusJsonCheckHelper.check(res, new StatusJsonCheckHelper.CheckCallback() {
+            @Override
+            public void onPass() {
+                Toast.makeText(RegisterActivity.this, "注册成功。", Toast.LENGTH_SHORT).show();
+                toActivity(RegisterActivity.this, LoginActivity.class);
+                finish();
+            }
+
+            @Override
+            public void onFailure(String msg, int which) {
+                if (which == 0) {
+                    usernameInputLayout.setError(msg);
+                } else {
+                    pwInputLayout.setError(msg);
+                }
+            }
+        });
     }
 }

@@ -95,7 +95,7 @@
                 android:layout_marginTop="3dp"
                 android:orientation="vertical">
 
-                <com.cxsj.runhdu.view.ImageNumberDisplay
+                <com.cxsj.runhdu.view.ImageNumberDisplayView
                     android:id="@+id/running_step"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
                     app:number="0"
                     app:unit="步" />
 
-                <com.cxsj.runhdu.view.ImageNumberDisplay
+                <com.cxsj.runhdu.view.ImageNumberDisplayView
                     android:id="@+id/distance_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -120,7 +120,7 @@
                     app:number="0"
                     app:unit="M" />
 
-                <com.cxsj.runhdu.view.ImageNumberDisplay
+                <com.cxsj.runhdu.view.ImageNumberDisplayView
                     android:id="@+id/running_energy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

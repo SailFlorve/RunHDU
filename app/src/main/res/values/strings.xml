@@ -14,6 +14,7 @@
     <string name="over_time">跑步用时过长，已经自动结束跑步。</string>
     <string name="title_activity_settings">设置</string>
     <string name="sunny_run_tips">Tips: 绑定的学号可以随时更换。你可以随时在右上方菜单的关于界面中检查更新。</string>
+    <string name="no_friends">没有好友！赶快去添加好友吧。</string>
 
     <string-array name="chart_num">
         <item>7天</item>
@@ -76,7 +77,10 @@
         <item>跑步前一直提示“没有权限”？</item>
         <item>为什么跑步需要连接网络？</item>
         <item>步数一直为0？</item>
+        <item>为什么跑步时转入后台一段时间后，再打开APP会重新进入？</item>
         <item>手机锁屏后，定位点不动？</item>
+        <item>跑步同步开关打开后，都会同步哪些数据？</item>
+        <item>我的隐私会被泄露吗？</item>
     </string-array>
 
     <string-array name="help_answer">
@@ -84,6 +88,9 @@
         <item>请确认您已经授予了本APP的定位权限。</item>
         <item>地图数据的下载、WIFI辅助定位以及云同步都需要网络连接才能工作。</item>
         <item>可能是您的手机没有加速度传感器。</item>
+        <item>跑步时需要显示与处理大量数据，请确认您的手机运行内存充足。内存不足时会APP被系统杀死，从而丢失跑步数据。我们会持续优化内存占用。</item>
         <item>请查看手机的省电设置，例如MIUI的“神隐模式”或OPPO的“纯净后台”功能，请把此APP加入省电白名单。</item>
+        <item>进入APP后，我们会将您的数据和服务器进行比对；每次跑步后，您的跑步数据将会上传到服务器；删除跑步数据时，将会同步服务器进行删除。</item>
+        <item>您的密码以及部分跑步数据会被转码以及加密；您的反馈信息不会记录用户名；我们不会获取您的手机信息、联系人、短信等敏感信息。</item>
     </string-array>
 </resources>

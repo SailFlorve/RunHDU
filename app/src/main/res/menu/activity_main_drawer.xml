@@ -19,14 +19,12 @@
     <item android:title="社交">
         <menu>
             <item
-                android:id="@+id/send_moments"
+                android:id="@+id/friend"
                 android:icon="@drawable/ic_friends"
-                android:title="好友"
-                android:visible="false" />
+                android:title="好友" />
             <item
                 android:id="@+id/share"
                 android:icon="@drawable/ic_menu_share"
-
                 android:title="分享" />
         </menu>
     </item>

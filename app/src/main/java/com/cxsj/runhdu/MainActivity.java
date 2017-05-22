@@ -2,14 +2,20 @@ package com.cxsj.runhdu;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +24,8 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -34,10 +42,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.cxsj.runhdu.adapters.MyFragmentPagerAdapter;
 import com.cxsj.runhdu.constant.Types;
+import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.model.sport.RunningInfo;
+import com.cxsj.runhdu.service.SocialService;
 import com.cxsj.runhdu.utils.ActivityManager;
+import com.cxsj.runhdu.utils.ImageSaveUtil;
 import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.utils.ScreenShot;
 import com.cxsj.runhdu.utils.SyncUtil;
@@ -48,9 +61,6 @@ import org.litepal.LitePal;
 import org.litepal.LitePalDB;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -73,7 +83,6 @@ import lecho.lib.hellocharts.view.ColumnChartView;
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
-    //private CollapsingToolbarLayoutState state;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private GradeProgressView circleProgress;
     private ImageView menuButton;
@@ -93,7 +102,6 @@ public class MainActivity extends BaseActivity
     private HistoryFragment historyFragment;
     private FrameLayout progressView;
     private LinearLayout chartView;
-    private ProgressDialog progressDialog;
 
     private List<String> mTitle = new ArrayList<>();
     private List<Fragment> mFragment = new ArrayList<>();
@@ -101,14 +109,12 @@ public class MainActivity extends BaseActivity
     private List<String> chartLabels = new ArrayList<>();
     private List<Float> chartValues = new ArrayList<>();
 
+    private SocialService socialService;
+    private SocialServiceConn conn;
+    private SocialReceiver receiver;
+
     private int chartColumnNum;//图表显示的列数
     private float targetSteps;
-
-//    private enum CollapsingToolbarLayoutState {
-//        EXPANDED,
-//        COLLAPSED,
-//        INTERMEDIATE
-//    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -135,6 +141,7 @@ public class MainActivity extends BaseActivity
         dataDescription = (TextView) findViewById(R.id.data_description);
         progressView = (FrameLayout) findViewById(R.id.progress_view_layout);
         chartView = (LinearLayout) findViewById(R.id.chart_view_layout);
+        //conn = new SocialServiceConn();
         setToolbar(R.id.toolbar_main, false);
 
         menuButton.setOnClickListener(this);
@@ -145,14 +152,13 @@ public class MainActivity extends BaseActivity
 
         if (TextUtils.isEmpty(username)) exitLogin();
 
-        //初始化数据库
-        LitePalDB litePalDB = LitePalDB.fromDefault(username);
-        LitePal.use(litePalDB);
-
         initSettings();
         initView();
         checkUpdate(this);
         checkServerData();
+        //开启服务
+//        bindService(new Intent(this, SocialService.class), conn, BIND_AUTO_CREATE);
+//        registerSocialReceiver();
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -195,12 +201,8 @@ public class MainActivity extends BaseActivity
                     dis += info.getDistance();
                 }
                 dataDescription.setText(
-                        year + "年" + month + "月" + day + "日\n"
-                                + "跑步" + runningInfoList.size()
-                                + "次 | "
-                                + (int) value.getValue()
-                                + "步 | "
-                                + dis + "米");
+                        String.format("%s年%s月%s日\n跑步%d次 | %d步 | %d米",
+                                year, month, day, runningInfoList.size(), (int) value.getValue(), dis));
             }
 
             @Override
@@ -213,6 +215,10 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onDestroy() {
         closeProgressDialog();
+//        unbindService(conn);
+//        if (receiver != null) {
+//            unregisterReceiver(receiver);
+//        }
         super.onDestroy();
     }
 
@@ -236,16 +242,14 @@ public class MainActivity extends BaseActivity
                 if (serverTimes != localTimes) {
                     new AlertDialog.Builder(MainActivity.this)
                             .setTitle("同步数据")
-                            .setMessage(String.format("本地数据与服务器不一致：\n" +
+                            .setMessage(String.format("本地跑步数据与服务器不一致：\n" +
                                     "本地数据：%d条；\n" +
                                     "服务器数据：%d条。\n" +
                                     "请选择操作：", localTimes, serverTimes))
-                            .setPositiveButton("服务器数据同步至本地", (dialog, which) -> {
-                                syncFromServer();
-                            })
-                            .setNegativeButton("本地数据上传至服务器", (dialog, which) -> {
-                                uploadToServer();
-                            })
+                            .setPositiveButton("服务器数据同步至本地", (dialog, which) ->
+                                    syncFromServer())
+                            .setNegativeButton("本地数据上传至服务器", (dialog, which) ->
+                                    uploadToServer())
                             .setNeutralButton("以后再说", (dialog, which) -> {
                             }).create().show();
                 }
@@ -281,6 +285,10 @@ public class MainActivity extends BaseActivity
     }
 
     private void initSettings() {
+        //初始化数据库
+        LitePalDB litePalDB = LitePalDB.fromDefault(username);
+        LitePal.use(litePalDB);
+
         //用户名为空时，跳转到WelcomeActivity
         if (TextUtils.isEmpty(username)) {
             ActivityManager.finishAll();
@@ -289,14 +297,20 @@ public class MainActivity extends BaseActivity
         //设置头像
         String fileName = (String) prefs.get("profile_path", null);
         if (!TextUtils.isEmpty(fileName)) {
+            Log.d(TAG, "加载本地图片");
             Uri uri = Uri.fromFile(new File(fileName));
             profileImage.setImageURI(uri);
+        } else {
+            Log.d(TAG, "使用Glide加载网络图片");
+            Glide.with(this).load(URLs.PROFILE_URL + username + ".JPEG")
+                    .asBitmap().error(R.drawable.photo).into(new SimpleTarget<Bitmap>() {
+                @Override
+                public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                    String fileDir = ImageSaveUtil.saveToSDCard(MainActivity.this, resource, "profile.jpg");
+                    prefs.put("profile_path", fileDir);
+                }
+            });
         }
-//
-//        Glide.with(this).load(URLs.PROFILE_URL + username + "_1.JPEG")
-//                .bitmapTransform(new CropCircleTransformation(this))
-//                .placeholder(R.drawable.photo).error(R.drawable.photo)
-//                .crossFade(0).into(profileImage);
 
         //设置菜单栏背景图
         String menuBgUri = (String) prefs.get("menu_bg_uri", null);
@@ -350,8 +364,8 @@ public class MainActivity extends BaseActivity
         }
         progressRunTimesText.setText("今日跑步" + times + "次");
         progressStepsText.setText(String.valueOf(steps));
-        progressDisEnergyText.setText(Utility.formatDecimal(dis / 1000.0, 2)
-                + "KM" + " | " + energy + "千卡");
+        progressDisEnergyText.setText(String.format("%sKM | %d千卡",
+                Utility.formatDecimal(dis / 1000.0, 2), energy));
         circleProgress.setProgressWidthAnimation((int) (steps / targetSteps * 100));
     }
 
@@ -428,6 +442,9 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.lab:
                 toActivity(this, TestActivity.class);
+                break;
+            case R.id.friend:
+                toActivity(this, FriendActivity.class);
                 break;
             case R.id.sunlight_long_run:
                 toActivity(MainActivity.this, SunnyRunActivity.class);
@@ -602,8 +619,8 @@ public class MainActivity extends BaseActivity
         intent.putExtra("aspectX", 1);
         intent.putExtra("aspectY", 1);
         // outputX outputY 是裁剪图片宽高
-        intent.putExtra("outputX", 196);
-        intent.putExtra("outputY", 196);
+        intent.putExtra("outputX", 192);
+        intent.putExtra("outputY", 192);
         intent.putExtra("return-data", true);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
         startActivityForResult(intent, Types.TYPE_SAVE_PROFILE);
@@ -629,7 +646,10 @@ public class MainActivity extends BaseActivity
                 if (data != null) {
                     Bitmap bitmap = data.getParcelableExtra("data");
                     profileImage.setImageBitmap(bitmap);
-                    saveProfile(bitmap);
+                    String saveDir = ImageSaveUtil.saveToSDCard(
+                            this, bitmap, "profile.jpg");
+                    prefs.put("profile_path", saveDir);
+                    ImageSaveUtil.saveToServer(username, bitmap);
                 }
                 break;
             default:
@@ -638,6 +658,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void showSnackBar(String text) {
+        if (text == null) return;
         Snackbar.make(collapsingToolbarLayout,
                 text, Snackbar.LENGTH_LONG)
                 .setAction("知道了", v -> {
@@ -645,7 +666,7 @@ public class MainActivity extends BaseActivity
     }
 
     //同步从服务器得到的数据到本地并显示
-    private void syncFromServer() {
+    public void syncFromServer() {
         showProgressDialog("正在从服务器同步...");
 
         SyncUtil.syncFromServer(username, new SyncUtil.SyncDataCallback() {
@@ -668,7 +689,7 @@ public class MainActivity extends BaseActivity
     private void uploadToServer() {
         showProgressDialog("正在上传至服务器...");
 
-        SyncUtil.uploadAllToServer(username, new SyncUtil.SyncDataCallback() {
+        SyncUtil.uploadAllToServer(this, username, new SyncUtil.SyncDataCallback() {
             @Override
             public void onSyncFailure(String msg) {
                 closeProgressDialog();
@@ -683,23 +704,38 @@ public class MainActivity extends BaseActivity
         });
     }
 
-    private void saveProfile(Bitmap bitmap) {
-        //保存到SD卡
-        FileOutputStream fos = null;
-        String fileName = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-                + "profile.jpg";
-        try {
-            fos = new FileOutputStream(fileName);
-            if (null != fos) {
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, fos);
-                fos.flush();
-                fos.close();
-                prefs.put("profile_path", fileName);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void registerSocialReceiver() {
+        receiver = new SocialReceiver();
+        IntentFilter filter = new IntentFilter("com.sailflorve.runhdu.social");
+        registerReceiver(receiver, filter);
+    }
+
+    public class SocialServiceConn implements ServiceConnection {
+
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            socialService = ((SocialService.LocalBinder) service).getService();
+            socialService.getData();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            socialService = null;
+        }
+    }
+
+    public class SocialReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            NotificationManager manager = (NotificationManager)
+                    getSystemService(NOTIFICATION_SERVICE);
+            Notification notification = new NotificationCompat.Builder(MainActivity.this)
+                    .setContentTitle("通知")
+                    .setContentText(intent.getStringExtra("json"))
+                    .setWhen(System.currentTimeMillis())
+                    .setSmallIcon(R.drawable.ic_start_run)
+                    .build();
+            manager.notify(0, notification);
         }
     }
 }
