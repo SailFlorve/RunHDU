@@ -23,7 +23,7 @@ import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.utils.QueryUtil;
-import com.cxsj.runhdu.utils.SyncUtil;
+import com.cxsj.runhdu.controller.DataSyncUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.NumberView;
 
@@ -184,7 +184,7 @@ public class RunDetailsActivity extends BaseActivity {
     private void requestDeleteItem() {
         if (isSyncOn) {
             showProgressDialog("正在同步删除至服务器...");
-            SyncUtil.deleteSingleLocalAndServerData(username, id, new SyncUtil.SyncDataCallback() {
+            DataSyncUtil.deleteSingleLocalAndServerData(username, id, new DataSyncUtil.SyncDataCallback() {
                 @Override
                 public void onSyncFailure(String msg) {
                     closeProgressDialog();

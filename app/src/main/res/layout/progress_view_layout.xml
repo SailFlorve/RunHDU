@@ -1,22 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/progress_view_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginTop="40dp">
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_marginTop="10dp">
+
+    <ImageView
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_run_main"
+        android:alpha="0.6"/>
 
     <com.cxsj.runhdu.view.GradeProgressView
         android:id="@+id/circle_progress"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:layout_gravity="center" />
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:layout_gravity="center"
-        android:layout_marginBottom="0dp"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -45,4 +55,4 @@
             android:text="0KM | 0千卡"
             android:textColor="#FFF" />
     </LinearLayout>
-</FrameLayout>
+</RelativeLayout>

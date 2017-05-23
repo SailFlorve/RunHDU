@@ -1,7 +1,14 @@
 package com.cxsj.runhdu;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.cxsj.runhdu.constant.URLs;
+import com.cxsj.runhdu.controller.DataSyncUtil;
 
 public class AboutActivity extends BaseActivity {
 

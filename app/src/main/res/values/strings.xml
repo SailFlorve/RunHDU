@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">RunHDU</string>
     <string name="title_activity_login">RunHDU</string>
-    <string name="current_version">1.0.0</string>
-    <string name="app_description">RunHDU Ver 1.0.0</string>
+    <string name="current_version">1.0.3</string>
+    <string name="app_description">RunHDU Ver 1.0.3</string>
     <string name="title_activity_main">运动概览</string>
     <string name="never_run">你今天还没有跑过步哦！\n点击右下角的跑步按钮，开始跑步吧。</string>
     <string name="got_it">知道了</string>

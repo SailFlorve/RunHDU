@@ -4,7 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,18 +17,12 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.model.gson.UpdateInfo;
+import com.cxsj.runhdu.controller.DataSyncUtil;
 import com.cxsj.runhdu.utils.ActivityManager;
-import com.cxsj.runhdu.utils.HttpUtil;
 import com.cxsj.runhdu.utils.Prefs;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Sail on 2017/4/13 0013.
@@ -32,12 +31,18 @@ import okhttp3.Response;
 
 @SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity {
-    private Context mContext;
     private ProgressDialog progressDialog;
     protected Prefs prefs;
     protected String username;
     protected boolean isSyncOn = true;
     protected final String TAG = "BaseActivity";
+    protected PermissionCallback permissionCallback;
+
+    protected interface PermissionCallback {
+        void onGranted();
+
+        void onDenied(List<String> permissions);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,70 +76,45 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void checkUpdate(Context context) {
-        HttpUtil.load(URLs.UPDATE_URL)
-                .addParam("version2",
-                        getResources().getString(R.string.current_version))
-                .post(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        if (context instanceof AboutActivity) {
-                            runOnUiThread(() -> {
-                                closeProgressDialog();
-                                Toast.makeText(context, "连接更新服务器失败。", Toast.LENGTH_SHORT).show();
-                            });
-                        }
-                    }
+        DataSyncUtil.checkUpdate(context, new DataSyncUtil.UpdateCheckCallback() {
+            @Override
+            public void onUpdate(String currentVersion, String latestVersion, String updateStatement) {
+                closeProgressDialog();
+                String ignoreVersion = (String) prefs.get("ignore_version", "");
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        UpdateInfo info = null;
-                        try {
-                            info = new Gson().fromJson(response.body().string(), UpdateInfo.class);
-                        } catch (JsonSyntaxException e) {
-                            e.printStackTrace();
-                        }
-                        if (info == null) return;
-                        String currentVersion = getResources().getString(R.string.current_version);
-                        String ignoreVersion = (String) prefs.get("ignore_version", "");
-                        UpdateInfo finalInfo = info;
-                        runOnUiThread(() -> {
-                            closeProgressDialog();
-                            switch (finalInfo.isUpdate) {
-                                case "true":
-                                    //如果MainActivity检查更新，且已忽略此版本
-                                    if (context instanceof MainActivity
-                                            && ignoreVersion.equals(currentVersion)) return;
+                if (context instanceof MainActivity
+                        && ignoreVersion.equals(currentVersion)) return;
 
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(context)
-                                            .setTitle("版本更新")
-                                            .setMessage("当前版本："
-                                                    + getResources().getString(R.string.current_version)
-                                                    + "\n最新版本："
-                                                    + finalInfo.latestVersion
-                                                    + "\n\n"
-                                                    + finalInfo.statement)
-                                            .setPositiveButton("立即升级", null)
-                                            .setNegativeButton("稍后提醒", null);
-                                    if (context instanceof MainActivity) {
-                                        builder.setNeutralButton("忽略此版本",
-                                                (dialog, which) -> prefs.put("ignore_version", currentVersion));
-                                    }
-                                    builder.create().show();
-                                    break;
-                                case "false":
-                                    if (context instanceof AboutActivity) {
-                                        Toast.makeText(context, "未发现新版本。", Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                default:
-                                    if (context instanceof AboutActivity) {
-                                        Toast.makeText(context, "服务器异常。", Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                            }
-                        });
-                    }
-                });
+                AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                        .setTitle("版本更新")
+                        .setMessage("当前版本："
+                                + getResources().getString(R.string.current_version)
+                                + "\n最新版本："
+                                + latestVersion
+                                + "\n\n"
+                                + updateStatement)
+                        .setPositiveButton("立即升级", (dialog, which) -> {
+                            Uri uri = Uri.parse(URLs.DOWNLOAD);
+                            Intent it = new Intent(Intent.ACTION_VIEW, uri);
+                            startActivity(it);
+                        })
+                        .setNegativeButton("以后再说", null);
+                if (context instanceof MainActivity) {
+                    builder.setNeutralButton("忽略此版本",
+                            (dialog, which) -> prefs.put("ignore_version", latestVersion));
+                }
+                builder.create().show();
+            }
+
+            @Override
+            public void onFailure(String msg) {
+                closeProgressDialog();
+                if (context instanceof AboutActivity) {
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
     }
 
 
@@ -146,12 +126,10 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void showProgressDialog(String text) {
-        if (progressDialog == null) {
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage(text);
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.setCancelable(false);
-        }
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage(text);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setCancelable(false);
         progressDialog.show();
     }
 
@@ -170,5 +148,48 @@ public class BaseActivity extends AppCompatActivity {
     protected void toActivity(Context context, Class<?> cls) {
         Intent intent = new Intent(context, cls);
         startActivity(intent);
+    }
+
+    public void requestPermissions(String[] permissions, PermissionCallback callback) {
+        permissionCallback = callback;
+        List<String> permissionList = new ArrayList<>();
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(this, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                permissionList.add(permission);
+            }
+        }
+        if (!permissionList.isEmpty()) {
+            ActivityCompat.requestPermissions(
+                    this, permissionList.toArray(new String[permissionList.size()]), 0);
+        } else {
+            permissionCallback.onGranted();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 0:
+                if (grantResults.length > 0) {
+                    List<String> deniedPermission = new ArrayList<>();
+                    for (int i = 0; i < grantResults.length; i++) {
+                        int grantResult = grantResults[i];
+                        if (grantResult == PackageManager.PERMISSION_DENIED) {
+                            deniedPermission.add(permissions[i]);
+                        }
+                    }
+                    if (deniedPermission.isEmpty()) {
+                        permissionCallback.onGranted();
+                    } else {
+                        permissionCallback.onDenied(deniedPermission);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
 }

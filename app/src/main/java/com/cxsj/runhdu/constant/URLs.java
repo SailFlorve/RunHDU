@@ -6,6 +6,7 @@ package com.cxsj.runhdu.constant;
  */
 
 public class URLs {
+    public static final String DOWNLOAD = "http://d1.51gugu.com/170258/runhdu.apk";
     public static final String LOGIN = "http://112.74.115.231:8080/CXSJ/Login";
     public static final String REGISTER="http://112.74.115.231:8080/CXSJ/Register";
     public static final String GET_RUN_INFO = "http://112.74.115.231:8080/chuangxinshijian/ReadAll";

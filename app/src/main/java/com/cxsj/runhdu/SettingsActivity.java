@@ -6,8 +6,8 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
+import com.cxsj.runhdu.controller.DataSyncUtil;
 import com.cxsj.runhdu.utils.Prefs;
-import com.cxsj.runhdu.utils.SyncUtil;
 
 public class SettingsActivity extends BaseActivity {
 
@@ -89,7 +89,7 @@ public class SettingsActivity extends BaseActivity {
             SettingsActivity parent = (SettingsActivity) getActivity();
             parent.showProgressDialog("正在删除...");
             String username = (String) prefs.get("username", "0");
-            SyncUtil.deleteAllLocalAndServerData(username, new SyncUtil.SyncDataCallback() {
+            DataSyncUtil.deleteAllLocalAndServerData(username, new DataSyncUtil.SyncDataCallback() {
                 @Override
                 public void onSyncFailure(String msg) {
                     parent.closeProgressDialog();

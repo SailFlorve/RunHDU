@@ -2,31 +2,18 @@ package com.cxsj.runhdu;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -35,11 +22,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -47,38 +32,37 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.cxsj.runhdu.adapters.MyFragmentPagerAdapter;
 import com.cxsj.runhdu.constant.Types;
 import com.cxsj.runhdu.constant.URLs;
+import com.cxsj.runhdu.controller.DataPresentUtil;
+import com.cxsj.runhdu.controller.DataSyncUtil;
 import com.cxsj.runhdu.model.sport.RunningInfo;
-import com.cxsj.runhdu.service.SocialService;
 import com.cxsj.runhdu.utils.ActivityManager;
+import com.cxsj.runhdu.utils.HttpUtil;
 import com.cxsj.runhdu.utils.ImageSaveUtil;
 import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.utils.ScreenShot;
-import com.cxsj.runhdu.utils.SyncUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.GradeProgressView;
+import com.google.gson.Gson;
 
 import org.litepal.LitePal;
 import org.litepal.LitePalDB;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.listener.ColumnChartOnValueSelectListener;
-import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.AxisValue;
-import lecho.lib.hellocharts.model.Column;
-import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.ColumnChartView;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -100,18 +84,15 @@ public class MainActivity extends BaseActivity
     private ColumnChartView columnChart;
     private TodayFragment todayFragment;
     private HistoryFragment historyFragment;
-    private FrameLayout progressView;
-    private LinearLayout chartView;
+    private RelativeLayout progressViewLayout;
+    private RelativeLayout chartView;
 
     private List<String> mTitle = new ArrayList<>();
     private List<Fragment> mFragment = new ArrayList<>();
-    private List<RunningInfo> runningInfoList = new ArrayList<>();
-    private List<String> chartLabels = new ArrayList<>();
-    private List<Float> chartValues = new ArrayList<>();
 
-    private SocialService socialService;
-    private SocialServiceConn conn;
-    private SocialReceiver receiver;
+//    private SocialService socialService;
+//    private SocialServiceConn conn;
+//    private SocialReceiver receiver;
 
     private int chartColumnNum;//图表显示的列数
     private float targetSteps;
@@ -120,42 +101,12 @@ public class MainActivity extends BaseActivity
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.getMenu().getItem(0).setChecked(true);
-
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        viewPager = (ViewPager) findViewById(R.id.view_pager);
-        progressRunTimesText = (TextView) findViewById(R.id.progress_times);
-        progressStepsText = (TextView) findViewById(R.id.progress_step_num);
-        progressDisEnergyText = (TextView) findViewById(R.id.progress_dis_energy);
-        circleProgress = (GradeProgressView) findViewById(R.id.circle_progress);
-        menuButton = (ImageView) findViewById(R.id.menu_button);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        menuBgImg = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.menu_bg_img);
-        columnChart = (ColumnChartView) findViewById(R.id.column_chart);
-        welcomeText = (TextView) navigationView.getHeaderView(0).findViewById(R.id.welcome_text);
-        profileImage = (CircleImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image);
-        dataDescription = (TextView) findViewById(R.id.data_description);
-        progressView = (FrameLayout) findViewById(R.id.progress_view_layout);
-        chartView = (LinearLayout) findViewById(R.id.chart_view_layout);
-        //conn = new SocialServiceConn();
-        setToolbar(R.id.toolbar_main, false);
-
-        menuButton.setOnClickListener(this);
-        fab.setOnClickListener(this);
-        profileImage.setOnClickListener(this);
-        menuBgImg.setOnClickListener(this);
-        navigationView.setNavigationItemSelectedListener(this);
-
         if (TextUtils.isEmpty(username)) exitLogin();
 
-        initSettings();
         initView();
         checkUpdate(this);
-        checkServerData();
+
+
         //开启服务
 //        bindService(new Intent(this, SocialService.class), conn, BIND_AUTO_CREATE);
 //        registerSocialReceiver();
@@ -165,10 +116,10 @@ public class MainActivity extends BaseActivity
             public void onTabSelected(TabLayout.Tab tab) {
                 if (tab.getPosition() == 0) {
                     chartView.setVisibility(View.INVISIBLE);
-                    progressView.setVisibility(View.VISIBLE);
+                    progressViewLayout.setVisibility(View.VISIBLE);
                 } else {
                     chartView.setVisibility(View.VISIBLE);
-                    progressView.setVisibility(View.INVISIBLE);
+                    progressViewLayout.setVisibility(View.INVISIBLE);
                 }
             }
 
@@ -194,7 +145,7 @@ public class MainActivity extends BaseActivity
                 String day = String.valueOf(calendar.get(Calendar.DATE));
 
                 int dis = 0;
-                runningInfoList = QueryUtil.findOrder(
+                List<RunningInfo> runningInfoList = QueryUtil.findOrder(
                         "year = ? and month = ? and date = ?",
                         year, month, day);
                 for (RunningInfo info : runningInfoList) {
@@ -210,6 +161,15 @@ public class MainActivity extends BaseActivity
 
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: 已经调用");
+        super.onResume();
+        initSettings();
+        setMainData();
+        checkServerData();
     }
 
     @Override
@@ -229,7 +189,7 @@ public class MainActivity extends BaseActivity
         //获取服务器端的跑步次数
         Log.d("次数", username);
 
-        SyncUtil.checkServerData(username, new SyncUtil.checkDataCallback() {
+        DataSyncUtil.checkServerData(username, new DataSyncUtil.CheckDataCallback() {
             @Override
             public void onCheckFailure(String msg) {
                 closeProgressDialog();
@@ -248,10 +208,20 @@ public class MainActivity extends BaseActivity
                                     "请选择操作：", localTimes, serverTimes))
                             .setPositiveButton("服务器数据同步至本地", (dialog, which) ->
                                     syncFromServer())
-                            .setNegativeButton("本地数据上传至服务器", (dialog, which) ->
-                                    uploadToServer())
-                            .setNeutralButton("以后再说", (dialog, which) -> {
-                            }).create().show();
+                            .setNegativeButton("本地数据上传至服务器", (dialog, which) -> {
+                                List<RunningInfo> infoList = QueryUtil.findAllOrder();
+                                if (infoList.isEmpty()) {
+                                    new AlertDialog.Builder(MainActivity.this)
+                                            .setTitle("本地无数据")
+                                            .setMessage("本地没有跑步数据，执行此操作将会清空服务器的数据。是否选择从服务器同步？")
+                                            .setNegativeButton("否，清空服务器", (dialog1, which1) -> uploadToServer())
+                                            .setPositiveButton("是，从服务器同步", (dialog12, which12) -> syncFromServer())
+                                            .create().show();
+                                } else {
+                                    uploadToServer();
+                                }
+                            })
+                            .setNeutralButton("以后再说", null).create().show();
                 }
             }
         });
@@ -259,6 +229,35 @@ public class MainActivity extends BaseActivity
 
     @SuppressLint("SetTextI18n")
     private void initView() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.getMenu().getItem(0).setChecked(true);
+
+        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
+        progressRunTimesText = (TextView) findViewById(R.id.progress_times);
+        progressStepsText = (TextView) findViewById(R.id.progress_step_num);
+        progressDisEnergyText = (TextView) findViewById(R.id.progress_dis_energy);
+        circleProgress = (GradeProgressView) findViewById(R.id.circle_progress);
+        menuButton = (ImageView) findViewById(R.id.menu_button);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        menuBgImg = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.menu_bg_img);
+        columnChart = (ColumnChartView) findViewById(R.id.column_chart);
+        welcomeText = (TextView) navigationView.getHeaderView(0).findViewById(R.id.welcome_text);
+        profileImage = (CircleImageView) navigationView.getHeaderView(0).findViewById(R.id.profile_image);
+        dataDescription = (TextView) findViewById(R.id.data_description);
+        progressViewLayout = (RelativeLayout) findViewById(R.id.progress_view_layout);
+        chartView = (RelativeLayout) findViewById(R.id.chart_view_layout);
+        //conn = new SocialServiceConn();
+        setToolbar(R.id.toolbar_main, false);
+
+        menuButton.setOnClickListener(this);
+        fab.setOnClickListener(this);
+        profileImage.setOnClickListener(this);
+        menuBgImg.setOnClickListener(this);
+        navigationView.setNavigationItemSelectedListener(this);
+
         //初始化进度条数值
         circleProgress.setProgressWidthAnimation(0);
         //初始化Title
@@ -279,9 +278,9 @@ public class MainActivity extends BaseActivity
         columnChart.setZoomEnabled(false);
         columnChart.setContainerScrollEnabled(true, ContainerScrollType.HORIZONTAL);
         chartView.setVisibility(View.INVISIBLE);
+
         //初始化welcome文字
         welcomeText.setText(Utility.getTime(Types.TYPE_AM_PM) + "好，" + username + "！");
-        setMainData();
     }
 
     private void initSettings() {
@@ -324,6 +323,8 @@ public class MainActivity extends BaseActivity
                 (String) prefs.get("target_steps", "5000")
         );
         isSyncOn = (boolean) prefs.get("sync_data", true);
+
+        dataDescription.setText("点击柱形图，查看详细信息");
     }
 
     private void setMainData() {
@@ -331,85 +332,33 @@ public class MainActivity extends BaseActivity
         setChartData();
     }
 
-
     private void setAllData() {
         setMainData();
-        try {
-            todayFragment.setListData();
-            historyFragment.updateData();
-        } catch (NullPointerException e) {
-            Toast.makeText(this, "APP异常，现已恢复。如果出现此提示，请联系开发者！", Toast.LENGTH_LONG).show();
-            recreate();
-        }
+        todayFragment.setListData();
+        historyFragment.updateData();
     }
 
     @SuppressLint("SetTextI18n")
     private void setProgressView() {
         circleProgress.setProgress(0);
-        //从数据库里读出数据。
-        runningInfoList = QueryUtil.findOrder(
-                "year = ? and month = ? and date = ?",
-                Utility.getTime(Calendar.YEAR),
-                Utility.getTime(Types.TYPE_MONTH),
-                Utility.getTime(Calendar.DATE));
-        int steps = 0;
-        int times = 0;
-        int dis = 0;
-        int energy = 0;
-        for (RunningInfo info : runningInfoList) {
-            steps += info.getSteps();
-            times++;
-            dis += info.getDistance();
-            energy += info.getEnergy();
-        }
-        progressRunTimesText.setText("今日跑步" + times + "次");
-        progressStepsText.setText(String.valueOf(steps));
-        progressDisEnergyText.setText(String.format("%sKM | %d千卡",
-                Utility.formatDecimal(dis / 1000.0, 2), energy));
-        circleProgress.setProgressWidthAnimation((int) (steps / targetSteps * 100));
+        DataPresentUtil.setProgressViewData((steps, times, dis, energy) -> {
+            progressRunTimesText.setText("今日跑步" + times + "次");
+            progressStepsText.setText(String.valueOf(steps));
+            progressDisEnergyText.setText(String.format("%sKM | %d千卡",
+                    Utility.formatDecimal(dis / 1000.0, 2), energy));
+            circleProgress.setProgressWidthAnimation((int) (steps / targetSteps * 100));
+        });
     }
 
     @SuppressLint("WrongConstant")
     private void setChartData() {
-        chartLabels.clear();
-        chartValues.clear();
-        //初始化ColumnChart
-        Calendar c = Calendar.getInstance();
-        c.setTime(new Date());
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd", Locale.CHINA);
-        for (int i = 0; i < chartColumnNum; i++) {
-            chartLabels.add(sdf.format(c.getTime()));
-            runningInfoList = QueryUtil.findOrder("year = ? and month = ? and date = ?",
-                    String.valueOf(c.get(Calendar.YEAR)),
-                    String.valueOf(c.get(Calendar.MONTH) + 1),
-                    String.valueOf(c.get(Calendar.DATE)));
-            int steps = 0;
-            for (RunningInfo info : runningInfoList) {
-                steps += info.getSteps();
-            }
-            chartValues.add((float) steps);
-            c.add(Calendar.DATE, -1);
-        }
-        Collections.reverse(chartLabels);
-        Collections.reverse(chartValues);
-        columnChart.setColumnChartData(getChartData(chartLabels, chartValues));
-
-        Viewport v1 = new Viewport(columnChart.getMaximumViewport());
-        v1.bottom = 0;
-        if (!chartValues.isEmpty()) {
-            v1.top = Collections.max(chartValues);
-        } else {
-            v1.top = 5000;
-        }
-        columnChart.setMaximumViewport(v1);
-        //设置当前的窗口显示多少个坐标数据
-        Viewport v2 = new Viewport(columnChart.getMaximumViewport());
-        v2.right = chartLabels.size();
-        v2.left = chartLabels.size() - 7;
-        columnChart.setCurrentViewport(v2);
-
-        dataDescription.setText("点击柱形图，查看详细信息");
-
+        DataPresentUtil.setColumnChartViewData(chartColumnNum, data -> {
+            columnChart.setColumnChartData(data);
+            Viewport v2 = new Viewport(columnChart.getMaximumViewport());
+            v2.right = chartColumnNum;
+            v2.left = chartColumnNum - 7;
+            columnChart.setCurrentViewport(v2);
+        });
     }
 
 
@@ -421,14 +370,6 @@ public class MainActivity extends BaseActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        initSettings();
-        checkServerData();
-        setAllData();
     }
 
     @Override
@@ -513,95 +454,40 @@ public class MainActivity extends BaseActivity
     }
 
     private void checkRunPermission() {
-        List<String> permissionList = new ArrayList<>();
-        if (ContextCompat.checkSelfPermission
-                (MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-        if (ContextCompat.checkSelfPermission
-                (MainActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.READ_PHONE_STATE);
-        }
-        if (ContextCompat.checkSelfPermission
-                (MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-
-        if (!permissionList.isEmpty()) {
-            String[] permissions = permissionList.toArray(new String[permissionList.size()]);
-            ActivityCompat.requestPermissions(MainActivity.this, permissions, 1);
-        } else {
-            startRunActivity();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 1:
-                if (grantResults.length > 0) {
-                    for (int result : grantResults) {
-                        if (result != PackageManager.PERMISSION_GRANTED) {
-                            Snackbar.make(collapsingToolbarLayout, "必须同意所有权限，才可以开始跑步。", Snackbar.LENGTH_LONG)
-                                    .setAction("知道了", v -> {
-                                    }).show();
-                            return;
-                        }
-                    }
-                    startRunActivity();
-                } else {
-                    Toast.makeText(this, "发生未知错误", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-                break;
-            default:
-        }
-    }
-
-    private ColumnChartData getChartData(List<String> labels, List<Float> nums) {
-        if (labels.size() != nums.size()
-                || labels.isEmpty()
-                || nums.isEmpty()) return null;
-
-        ColumnChartData data;
-        // 列，每列1个柱状图。
-        int numSubcolumns = 1;
-        int numColumns = labels.size();
-        //圆柱对象集合
-        List<Column> columns = new ArrayList<>();
-        //子列数据集合
-        List<SubcolumnValue> values;
-        List<AxisValue> axisValues = new ArrayList<>();
-        //遍历列数numColumns
-        for (int i = 0; i < numColumns; ++i) {
-            values = new ArrayList<>();
-            //遍历每一列的每一个子列
-            for (int j = 0; j < numSubcolumns; ++j) {
-                //为每一柱图添加颜色和数值
-                values.add(new SubcolumnValue(nums.get(i), Color.parseColor("#03A9F4")));
+        requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionCallback() {
+            @Override
+            public void onGranted() {
+                startRunActivity();
             }
-            //创建Column对象
-            Column column = new Column(values);
-            //是否有数据标注
-            column.setHasLabels(true);
-            //是否是点击圆柱才显示数据标注
-            column.setHasLabelsOnlyForSelected(false);
-            columns.add(column);
-            //给x轴坐标设置描述
-            axisValues.add(new AxisValue(i).setLabel(labels.get(i)));
-        }
-        //创建一个带有之前圆柱对象column集合的ColumnChartData
-        data = new ColumnChartData(columns);
 
-        //定义x轴y轴相应参数
-        Axis axisX = new Axis();
-        axisX.setTextColor(Color.parseColor("#ffffff"));
-        axisX.setValues(axisValues);
+            @Override
+            public void onDenied(List<String> permissions) {
+                StringBuilder builder = new StringBuilder();
+                builder.append("跑步前请允许以下权限：\n");
+                for (String permission : permissions) {
+                    switch (permission) {
+                        case Manifest.permission.ACCESS_FINE_LOCATION:
+                            builder.append("定位");
+                            break;
+                        case Manifest.permission.READ_PHONE_STATE:
+                            builder.append("获取手机信息");
+                            break;
+                        case Manifest.permission.WRITE_EXTERNAL_STORAGE:
+                            builder.append("读写手机存储");
+                            break;
+                        default:
+                    }
+                }
 
-        //把X轴Y轴数据设置到ColumnChartData 对象中
-        data.setAxisXBottom(axisX);
-        //data.setAxisYLeft(axisY);
-        return data;
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("权限不足")
+                        .setMessage(builder.toString())
+                        .setPositiveButton("知道了", null)
+                        .create().show();
+            }
+        });
     }
 
     private void choosePhoto(int type) {
@@ -669,7 +555,7 @@ public class MainActivity extends BaseActivity
     public void syncFromServer() {
         showProgressDialog("正在从服务器同步...");
 
-        SyncUtil.syncFromServer(username, new SyncUtil.SyncDataCallback() {
+        DataSyncUtil.syncFromServer(username, new DataSyncUtil.SyncDataCallback() {
             @Override
             public void onSyncFailure(String msg) {
                 closeProgressDialog();
@@ -688,8 +574,7 @@ public class MainActivity extends BaseActivity
     //把本地的数据同步至服务器
     private void uploadToServer() {
         showProgressDialog("正在上传至服务器...");
-
-        SyncUtil.uploadAllToServer(this, username, new SyncUtil.SyncDataCallback() {
+        DataSyncUtil.uploadAllToServer(username, new DataSyncUtil.SyncDataCallback() {
             @Override
             public void onSyncFailure(String msg) {
                 closeProgressDialog();
@@ -704,38 +589,38 @@ public class MainActivity extends BaseActivity
         });
     }
 
-    private void registerSocialReceiver() {
-        receiver = new SocialReceiver();
-        IntentFilter filter = new IntentFilter("com.sailflorve.runhdu.social");
-        registerReceiver(receiver, filter);
-    }
-
-    public class SocialServiceConn implements ServiceConnection {
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            socialService = ((SocialService.LocalBinder) service).getService();
-            socialService.getData();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            socialService = null;
-        }
-    }
-
-    public class SocialReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            NotificationManager manager = (NotificationManager)
-                    getSystemService(NOTIFICATION_SERVICE);
-            Notification notification = new NotificationCompat.Builder(MainActivity.this)
-                    .setContentTitle("通知")
-                    .setContentText(intent.getStringExtra("json"))
-                    .setWhen(System.currentTimeMillis())
-                    .setSmallIcon(R.drawable.ic_start_run)
-                    .build();
-            manager.notify(0, notification);
-        }
-    }
+//    private void registerSocialReceiver() {
+//        receiver = new SocialReceiver();
+//        IntentFilter filter = new IntentFilter("com.sailflorve.runhdu.social");
+//        registerReceiver(receiver, filter);
+//    }
+//
+//    public class SocialServiceConn implements ServiceConnection {
+//
+//        @Override
+//        public void onServiceConnected(ComponentName name, IBinder service) {
+//            socialService = ((SocialService.LocalBinder) service).getService();
+//            socialService.getData();
+//        }
+//
+//        @Override
+//        public void onServiceDisconnected(ComponentName name) {
+//            socialService = null;
+//        }
+//    }
+//
+//    public class SocialReceiver extends BroadcastReceiver {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            NotificationManager manager = (NotificationManager)
+//                    getSystemService(NOTIFICATION_SERVICE);
+//            Notification notification = new NotificationCompat.Builder(MainActivity.this)
+//                    .setContentTitle("通知")
+//                    .setContentText(intent.getStringExtra("json"))
+//                    .setWhen(System.currentTimeMillis())
+//                    .setSmallIcon(R.drawable.ic_start_run)
+//                    .build();
+//            manager.notify(0, notification);
+//        }
+//    }
 }

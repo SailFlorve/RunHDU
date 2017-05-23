@@ -13,7 +13,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="实验功能"/>
+        app:title="实验功能" />
 
     <Button
         android:id="@+id/GZip_button"
@@ -25,12 +25,30 @@
         android:textColor="#FFF" />
 
     <Button
-        android:id="@+id/zip_button"
+        android:id="@+id/base64_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         android:background="?attr/colorPrimary"
-        android:text="Zip压缩"
+        android:text="BASE64转码"
+        android:textColor="#FFF" />
+
+    <Button
+        android:id="@+id/GZip_decode_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="?attr/colorPrimary"
+        android:text="GZip解压"
+        android:textColor="#FFF" />
+
+    <Button
+        android:id="@+id/base64_decode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="?attr/colorPrimary"
+        android:text="Base64解压"
         android:textColor="#FFF" />
 
     <Button

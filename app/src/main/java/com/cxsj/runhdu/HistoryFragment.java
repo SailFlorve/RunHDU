@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.cxsj.runhdu.controller.DataPresentUtil;
 import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.utils.Utility;
@@ -27,7 +28,6 @@ public class HistoryFragment extends Fragment {
     private NumberView allTimes;
     private NumberView averTimes;
     private NumberView allTime;
-    private List<RunningInfo> list = new ArrayList<>();
 
     @Nullable
     @Override
@@ -47,45 +47,29 @@ public class HistoryFragment extends Fragment {
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        updateData();
         super.onActivityCreated(savedInstanceState);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateData();
+    }
+
     public void updateData() {
-        int allStepsNum = DataSupport.sum(RunningInfo.class, "steps", int.class);
-        int allEnergyNum = DataSupport.sum(RunningInfo.class, "energy", int.class);
-        double allDisNum = DataSupport.sum(RunningInfo.class, "distance", int.class);
-        double averStepsNum = DataSupport.average(RunningInfo.class, "steps");
-        double averEnergyNum = DataSupport.average(RunningInfo.class, "energy");
-        double averDisNum = DataSupport.average(RunningInfo.class, "distance");
-        int allTimesNum = DataSupport.count(RunningInfo.class);
-        double averTimesNum = 0;
-        double allTimeNum = 0;
-
-        list = QueryUtil.findAllOrder();
-        String oldDate = null;
-        int runDays = 0;
-        for (RunningInfo info : list) {
-            String date = info.getDate();
-            if (!date.equals(oldDate)) runDays++;
-            oldDate = date;
-            allTimeNum += Utility.getMinutes(info.getDuration());
-
-        }
-
-        if (runDays != 0) {
-            averTimesNum = (double) allTimesNum / runDays;
-        }
-
-        allSteps.setText(handleBigInt(allStepsNum));
-        allEnergy.setText(handleBigInt(allEnergyNum));
-        allDis.setText(Utility.formatDecimal(allDisNum / 1000, 1));
-        averSteps.setText(handleBigDouble(averStepsNum));
-        averEnergy.setText(handleBigDouble(averEnergyNum));
-        averDis.setText(Utility.formatDecimal(averDisNum / 1000, 1));
-        allTimes.setText(String.valueOf(allTimesNum));
-        averTimes.setText(Utility.formatDecimal(averTimesNum, 1));
-        allTime.setText(Utility.formatDecimal(allTimeNum / 60.0, 1));
+        DataPresentUtil.setStatisticsData((allStepsNum, allEnergyNum, allDisNum,
+                                           averStepsNum, averEnergyNum, averDisNum,
+                                           allTimesNum, averTimesNum, allTimeNum) -> {
+            allSteps.setText(handleBigInt(allStepsNum));
+            allEnergy.setText(handleBigInt(allEnergyNum));
+            allDis.setText(Utility.formatDecimal(allDisNum / 1000, 1));
+            averSteps.setText(handleBigDouble(averStepsNum));
+            averEnergy.setText(handleBigDouble(averEnergyNum));
+            averDis.setText(Utility.formatDecimal(averDisNum / 1000, 1));
+            allTimes.setText(String.valueOf(allTimesNum));
+            averTimes.setText(Utility.formatDecimal(averTimesNum, 1));
+            allTime.setText(Utility.formatDecimal(allTimeNum / 60.0, 1));
+        });
     }
 
     private String handleBigInt(int num) {

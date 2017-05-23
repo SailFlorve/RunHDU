@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.cxsj.runhdu.adapters.RecyclerViewSectionAdapter;
+import com.cxsj.runhdu.controller.DataPresentUtil;
 import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.model.sport.RunningInfoSection;
 import com.cxsj.runhdu.utils.QueryUtil;
@@ -35,13 +36,14 @@ public class TodayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: ");
         view = inflater.inflate(R.layout.fragment_today, container, false);
-        initView();
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        setListData();
+        Log.d(TAG, "onActivityCreated: ");
+        initView();
+
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -49,6 +51,7 @@ public class TodayFragment extends Fragment {
     public void onResume() {
         Log.d(TAG, "onResume: ");
         super.onResume();
+        setListData();
     }
 
     private void initView() {
@@ -70,99 +73,22 @@ public class TodayFragment extends Fragment {
         });
     }
 
-    private void addInfoList(List<RunningInfo> list) {
-        if (infoList == null) {
-            return;
-        }
-
-        for (RunningInfo info : list) {
-            RunningInfoSection section = new RunningInfoSection(info);
-            infoList.add(section);
-        }
-    }
-
-    /*
-    数据库： 2016 12-2
-            2016 12-5
-            2016 12-6
-            2016 12-7
-            2016 12-8
-            2016 12-8
-            2016 12-8
-            --addHeader 2016年12月 7次
-            2017 2-3
-            2017 2-3
-            --addHeader 2017年2月 2次
-            2017 5-1
-            2017 5-1
-            2017 5-1
-            --addHeader 2017年5月 3次
-    * */
-
     public void setListData() {
-        infoList.clear();
-        viewAdapter.notifyDataSetChanged();
-
-        List<RunningInfo> list = QueryUtil.findAllOrder();
-        if (!list.isEmpty()) {
-            neverRunLayout.setVisibility(View.GONE);
-        } else {
-            neverRunLayout.setVisibility(View.VISIBLE);
-            return;
-        }
-
-        String oldYear = list.get(0).getYear();
-        String oldMonth = list.get(0).getMonth();
-        int times = 0;
-        List<RunningInfo> tempList = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            RunningInfo info = list.get(i);
-            String year = info.getYear();
-            String month = info.getMonth();
-
-            if (year.equals(oldYear) && month.equals(oldMonth)) {
-                times++;
-                tempList.add(info);
+        DataPresentUtil.setAllRunData(sectionList -> {
+            if (infoList == null) {
+                infoList = new ArrayList<>();
             } else {
-                RunningInfoSection section = new RunningInfoSection(true, oldYear + "年" + oldMonth + "月");
-                section.setTimes(String.valueOf(times));
-                addInfoList(tempList);
-                infoList.add(section);
-                oldYear = year;
-                oldMonth = month;
-                times = 1;
-                tempList = new ArrayList<>();
-                tempList.add(info);
+                infoList.clear();
             }
-            if (i == list.size() - 1) {
-                RunningInfoSection section = new RunningInfoSection(true, oldYear + "年" + oldMonth + "月");
-                section.setTimes(String.valueOf(times));
-                addInfoList(tempList);
-                infoList.add(section);
+            if (sectionList != null) {
+                infoList.addAll(sectionList);
             }
-        }
-        Collections.reverse(infoList);
-        viewAdapter.notifyDataSetChanged();
-
-//        for (RunningInfo info : list) {
-//            String year = info.getYear();
-//            String month = info.getMonth();
-//            if (year.equals(oldYear)
-//                    && month.equals(oldMonth)) {
-//                times++;
-//                tempList.add(info);
-//            } else {
-//                RunningInfoSection section = new RunningInfoSection(true, year + "年" + month + "月");
-//                section.setTimes(String.valueOf(times));
-//                addInfoList(tempList);
-//                tempList = null;
-//                tempList = new ArrayList<>();
-//                tempList.add(info);
-//                infoList.add(section);
-//                times = 1;
-//                oldYear = year;
-//                oldMonth = month;
-//            }
-//        }
+            viewAdapter.notifyDataSetChanged();
+            if (!infoList.isEmpty()) {
+                neverRunLayout.setVisibility(View.GONE);
+            } else {
+                neverRunLayout.setVisibility(View.VISIBLE);
+            }
+        });
     }
 }

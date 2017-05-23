@@ -3,17 +3,22 @@ package com.cxsj.runhdu.view;
 import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.support.annotation.IntRange;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+
+import com.cxsj.runhdu.R;
 
 /**
  * 显示进度条。
@@ -34,8 +39,8 @@ public class GradeProgressView extends View {
     private int lineWidth = 30;
 
     //最外圈线的宽度和与进度条之间的间距
-    private int outLineWidth = 5;
-    private int gapWidth = 20;
+    private int outLineWidth = 6;
+    private int gapWidth = 25;
 
     //指针的线宽度， 半径， 以及指针与进度条的间距
     private int pointLineWidth = 10;
@@ -127,7 +132,6 @@ public class GradeProgressView extends View {
 
         int value = outLineWidth / 2;
         mOuterRectF.set(value, value, w - value, h - value);
-
         int gap = lineWidth / 2 + outLineWidth + gapWidth;
 
         mRectF.set(mOuterRectF.left + gap,
@@ -153,7 +157,9 @@ public class GradeProgressView extends View {
         float degree = 2.7f * mProgress;
 
         //draw out arc
-        canvas.drawArc(mOuterRectF, 135, 270, false, mOuterPaint);
+        canvas.drawArc(mOuterRectF, 135, 128, false, mOuterPaint);
+
+        canvas.drawArc(mOuterRectF, 277, 128, false, mOuterPaint);
 
         //draw background arc
         canvas.drawArc(mRectF, 135 + degree, 270 - degree, false, mPaint);

@@ -20,7 +20,6 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.baidu.mapapi.BMapManager;
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
@@ -35,11 +34,11 @@ import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.cxsj.runhdu.constant.Strings;
 import com.cxsj.runhdu.constant.Types;
+import com.cxsj.runhdu.controller.DataSyncUtil;
 import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.sensor.StepSensorAcceleration;
 import com.cxsj.runhdu.sensor.StepSensorBase;
 import com.cxsj.runhdu.sensor.StepSensorPedometer;
-import com.cxsj.runhdu.utils.SyncUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.ImageNumberDisplayView;
 import com.dd.CircularProgressButton;
@@ -335,7 +334,7 @@ public class RunningActivity extends BaseActivity
     private void updateToServer(RunningInfo runningInfo) {
         isSyncing = true;
         Log.d(TAG, "saveRunData: " + runningInfo.getRunId());
-        SyncUtil.uploadSingleToServer(username, runningInfo, new SyncUtil.SyncDataCallback() {
+        DataSyncUtil.uploadSingleToServer(username, runningInfo, new DataSyncUtil.SyncDataCallback() {
             @Override
             public void onSyncFailure(String msg) {
                 isSyncing = false;

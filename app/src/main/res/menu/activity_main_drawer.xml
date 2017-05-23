@@ -21,7 +21,8 @@
             <item
                 android:id="@+id/friend"
                 android:icon="@drawable/ic_friends"
-                android:title="好友" />
+                android:title="好友"
+                android:visible="false" />
             <item
                 android:id="@+id/share"
                 android:icon="@drawable/ic_menu_share"
