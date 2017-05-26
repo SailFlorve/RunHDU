@@ -21,7 +21,15 @@ public class URLs {
     public static final String SUNNY_RUN_QUERY_API = "http://hdu.sunnysport.org.cn/api/student/achievements/";
     public static final String SUNNY_RUN_INFO_API = "http://hdu.sunnysport.org.cn/api/student/info/";
     public static final String DELETE_ITEM = "http://112.74.115.231:8080/chuangxinshijian/ClearByUserNameAndRunId";
+
+    //UserA：申请人 UserB: 被申请人
     public static final String APPLY_FRIEND = "http://112.74.115.231:8080/CXSJ/Apply";
+
+    //UserA：申请人 UserB: 被通知用户
     public static final String REPLY_FRIEND = "http://112.74.115.231:8080/CXSJ/BeFriend";
-    public static final String GET_FRIEND_STATUS = "http://112.74.115.231:8080/CXSJ/Get";
+
+    //UserName
+    public static final String GET_FRIEND = "http://112.74.115.231:8080/CXSJ/MyFriends";
+
+    public static final String OFF_LINE = "http://112.74.115.231:8080/CXSJ/Xiaxian";
 }

@@ -13,6 +13,9 @@ android {
         versionName "1.0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        jackOptions {
+            enabled true
+        }
     }
 
     buildTypes {

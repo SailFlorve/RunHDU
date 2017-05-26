@@ -21,6 +21,7 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.cxsj.runhdu.model.gson.Running;
 import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.controller.DataSyncUtil;
@@ -69,14 +70,19 @@ public class RunDetailsActivity extends BaseActivity {
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
             id = bundle.getString("runId", "");
+            RunningInfo runningInfo = (RunningInfo) intent.getSerializableExtra("running_info");
+            setAllDataById(id, runningInfo);
+        } else {
+            Toast.makeText(this, "发生异常", Toast.LENGTH_SHORT).show();
+            finish();
         }
-        if (TextUtils.isEmpty(id)) finish();
-        setAllData();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.run_details_menu, menu);
+        if (!TextUtils.isEmpty(id)) {
+            getMenuInflater().inflate(R.menu.run_details_menu, menu);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -90,11 +96,8 @@ public class RunDetailsActivity extends BaseActivity {
                 new AlertDialog.Builder(this)
                         .setTitle("删除跑步记录")
                         .setMessage("你确定删除此条跑步信息吗？")
-                        .setPositiveButton("删除", (dialog, which) -> {
-                            requestDeleteItem();
-                        })
-                        .setNegativeButton("不删除", (dialog, which) -> {
-                        }).create().show();
+                        .setPositiveButton("删除", (dialog, which) -> requestDeleteItem())
+                        .setNegativeButton("不删除", null).create().show();
                 break;
             default:
                 break;
@@ -102,9 +105,13 @@ public class RunDetailsActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setAllData() {
-        List<RunningInfo> infoList = QueryUtil.find("runId = ?", id);
-        RunningInfo info = infoList.get(0);
+    private void setAllDataById(String id, RunningInfo info) {
+        if (!TextUtils.isEmpty(id)) {
+            List<RunningInfo> infoList = QueryUtil.find("runId = ?", id);
+            info = infoList.get(0);
+        } else if (info == null) {
+            return;
+        }
 
         if (info == null) return;
         disText.setText(Utility.formatDecimal(info.getDistance() / 1000.0, 2));

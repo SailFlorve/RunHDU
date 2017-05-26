@@ -1,14 +1,24 @@
 package com.cxsj.runhdu.model.gson;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Sail on 2017/5/22 0022.
  * 好友实体类
  */
 
 public class FriendInfo {
+    @SerializedName("UserName")
     private String username;
+
+    @SerializedName("TodayTimes")
     private int numToday;
+
+    @SerializedName("SumTimes")
     private int numAll;
+
+    @SerializedName("IsOnLine")
+    private boolean isOnline;
 
     public String getUsername() {
         return username;
@@ -32,5 +42,13 @@ public class FriendInfo {
 
     public void setNumAll(int numAll) {
         this.numAll = numAll;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean online) {
+        isOnline = online;
     }
 }

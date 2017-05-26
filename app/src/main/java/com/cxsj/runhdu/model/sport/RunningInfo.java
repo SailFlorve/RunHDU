@@ -4,7 +4,9 @@ import com.cxsj.runhdu.utils.ZipUtil;
 
 import org.litepal.crud.DataSupport;
 
-public class RunningInfo extends DataSupport {
+import java.io.Serializable;
+
+public class RunningInfo extends DataSupport implements Serializable {
 
 
     private String runId;

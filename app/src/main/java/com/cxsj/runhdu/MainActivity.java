@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -20,11 +21,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -34,6 +37,8 @@ import com.cxsj.runhdu.constant.Types;
 import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.controller.DataPresentUtil;
 import com.cxsj.runhdu.controller.DataSyncUtil;
+import com.cxsj.runhdu.model.gson.Running;
+import com.cxsj.runhdu.model.gson.UpdateInfo;
 import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.utils.ActivityManager;
 import com.cxsj.runhdu.utils.HttpUtil;
@@ -42,10 +47,10 @@ import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.utils.ScreenShot;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.GradeProgressView;
-import com.google.gson.Gson;
 
 import org.litepal.LitePal;
 import org.litepal.LitePalDB;
+import org.litepal.crud.DataSupport;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,6 +101,7 @@ public class MainActivity extends BaseActivity
 
     private int chartColumnNum;//图表显示的列数
     private float targetSteps;
+    private UpdateInfo mUpdateInfo = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,7 +110,7 @@ public class MainActivity extends BaseActivity
         if (TextUtils.isEmpty(username)) exitLogin();
 
         initView();
-        checkUpdate(this);
+        checkUpdate();
 
 
         //开启服务
@@ -175,6 +181,17 @@ public class MainActivity extends BaseActivity
     @Override
     protected void onDestroy() {
         closeProgressDialog();
+        HttpUtil.load(URLs.OFF_LINE)
+                .addParam("UserName", username)
+                .post(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                    }
+                });
 //        unbindService(conn);
 //        if (receiver != null) {
 //            unregisterReceiver(receiver);
@@ -294,7 +311,7 @@ public class MainActivity extends BaseActivity
             toActivity(this, WelcomeActivity.class);
         }
         //设置头像
-        String fileName = (String) prefs.get("profile_path", null);
+        String fileName = (String) prefs.get(username + "_profile_path", null);
         if (!TextUtils.isEmpty(fileName)) {
             Log.d(TAG, "加载本地图片");
             Uri uri = Uri.fromFile(new File(fileName));
@@ -306,7 +323,7 @@ public class MainActivity extends BaseActivity
                 @Override
                 public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                     String fileDir = ImageSaveUtil.saveToSDCard(MainActivity.this, resource, "profile.jpg");
-                    prefs.put("profile_path", fileDir);
+                    prefs.put(username + "_profile_path", fileDir);
                 }
             });
         }
@@ -367,6 +384,8 @@ public class MainActivity extends BaseActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (mUpdateInfo != null) {
+            showUpdateDialog();
         } else {
             super.onBackPressed();
         }
@@ -379,7 +398,7 @@ public class MainActivity extends BaseActivity
             case R.id.sport_status:
                 break;
             case R.id.quit:
-                finish();
+                android.os.Process.killProcess(Process.myPid());
                 break;
             case R.id.lab:
                 toActivity(this, TestActivity.class);
@@ -534,7 +553,7 @@ public class MainActivity extends BaseActivity
                     profileImage.setImageBitmap(bitmap);
                     String saveDir = ImageSaveUtil.saveToSDCard(
                             this, bitmap, "profile.jpg");
-                    prefs.put("profile_path", saveDir);
+                    prefs.put(username + "_profile_path", saveDir);
                     ImageSaveUtil.saveToServer(username, bitmap);
                 }
                 break;
@@ -555,18 +574,25 @@ public class MainActivity extends BaseActivity
     public void syncFromServer() {
         showProgressDialog("正在从服务器同步...");
 
-        DataSyncUtil.syncFromServer(username, new DataSyncUtil.SyncDataCallback() {
+        DataSyncUtil.downloadFromServer(username, new DataSyncUtil.DownloadRunDataCallback() {
             @Override
-            public void onSyncFailure(String msg) {
+            public void onFailure(String msg) {
                 closeProgressDialog();
                 showSnackBar(msg);
             }
 
             @Override
-            public void onSyncSuccess() {
+            public void onSuccess(Running running) {
                 closeProgressDialog();
-                showSnackBar("同步成功。");
-                setAllData();
+                if (running == null) {
+                    showSnackBar("同步失败。");
+                } else {
+                    showSnackBar("同步成功。");
+                    DataSupport.deleteAll(RunningInfo.class);
+                    List<RunningInfo> serverInfo = running.dataList;
+                    DataSupport.saveAll(serverInfo);
+                    setAllData();
+                }
             }
         });
     }
@@ -587,6 +613,49 @@ public class MainActivity extends BaseActivity
                 showSnackBar("上传成功。");
             }
         });
+    }
+
+    private void checkUpdate() {
+        DataSyncUtil.checkUpdate(this, new DataSyncUtil.UpdateCheckCallback() {
+            @Override
+            public void onSuccess(UpdateInfo updateInfo) {
+                String ignoreVersion = (String) prefs.get("ignore_version", "");
+                if (!updateInfo.getLatestVersion().equals(ignoreVersion)) {
+                    mUpdateInfo = updateInfo;
+                }
+            }
+
+            @Override
+            public void onFailure(String msg) {
+            }
+        });
+    }
+
+    private void showUpdateDialog() {
+        if (mUpdateInfo == null) return;
+        String dialogStr = "退出前，不如更新一下？\n\n" +
+                "当前版本：" +
+                mUpdateInfo.getCurrentVersion() +
+                "\n最新版本：" +
+                mUpdateInfo.getLatestVersion() +
+                "\n\n" +
+                mUpdateInfo.getStatement();
+        new AlertDialog.Builder(this)
+                .setTitle("发现新版本")
+                .setMessage(dialogStr)
+                .setPositiveButton("立即升级", (dialog, which) -> {
+                    Uri uri = Uri.parse(URLs.DOWNLOAD);
+                    Intent it = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(it);
+                })
+                .setNegativeButton("立即退出", (dialog, which) -> finish())
+                .setNeutralButton("忽略此版本", (dialog, which) ->
+                        prefs.put("ignore_version", mUpdateInfo.getLatestVersion()))
+                .setOnCancelListener(dialog -> {
+
+                })
+                .create().show();
+        mUpdateInfo = null;
     }
 
 //    private void registerSocialReceiver() {

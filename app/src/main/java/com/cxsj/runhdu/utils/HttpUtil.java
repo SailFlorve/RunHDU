@@ -1,5 +1,6 @@
 package com.cxsj.runhdu.utils;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;

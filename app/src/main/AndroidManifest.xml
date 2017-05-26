@@ -85,7 +85,6 @@
 
         <activity android:name=".TestActivity" />
         <activity android:name=".FeedbackActivity" />
-
         <activity
             android:name=".HelpActivity"
             android:screenOrientation="portrait" />
@@ -97,9 +96,12 @@
 
         <activity
             android:name=".FriendActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity android:name=".FriendApplyBoxActivity" />
+        <activity
+            android:name=".FriendDetailsActivity"
+            android:theme="@style/FriendDetailsActivityTheme" />
     </application>
 
 </manifest>

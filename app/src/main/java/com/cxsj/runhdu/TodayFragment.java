@@ -19,7 +19,6 @@ import com.cxsj.runhdu.model.sport.RunningInfoSection;
 import com.cxsj.runhdu.utils.QueryUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class TodayFragment extends Fragment {
@@ -74,7 +73,8 @@ public class TodayFragment extends Fragment {
     }
 
     public void setListData() {
-        DataPresentUtil.setAllRunData(sectionList -> {
+        List<RunningInfo> list = QueryUtil.findAllOrder();
+        DataPresentUtil.getSectionList(list, sectionList -> {
             if (infoList == null) {
                 infoList = new ArrayList<>();
             } else {

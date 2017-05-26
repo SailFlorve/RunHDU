@@ -45,7 +45,8 @@ public class SettingsActivity extends BaseActivity {
             super.onCreate(savedInstanceState);
             // 加载xml资源文件
             addPreferencesFromResource(R.xml.preferences);
-            prefs = new Prefs(getActivity());
+            SettingsActivity activity = (SettingsActivity) getActivity();
+            prefs = new Prefs(activity, activity.username);
             exitLogin = findPreference("exit_login");
             clearData = findPreference("clear_data");
             exitLogin.setOnPreferenceClickListener(this);

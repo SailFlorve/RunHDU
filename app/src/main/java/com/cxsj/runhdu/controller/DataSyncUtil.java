@@ -3,20 +3,18 @@ package com.cxsj.runhdu.controller;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
-import com.cxsj.runhdu.MainActivity;
 import com.cxsj.runhdu.R;
 import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.model.gson.Running;
+import com.cxsj.runhdu.model.gson.UpdateInfo;
 import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.utils.HttpUtil;
 import com.cxsj.runhdu.utils.QueryUtil;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
@@ -29,7 +27,7 @@ import okhttp3.Response;
 /**
  * Created by Sail on 2017/5/10 0010.
  * 同步数据相关的类
- * 包括：从服务器下载数据、上传数据到服务器、检查更新、删除数据等
+ * 包括：从服务器下载数据、上传数据到服务器、检查更新、删除数据、好友等
  */
 
 public class DataSyncUtil {
@@ -46,6 +44,12 @@ public class DataSyncUtil {
         void onCheckSuccess(int serverTimes, int localTimes);
     }
 
+    public interface DownloadRunDataCallback {
+        void onFailure(String msg);
+
+        void onSuccess(Running running);
+    }
+
     /**
      * 同步数据回调
      */
@@ -59,7 +63,16 @@ public class DataSyncUtil {
      * 检查更新回调
      */
     public interface UpdateCheckCallback {
-        void onUpdate(String currentVersion, String latestVersion, String updateStatement);
+        void onSuccess(UpdateInfo updateInfo);
+
+        void onFailure(String msg);
+    }
+
+    /**
+     * 获取好友列表和申请列表回调
+     */
+    public interface FriendCallback {
+        void onSuccess(String json);
 
         void onFailure(String msg);
     }
@@ -96,28 +109,27 @@ public class DataSyncUtil {
     }
 
     /**
-     * 从服务器同步数据
+     * 从服务器同步数据并保存到本地的数据库
      *
      * @param username
      * @param callback
      */
-    public static void syncFromServer(String username, SyncDataCallback callback) {
+    public static void downloadFromServer(String username, DownloadRunDataCallback callback) {
         HttpUtil.load(URLs.GET_RUN_INFO)
                 .addParam("userName", username)
                 .post(new Callback() {
                     @Override
                     public void onFailure(Call call, IOException e) {
-                        mHandler.post(() -> callback.onSyncFailure("无法同步，网络连接失败。"));
+                        mHandler.post(() -> callback.onFailure("网络连接失败。"));
                     }
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         String result = response.body().string();
                         Running running = new Gson().fromJson(result, Running.class);
-                        DataSupport.deleteAll(RunningInfo.class);
-                        List<RunningInfo> serverInfo = running.dataList;
-                        DataSupport.saveAll(serverInfo);
-                        mHandler.post(callback::onSyncSuccess);
+                        mHandler.post(() -> {
+                            callback.onSuccess(running);
+                        });
                     }
                 });
     }
@@ -264,7 +276,6 @@ public class DataSyncUtil {
     /**
      * 检查更新
      *
-     * @param context
      * @param callback
      */
     public static void checkUpdate(Context context, UpdateCheckCallback callback) {
@@ -281,38 +292,44 @@ public class DataSyncUtil {
 
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
-                        JSONObject updateInfo = null;
-                        String isUpdate;
-                        String latestVersion = null;
-                        String statement = null;
+                        UpdateInfo updateInfo;
                         try {
-                            updateInfo = new JSONObject(response.body().string());
-                            isUpdate = updateInfo.getString("isUpdate");
-                            if (!updateInfo.isNull("latestVersion")) {
-                                latestVersion = updateInfo.getString("latestVersion");
-                            }
-                            if (!updateInfo.isNull("statement")) {
-                                statement = updateInfo.getString("statement");
-                            }
-                        } catch (JSONException e) {
+                            updateInfo = new Gson().fromJson(response.body().string(), UpdateInfo.class);
+                            updateInfo.setCurrentVersion(currentVersion);
+                        } catch (JsonSyntaxException e) {
                             e.printStackTrace();
-                            callback.onFailure("JSON格式错误。");
+                            callback.onFailure("服务器错误。");
                             return;
                         }
 
-                        switch (isUpdate) {
-                            case "true":
-                                String finalLatestVersion = latestVersion;
-                                String finalStatement = statement;
-                                mHandler.post(() -> callback.onUpdate(currentVersion, finalLatestVersion, finalStatement));
-                                break;
-                            case "false":
-                                mHandler.post(() -> callback.onFailure("没有发现新版本。"));
-                                break;
-                            default:
-                                mHandler.post(() -> callback.onFailure("服务器异常。"));
-                                break;
+                        if (updateInfo != null) {
+                            mHandler.post(() -> callback.onSuccess(updateInfo));
+                        } else {
+                            mHandler.post(() -> callback.onFailure("检查更新异常。"));
                         }
+                    }
+                });
+    }
+
+
+    /**
+     * 获取好友列表
+     *
+     * @return
+     */
+    public static void getFriend(String username, FriendCallback callback) {
+        HttpUtil.load(URLs.GET_FRIEND)
+                .addParam("UserName", username)
+                .post(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        mHandler.post(() -> callback.onFailure("网络连接失败。"));
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        String jsonStr = response.body().string();
+                        mHandler.post(() -> callback.onSuccess(jsonStr));
                     }
                 });
     }

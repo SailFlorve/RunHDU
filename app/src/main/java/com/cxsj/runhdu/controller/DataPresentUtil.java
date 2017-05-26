@@ -39,7 +39,7 @@ public class DataPresentUtil {
         void onDataFound(ColumnChartData data);
     }
 
-    public interface AllDataCallback {
+    public interface GetSectionListCallback {
         void onDataFound(List<RunningInfoSection> infoList);
     }
 
@@ -138,9 +138,13 @@ public class DataPresentUtil {
         callback.onDataFound(data);
     }
 
-    public static void setAllRunData(AllDataCallback callback) {
+    /**
+     * 从数据库查找并回调List<RunningInfoSection>
+     *
+     * @param callback
+     */
+    public static void getSectionList(List<RunningInfo> list, GetSectionListCallback callback) {
         List<RunningInfoSection> runningInfoSectionList = new ArrayList<>();
-        List<RunningInfo> list = QueryUtil.findAllOrder();
         if (list.isEmpty()) {
             callback.onDataFound(null);
             return;

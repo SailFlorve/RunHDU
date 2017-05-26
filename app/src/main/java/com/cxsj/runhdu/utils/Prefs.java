@@ -11,11 +11,11 @@ import android.preference.PreferenceManager;
 
 public class Prefs {
 
-    private static SharedPreferences prefs;
-    private static SharedPreferences.Editor editor;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor editor;
 
-    public Prefs(Context context) {
-        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+    public Prefs(Context context, String fileName) {
+        prefs = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
         editor = prefs.edit();
     }
 

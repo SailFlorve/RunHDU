@@ -48,7 +48,7 @@ public class BaseActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityManager.addActivity(this);
-        prefs = new Prefs(this);
+        prefs = new Prefs(this, username);
         username = (String) prefs.get("username", "");
         isSyncOn = (boolean) prefs.get("sync_data", true);
 
@@ -74,49 +74,6 @@ public class BaseActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    protected void checkUpdate(Context context) {
-        DataSyncUtil.checkUpdate(context, new DataSyncUtil.UpdateCheckCallback() {
-            @Override
-            public void onUpdate(String currentVersion, String latestVersion, String updateStatement) {
-                closeProgressDialog();
-                String ignoreVersion = (String) prefs.get("ignore_version", "");
-
-                if (context instanceof MainActivity
-                        && ignoreVersion.equals(currentVersion)) return;
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(context)
-                        .setTitle("版本更新")
-                        .setMessage("当前版本："
-                                + getResources().getString(R.string.current_version)
-                                + "\n最新版本："
-                                + latestVersion
-                                + "\n\n"
-                                + updateStatement)
-                        .setPositiveButton("立即升级", (dialog, which) -> {
-                            Uri uri = Uri.parse(URLs.DOWNLOAD);
-                            Intent it = new Intent(Intent.ACTION_VIEW, uri);
-                            startActivity(it);
-                        })
-                        .setNegativeButton("以后再说", null);
-                if (context instanceof MainActivity) {
-                    builder.setNeutralButton("忽略此版本",
-                            (dialog, which) -> prefs.put("ignore_version", latestVersion));
-                }
-                builder.create().show();
-            }
-
-            @Override
-            public void onFailure(String msg) {
-                closeProgressDialog();
-                if (context instanceof AboutActivity) {
-                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });
-    }
-
 
     protected void showComingSoonDialog() {
         new AlertDialog.Builder(this)

@@ -77,7 +77,7 @@ public class InputCheckHelper {
         }
 
         if (username.length() < 3 || username.length() > 16) {
-            return "用户名长度为3-8个字符。";
+            return "用户名长度为3-16个字符。";
         }
 
         for (int i = 0; i < username.length(); i++) {

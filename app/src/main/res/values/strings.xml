@@ -15,6 +15,7 @@
     <string name="title_activity_settings">设置</string>
     <string name="sunny_run_tips">Tips: 绑定的学号可以随时更换。你可以随时在右上方菜单的关于界面中检查更新。</string>
     <string name="no_friends">没有好友！赶快去添加好友吧。</string>
+    <string name="no_friend_apply">还没有好友申请哦，快去寻找朋友吧！</string>
 
     <string-array name="chart_num">
         <item>7天</item>

@@ -24,9 +24,11 @@
         <item name="android:textSize">18sp</item>
     </style>
 
-    <style name="RunningActivityTheme" parent="AppTheme"/>
+    <style name="RunningActivityTheme" parent="AppTheme" />
 
-    <style name="WelcomeActivityTheme" parent="AppTheme">
+    <style name="WelcomeActivityTheme" parent="AppTheme" />
+
+    <style name="FriendDetailsActivityTheme" parent="AppTheme">
+
     </style>
-
 </resources>
