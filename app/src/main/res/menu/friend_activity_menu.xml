@@ -8,11 +8,10 @@
         android:title="刷新"
         app:showAsAction="ifRoom" />
 
-        <item
-                android:id="@+id/friend_box"
-                android:icon="@drawable/ic_sms"
-                android:title="好友申请"
-                app:showAsAction="ifRoom" />
-
+    <item
+        android:id="@+id/friend_box"
+        android:icon="@drawable/ic_sms"
+        android:title="好友申请"
+        app:showAsAction="ifRoom" />
 
 </menu>

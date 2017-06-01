@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * Created by chjyp on 2017/5/5.
+ * 帮助列表的Adapter
  */
 
 

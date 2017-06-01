@@ -11,7 +11,7 @@ import okhttp3.Request;
 
 /**
  * Created by Sail on 2017/4/2 0002.
- * OkHttp
+ * OkHttp操作的封装类
  */
 
 public class HttpUtil {

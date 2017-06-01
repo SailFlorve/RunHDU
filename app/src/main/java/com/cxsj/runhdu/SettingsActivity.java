@@ -9,6 +9,9 @@ import android.widget.Toast;
 import com.cxsj.runhdu.controller.DataSyncUtil;
 import com.cxsj.runhdu.utils.Prefs;
 
+/**
+ * 设置Activity
+ */
 public class SettingsActivity extends BaseActivity {
 
     @Override
@@ -46,7 +49,7 @@ public class SettingsActivity extends BaseActivity {
             // 加载xml资源文件
             addPreferencesFromResource(R.xml.preferences);
             SettingsActivity activity = (SettingsActivity) getActivity();
-            prefs = new Prefs(activity, activity.username);
+            prefs = new Prefs(activity);
             exitLogin = findPreference("exit_login");
             clearData = findPreference("clear_data");
             exitLogin.setOnPreferenceClickListener(this);

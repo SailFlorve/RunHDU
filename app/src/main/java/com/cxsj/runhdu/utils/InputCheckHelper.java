@@ -4,7 +4,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 /**
- * 检查登录注册时输入正确性的封装类
+ * 检查登录注册时输入正确性的工具类
  */
 
 public class InputCheckHelper {

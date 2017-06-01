@@ -17,6 +17,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.cxsj.runhdu.adapters.FriendRecyclerViewAdapter;
 import com.cxsj.runhdu.constant.URLs;
@@ -26,7 +28,6 @@ import com.cxsj.runhdu.model.gson.MyFriend;
 import com.cxsj.runhdu.model.gson.Status;
 import com.cxsj.runhdu.utils.HttpUtil;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +37,9 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+/**
+ * 好友
+ */
 public class FriendActivity extends BaseActivity {
     private RecyclerView friendListView;
     private FriendRecyclerViewAdapter adapter;
@@ -43,6 +47,8 @@ public class FriendActivity extends BaseActivity {
     private SwipeRefreshLayout refreshLayout;
 
     private LinearLayout noFriendTipLayout;
+    private RelativeLayout haveApplyLayout;
+    private TextView applyText;
 
     private List<FriendInfo> friendInfoList = new ArrayList<>();
 
@@ -89,6 +95,8 @@ public class FriendActivity extends BaseActivity {
         addFriendButton = (FloatingActionButton) findViewById(R.id.add_friend);
         refreshLayout = (SwipeRefreshLayout) findViewById(R.id.friend_refresh_layout);
         noFriendTipLayout = (LinearLayout) findViewById(R.id.no_friend_tip_layout);
+        haveApplyLayout = (RelativeLayout) findViewById(R.id.have_apply_layout);
+        applyText = (TextView) findViewById(R.id.have_apply_text);
         refreshLayout.setColorSchemeColors(ContextCompat.getColor(this, R.color.colorAccent));
 
         adapter = new FriendRecyclerViewAdapter(
@@ -97,6 +105,9 @@ public class FriendActivity extends BaseActivity {
         GridLayoutManager manager = new GridLayoutManager(this, 1);
         friendListView.setAdapter(adapter);
         friendListView.setLayoutManager(manager);
+
+        haveApplyLayout.setOnClickListener(v ->
+                toActivity(FriendActivity.this, FriendApplyBoxActivity.class));
 
         adapter.setOnItemClickListener((adapter, view, position) -> {
             Intent intent = new Intent(FriendActivity.this, FriendDetailsActivity.class);
@@ -122,11 +133,13 @@ public class FriendActivity extends BaseActivity {
                         TextInputLayout inputLayout = (TextInputLayout)
                                 viewDialog.findViewById(R.id.friend_username_input_layout);
                         String usernameInput = inputLayout
-                                .getEditText().getText().toString();
+                                .getEditText().getText().toString().trim();
                         if (username.equals(usernameInput)) {
-                            showSnackBar("不能添加自己哦。");
+                            showSnackBar("不能添加自己哦。", "重试", v1 ->
+                                    addFriendButton.callOnClick());
+                        } else {
+                            applyFriend(usernameInput);
                         }
-                        applyFriend(usernameInput);
                     })
                     .setNegativeButton("取消", null)
                     .create().show();
@@ -135,66 +148,60 @@ public class FriendActivity extends BaseActivity {
         refreshLayout.setOnRefreshListener(this::getFriendData);
     }
 
+    /**
+     * 从缓存里加载好友列表
+     */
     private void initFriendData() {
         String friendJson = (String) prefs.get(username + "_friend_json", "");
         if (!TextUtils.isEmpty(friendJson)) {
             MyFriend myFriend = new Gson().fromJson(friendJson, MyFriend.class);
-            setFriendList(myFriend);
+            setFriendView(myFriend);
         }
     }
 
+    /**
+     * 从服务器获取最新好友列表
+     */
     private void getFriendData() {
         refreshLayout.setRefreshing(true);
         DataSyncUtil.getFriend(username, new DataSyncUtil.FriendCallback() {
             @Override
-            public void onSuccess(String json) {
+            public void onSuccess(String json, MyFriend myFriend) {
                 refreshLayout.setRefreshing(false);
-                MyFriend myFriend;
-                try {
-                    myFriend = new Gson().fromJson(json, MyFriend.class);
-                } catch (JsonSyntaxException e) {
-                    showSnackBar("返回JSON格式错误。");
-                    return;
-                }
-                if (myFriend == null) {
-                    showSnackBar("对象初始化失败。");
-                    return;
-                }
                 prefs.put(username + "_friend_json", json);
-                setFriendList(myFriend);
+                setFriendView(myFriend);
                 if (!myFriend.getApplyList().isEmpty()) {
-                    new AlertDialog.Builder(FriendActivity.this)
-                            .setTitle("好友请求")
-                            .setMessage(String.format("你有%d条好友请求，快去查看一下吧！",
-                                    myFriend.getApplyList().size()))
-                            .setPositiveButton("去查看", (dialog, which) ->
-                                    toActivity(FriendActivity.this, FriendApplyBoxActivity.class))
-                            .setNegativeButton("以后再说", null)
-                            .create().show();
+                    haveApplyLayout.setVisibility(View.VISIBLE);
+                    applyText.setText(String.format("你有%d条好友请求。",
+                            myFriend.getApplyList().size()));
+                } else {
+                    haveApplyLayout.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onFailure(String msg) {
                 refreshLayout.setRefreshing(false);
-                showSnackBar("初始化好友列表失败。", "重试", v -> getFriendData());
+                showSnackBar(msg, "重试", v -> getFriendData());
             }
         });
     }
 
-    //TODO:检测最新的json和现有的json里，好友的变化and申请的变化；
-    private void setFriendList(MyFriend myFriend) {
+    /**
+     * 设置好友列表
+     * @param myFriend
+     */
+    private void setFriendView(MyFriend myFriend) {
+        friendInfoList.clear();
         if (myFriend.getFriendList().isEmpty()) {
             noFriendTipLayout.setVisibility(View.VISIBLE);
         } else {
             noFriendTipLayout.setVisibility(View.GONE);
-            friendInfoList.clear();
             friendInfoList.addAll(myFriend.getFriendList());
-            adapter.notifyDataSetChanged();
         }
+        adapter.notifyDataSetChanged();
     }
 
-    //TODO:如果对方在请求列表里，给予提示！
     private void applyFriend(String friendName) {
         if (TextUtils.isEmpty(friendName)) {
             showSnackBar("好友用户名为空！", "重试", v ->
@@ -223,7 +230,8 @@ public class FriendActivity extends BaseActivity {
                             if (status.getResult()) {
                                 showSnackBar("请求发送成功。");
                             } else {
-                                showSnackBar(status.getMessage());
+                                showSnackBar(status.getMessage(), "重试", v ->
+                                        addFriendButton.callOnClick());
                             }
                         });
                     }

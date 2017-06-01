@@ -2,12 +2,10 @@ package com.cxsj.runhdu;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -21,13 +19,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.StringBuilderPrinter;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
@@ -87,8 +83,8 @@ public class MainActivity extends BaseActivity
     private DrawerLayout drawerLayout;
     private FloatingActionButton fab;
     private ColumnChartView columnChart;
-    private TodayFragment todayFragment;
-    private HistoryFragment historyFragment;
+    private RunListFragment runListFragment;
+    private StatisticsFragment statisticsFragment;
     private RelativeLayout progressViewLayout;
     private RelativeLayout chartView;
 
@@ -109,11 +105,11 @@ public class MainActivity extends BaseActivity
         setContentView(R.layout.activity_main);
         if (TextUtils.isEmpty(username)) exitLogin();
 
+        //初始化view
         initView();
+        //检查更新
         checkUpdate();
 
-
-        //开启服务
 //        bindService(new Intent(this, SocialService.class), conn, BIND_AUTO_CREATE);
 //        registerSocialReceiver();
 
@@ -158,8 +154,8 @@ public class MainActivity extends BaseActivity
                     dis += info.getDistance();
                 }
                 dataDescription.setText(
-                        String.format("%s年%s月%s日\n跑步%d次 | %d步 | %d米",
-                                year, month, day, runningInfoList.size(), (int) value.getValue(), dis));
+                        String.format("%s月%s日 跑步%d次 | %d步 | %d米",
+                                month, day, runningInfoList.size(), (int) value.getValue(), dis));
             }
 
             @Override
@@ -173,8 +169,11 @@ public class MainActivity extends BaseActivity
     protected void onResume() {
         Log.d(TAG, "onResume: 已经调用");
         super.onResume();
+        //更新设置选项
         initSettings();
+        //设置ProgressView和柱状图
         setMainData();
+        //检查服务器数据是否与本地一致
         checkServerData();
     }
 
@@ -202,20 +201,15 @@ public class MainActivity extends BaseActivity
     //检查网络数据
     private void checkServerData() {
         if (!isSyncOn) return;
-        showProgressDialog("正在获取服务器信息...");
         //获取服务器端的跑步次数
-        Log.d("次数", username);
-
         DataSyncUtil.checkServerData(username, new DataSyncUtil.CheckDataCallback() {
             @Override
             public void onCheckFailure(String msg) {
-                closeProgressDialog();
                 showSnackBar(msg);
             }
 
             @Override
             public void onCheckSuccess(int serverTimes, int localTimes) {
-                closeProgressDialog();
                 if (serverTimes != localTimes) {
                     new AlertDialog.Builder(MainActivity.this)
                             .setTitle("同步数据")
@@ -282,11 +276,11 @@ public class MainActivity extends BaseActivity
         //初始化TabLayout
         mTitle.add("跑步详情");
         mTitle.add("数据统计");
-        mFragment.add(new TodayFragment());
-        mFragment.add(new HistoryFragment());
+        mFragment.add(new RunListFragment());
+        mFragment.add(new StatisticsFragment());
         MyFragmentPagerAdapter adapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), mTitle, mFragment);
-        todayFragment = (TodayFragment) adapter.getItem(0);
-        historyFragment = (HistoryFragment) adapter.getItem(1);
+        runListFragment = (RunListFragment) adapter.getItem(0);
+        statisticsFragment = (StatisticsFragment) adapter.getItem(1);
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         //初始化ColumnChart
@@ -322,6 +316,7 @@ public class MainActivity extends BaseActivity
                     .asBitmap().error(R.drawable.photo).into(new SimpleTarget<Bitmap>() {
                 @Override
                 public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                    profileImage.setImageBitmap(resource);
                     String fileDir = ImageSaveUtil.saveToSDCard(MainActivity.this, resource, "profile.jpg");
                     prefs.put(username + "_profile_path", fileDir);
                 }
@@ -335,11 +330,10 @@ public class MainActivity extends BaseActivity
         }
 
         chartColumnNum = Integer.parseInt(
-                (String) prefs.get("chart_column_num", "30"));
+                (String) defaultPrefs.get("chart_column_num", "30"));
         targetSteps = Float.parseFloat(
-                (String) prefs.get("target_steps", "5000")
+                (String) defaultPrefs.get("target_steps", "5000")
         );
-        isSyncOn = (boolean) prefs.get("sync_data", true);
 
         dataDescription.setText("点击柱形图，查看详细信息");
     }
@@ -351,8 +345,8 @@ public class MainActivity extends BaseActivity
 
     private void setAllData() {
         setMainData();
-        todayFragment.setListData();
-        historyFragment.updateData();
+        runListFragment.setListData();
+        statisticsFragment.updateData();
     }
 
     @SuppressLint("SetTextI18n")
@@ -384,10 +378,8 @@ public class MainActivity extends BaseActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else if (mUpdateInfo != null) {
-            showUpdateDialog();
         } else {
-            super.onBackPressed();
+            showUpdateDialogBeforeExit();
         }
     }
 
@@ -398,10 +390,7 @@ public class MainActivity extends BaseActivity
             case R.id.sport_status:
                 break;
             case R.id.quit:
-                android.os.Process.killProcess(Process.myPid());
-                break;
-            case R.id.lab:
-                toActivity(this, TestActivity.class);
+                showUpdateDialogBeforeExit();
                 break;
             case R.id.friend:
                 toActivity(this, FriendActivity.class);
@@ -461,6 +450,7 @@ public class MainActivity extends BaseActivity
 
     //开启跑步Activity，此方法包括一些跑步条件检查
     public void startRunActivity() {
+        //检查网络
         if (isSyncOn) {
             if (!Utility.isNetworkAvailable(getApplicationContext())) {
                 Snackbar.make(collapsingToolbarLayout, R.string.internet_not_connect, Snackbar.LENGTH_LONG)
@@ -470,8 +460,10 @@ public class MainActivity extends BaseActivity
             }
         }
         toActivity(MainActivity.this, RunningActivity.class);
+        //...
     }
 
+    //检查跑步权限
     private void checkRunPermission() {
         requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.READ_PHONE_STATE,
@@ -509,12 +501,14 @@ public class MainActivity extends BaseActivity
         });
     }
 
+    //开始选择照片
     private void choosePhoto(int type) {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");//相片类型
         startActivityForResult(intent, type);
     }
 
+    //开启裁剪照片Activity
     public void startPhotoZoom(Uri uri) {
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
@@ -619,9 +613,11 @@ public class MainActivity extends BaseActivity
         DataSyncUtil.checkUpdate(this, new DataSyncUtil.UpdateCheckCallback() {
             @Override
             public void onSuccess(UpdateInfo updateInfo) {
-                String ignoreVersion = (String) prefs.get("ignore_version", "");
-                if (!updateInfo.getLatestVersion().equals(ignoreVersion)) {
-                    mUpdateInfo = updateInfo;
+                if (updateInfo.isUpdate()) {
+                    String ignoreVersion = (String) prefs.get("ignore_version", "");
+                    if (!updateInfo.getLatestVersion().equals(ignoreVersion)) {
+                        mUpdateInfo = updateInfo;
+                    }
                 }
             }
 
@@ -631,9 +627,13 @@ public class MainActivity extends BaseActivity
         });
     }
 
-    private void showUpdateDialog() {
-        if (mUpdateInfo == null) return;
-        String dialogStr = "退出前，不如更新一下？\n\n" +
+    //退出前，如果有更新，给予提示。
+    private void showUpdateDialogBeforeExit() {
+        if (mUpdateInfo == null) {
+            finish();
+            return;
+        }
+        String dialogStr = "若不升级，请按返回键直接退出。\n\n" +
                 "当前版本：" +
                 mUpdateInfo.getCurrentVersion() +
                 "\n最新版本：" +
@@ -641,21 +641,22 @@ public class MainActivity extends BaseActivity
                 "\n\n" +
                 mUpdateInfo.getStatement();
         new AlertDialog.Builder(this)
-                .setTitle("发现新版本")
+                .setTitle("退出前，升级一下？")
                 .setMessage(dialogStr)
                 .setPositiveButton("立即升级", (dialog, which) -> {
-                    Uri uri = Uri.parse(URLs.DOWNLOAD);
-                    Intent it = new Intent(Intent.ACTION_VIEW, uri);
+                    Intent it = new Intent(Intent.ACTION_VIEW,
+                            Utility.getDownloadUri(mUpdateInfo.getLatestVersion()));
                     startActivity(it);
+                    mUpdateInfo = null;
+                })
+                .setNeutralButton("不提示此版本", (dialog, which) -> {
+                    prefs.put("ignore_version", mUpdateInfo.getLatestVersion());
+                    showSnackBar("不再提示此版本，但是仍然可以手动检测升级。");
+                    mUpdateInfo = null;
                 })
                 .setNegativeButton("立即退出", (dialog, which) -> finish())
-                .setNeutralButton("忽略此版本", (dialog, which) ->
-                        prefs.put("ignore_version", mUpdateInfo.getLatestVersion()))
-                .setOnCancelListener(dialog -> {
-
-                })
+                .setOnCancelListener(dialog -> finish())
                 .create().show();
-        mUpdateInfo = null;
     }
 
 //    private void registerSocialReceiver() {

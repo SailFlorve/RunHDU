@@ -25,10 +25,22 @@
         android:layout_height="0dp"
         android:layout_weight="5">
 
+
         <com.baidu.mapapi.map.MapView
             android:id="@+id/map_view_details"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
+
+
+        <TextView
+            android:id="@+id/no_trail_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#b4000000"
+            android:gravity="center"
+            android:textColor="#b9ffffff"
+            android:textSize="45sp"
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"

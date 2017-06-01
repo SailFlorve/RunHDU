@@ -8,17 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cxsj.runhdu.controller.DataPresentUtil;
-import com.cxsj.runhdu.model.sport.RunningInfo;
-import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.NumberView;
 
-import org.litepal.crud.DataSupport;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class HistoryFragment extends Fragment {
+/**
+ * 数据统计的Fragment
+ */
+public class StatisticsFragment extends Fragment {
     private NumberView allSteps;
     private NumberView allEnergy;
     private NumberView allDis;
@@ -56,6 +52,7 @@ public class HistoryFragment extends Fragment {
         updateData();
     }
 
+    //设置统计数据
     public void updateData() {
         DataPresentUtil.setStatisticsData((allStepsNum, allEnergyNum, allDisNum,
                                            averStepsNum, averEnergyNum, averDisNum,
@@ -72,6 +69,7 @@ public class HistoryFragment extends Fragment {
         });
     }
 
+    //处理大数据，如果超过10000，则显示万
     private String handleBigInt(int num) {
         if (num > 10000) {
             return Utility.formatDecimal(num / 10000.0, 2) + "万";

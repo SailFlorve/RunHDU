@@ -2,6 +2,7 @@ package com.cxsj.runhdu.model;
 
 /**
  * Created by chjyp on 2017/5/5.
+ * 帮助列表实体类
  */
 
 public class HelpItem {

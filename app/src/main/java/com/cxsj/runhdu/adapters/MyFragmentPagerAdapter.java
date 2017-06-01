@@ -7,6 +7,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import java.util.List;
 
 
+/**
+ * MainActivity中TabLayout的Adapter
+ */
 public class MyFragmentPagerAdapter extends FragmentPagerAdapter {
     private List<String> title;
     private List<Fragment> views;

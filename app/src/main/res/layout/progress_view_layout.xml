@@ -4,23 +4,24 @@
     android:id="@+id/progress_view_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_centerInParent="true"
-    android:layout_marginTop="10dp">
+    android:layout_marginTop="50dp"
+    android:layout_marginLeft="60dp"
+    android:layout_marginRight="60dp">
 
     <ImageView
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_run_main"
-        android:alpha="0.6"/>
+        android:alpha="0.6"
+        android:src="@drawable/ic_run_main" />
 
     <com.cxsj.runhdu.view.GradeProgressView
+        android:layout_marginTop="20dp"
         android:id="@+id/circle_progress"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_gravity="center"
-        android:layout_marginTop="15dp" />
+        android:layout_gravity="center" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,7 +43,6 @@
             android:id="@+id/progress_step_num"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
             android:text="0"
             android:textColor="#fff"
             android:textSize="38sp" />

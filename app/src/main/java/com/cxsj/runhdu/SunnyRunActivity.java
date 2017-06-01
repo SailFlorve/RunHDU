@@ -36,6 +36,9 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+/**
+ * 阳光长跑查询activity
+ */
 public class SunnyRunActivity extends BaseActivity {
 
     private RecyclerView sunnyRunRecyclerView;

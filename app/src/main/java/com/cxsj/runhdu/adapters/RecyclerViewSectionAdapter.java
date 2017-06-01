@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * Created by Sail on 2017/5/3 0003.
- * RecyclerView的带分组实体类
+ * RecyclerView的带Head实体类，用于展示跑步列表。
  */
 
 public class RecyclerViewSectionAdapter extends BaseSectionQuickAdapter<RunningInfoSection, BaseViewHolder> {

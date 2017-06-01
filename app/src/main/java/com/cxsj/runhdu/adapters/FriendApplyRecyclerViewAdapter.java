@@ -11,6 +11,7 @@ import com.cxsj.runhdu.model.gson.FriendInfo;
 import com.cxsj.runhdu.model.gson.MyFriend;
 import com.cxsj.runhdu.utils.Utility;
 
+import java.util.Calendar;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -28,9 +29,7 @@ public class FriendApplyRecyclerViewAdapter extends BaseQuickAdapter<MyFriend.Ap
     @Override
     protected void convert(BaseViewHolder helper, MyFriend.ApplicantInfo item) {
         CircleImageView profileImg = helper.getView(R.id.apply_profile);
-        Glide.with(mContext).load(URLs.PROFILE_URL + item.getApplicant() + ".JPEG")
-                .signature(new StringSignature(Utility.getTime(Types.TYPE_STRING_FORM)))
-                .crossFade(0).error(R.drawable.photo).into(profileImg);
+        Utility.loadFriendProfileImg(mContext.getApplicationContext(), item.getApplicant(), profileImg);
         helper.setText(R.id.apply_username, item.getApplicant());
         helper.setText(R.id.apply_time, item.getDate());
         helper.addOnClickListener(R.id.refuse_apply_button);

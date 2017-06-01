@@ -26,13 +26,14 @@ import java.util.List;
 
 /**
  * Created by Sail on 2017/4/13 0013.
- * Base activity to observe.
+ * 所有Activity的基类
  */
 
 @SuppressLint("Registered")
 public class BaseActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     protected Prefs prefs;
+    protected Prefs defaultPrefs;
     protected String username;
     protected boolean isSyncOn = true;
     protected final String TAG = "BaseActivity";
@@ -48,10 +49,12 @@ public class BaseActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityManager.addActivity(this);
-        prefs = new Prefs(this, username);
-        username = (String) prefs.get("username", "");
-        isSyncOn = (boolean) prefs.get("sync_data", true);
+        defaultPrefs = new Prefs(this);
+        username = (String) defaultPrefs.get("username", "");
 
+        prefs = new Prefs(this, username);
+
+        isSyncOn = (boolean) defaultPrefs.get("sync_data", true);
     }
 
     @Override
@@ -60,6 +63,11 @@ public class BaseActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    /**
+     * 设置toolbar
+     * @param toolbarResId toolbar的id
+     * @param haveBackButton 是否有返回按钮
+     */
     protected void setToolbar(int toolbarResId, boolean haveBackButton) {
         setSupportActionBar((Toolbar) findViewById(toolbarResId));
         if (haveBackButton) {
@@ -75,6 +83,9 @@ public class BaseActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * 显示“敬请期待”对话框
+     */
     protected void showComingSoonDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("敬请期待")
@@ -82,31 +93,51 @@ public class BaseActivity extends AppCompatActivity {
                 .setPositiveButton("十分期待", null).create().show();
     }
 
+    /**
+     * 显示进度对话框
+     * @param text 显示文字
+     */
     protected void showProgressDialog(String text) {
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(text);
-        progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.setCancelable(false);
         progressDialog.show();
     }
 
+    /**
+     * 关闭进度对话框
+     */
     protected void closeProgressDialog() {
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
     }
 
+    /**
+     * 退出登录
+     */
     protected void exitLogin() {
-        prefs.put("username", "");
+        defaultPrefs.put("username", "");
         ActivityManager.finishAll();
         toActivity(this, WelcomeActivity.class);
     }
 
+    /**
+     * 跳转到Activity
+     * @param context 当前context
+     * @param cls 跳转的context
+     */
     protected void toActivity(Context context, Class<?> cls) {
         Intent intent = new Intent(context, cls);
         startActivity(intent);
     }
 
+
+    /**
+     * 权限请求
+     * @param permissions 权限数组
+     * @param callback
+     */
     public void requestPermissions(String[] permissions, PermissionCallback callback) {
         permissionCallback = callback;
         List<String> permissionList = new ArrayList<>();

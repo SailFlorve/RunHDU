@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * Created by Sail on 2017/4/3 0003.
- * Adapter
+ * 阳光长跑Adapter
  */
 
 public class SunnyRunRecyclerViewAdapter extends BaseQuickAdapter<SunnyRunInfo, BaseViewHolder> {

@@ -29,31 +29,16 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:statusBarScrim="@android:color/transparent">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="vertical"
-                app:layout_collapseMode="parallax"
-                app:layout_collapseParallaxMultiplier="0.6"
-                app:layout_scrollFlags="exitUntilCollapsed">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:layout_collapseMode="parallax">
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:gravity="center"
-                    android:textSize="14sp"
-                    app:layout_collapseParallaxMultiplier="1" />
+                <include layout="@layout/chart_view_layout" />
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                <include layout="@layout/progress_view_layout" />
+            </RelativeLayout>
 
-                    <include layout="@layout/chart_view_layout" />
-
-                    <include layout="@layout/progress_view_layout" />
-                </RelativeLayout>
-            </LinearLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar_main"

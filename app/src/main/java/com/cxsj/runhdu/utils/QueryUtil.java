@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * Created by Sail on 2017/5/10 0010.
- * 操作数据库的封装
+ * 操作数据库的封装工具类
  */
 
 public class QueryUtil {

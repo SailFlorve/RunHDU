@@ -6,7 +6,7 @@ import android.preference.PreferenceManager;
 
 /**
  * Created by Sail on 2017/4/3 0003.
- * SharedPreference
+ * SharedPreference封装类
  */
 
 public class Prefs {
@@ -14,8 +14,17 @@ public class Prefs {
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
 
+    public Prefs(Context context) {
+        prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        editor = prefs.edit();
+    }
+
     public Prefs(Context context, String fileName) {
-        prefs = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+        if (fileName == null) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        } else {
+            prefs = context.getSharedPreferences(fileName, Context.MODE_PRIVATE);
+        }
         editor = prefs.edit();
     }
 

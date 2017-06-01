@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.cxsj.runhdu.R;
 import com.cxsj.runhdu.constant.URLs;
+import com.cxsj.runhdu.model.gson.MyFriend;
 import com.cxsj.runhdu.model.gson.Running;
 import com.cxsj.runhdu.model.gson.UpdateInfo;
 import com.cxsj.runhdu.model.sport.RunningInfo;
@@ -26,7 +27,7 @@ import okhttp3.Response;
 
 /**
  * Created by Sail on 2017/5/10 0010.
- * 同步数据相关的类
+ * 控制同步数据相关的类
  * 包括：从服务器下载数据、上传数据到服务器、检查更新、删除数据、好友等
  */
 
@@ -72,7 +73,7 @@ public class DataSyncUtil {
      * 获取好友列表和申请列表回调
      */
     public interface FriendCallback {
-        void onSuccess(String json);
+        void onSuccess(String json, MyFriend myFriend);
 
         void onFailure(String msg);
     }
@@ -329,7 +330,18 @@ public class DataSyncUtil {
                     @Override
                     public void onResponse(Call call, Response response) throws IOException {
                         String jsonStr = response.body().string();
-                        mHandler.post(() -> callback.onSuccess(jsonStr));
+                        MyFriend myFriend;
+                        try {
+                            myFriend = new Gson().fromJson(jsonStr, MyFriend.class);
+                        } catch (JsonSyntaxException e) {
+                            mHandler.post(() -> callback.onFailure("服务器错误。"));
+                            return;
+                        }
+                        if (myFriend == null) {
+                            mHandler.post(() -> callback.onFailure("对象初始化失败。"));
+                            return;
+                        }
+                        mHandler.post(() -> callback.onSuccess(jsonStr, myFriend));
                     }
                 });
     }

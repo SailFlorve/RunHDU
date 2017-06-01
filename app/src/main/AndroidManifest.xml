@@ -78,12 +78,15 @@
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="fCRQGRdsEz9gG1sOkOW1oZtCGhlSDVGP" />
 
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="2da223bb6f1dc069d0bb68ac39963290"/>
+
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
 
-        <activity android:name=".TestActivity" />
         <activity android:name=".FeedbackActivity" />
         <activity
             android:name=".HelpActivity"

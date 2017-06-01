@@ -1,5 +1,8 @@
 package com.cxsj.runhdu.model.sport;
 
+/**
+ * 阳光长跑信息实体类
+ */
 public class SunnyRunInfo {
 
     private boolean isValid;

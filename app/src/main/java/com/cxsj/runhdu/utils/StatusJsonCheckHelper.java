@@ -6,7 +6,7 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * Created by Sail on 2017/5/21 0021.
- * 登录注册时返回的JSON检查。
+ * 返回的状态类JSON检查。
  */
 
 public class StatusJsonCheckHelper {

@@ -16,7 +16,7 @@
             android:entryValues="@array/chart_num_value"
             android:key="chart_column_num"
             android:summary="%s"
-            android:title="柱状图显示天数" />
+            android:title="统计图显示天数" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="数据同步">
@@ -38,8 +38,8 @@
         <SwitchPreference
             android:defaultValue="false"
             android:key="only_gps_run"
-            android:summary="开启后，无GPS定位时也可以跑步，但不会记录轨迹、速度和路程信息。"
-            android:title="允许无GPS时跑步" />
+            android:summary="开启后，GPS没有开启时也可以跑步，但不会记录轨迹、速度和路程信息。"
+            android:title="无GPS跑步" />
 
         <ListPreference
             android:defaultValue="1.5"

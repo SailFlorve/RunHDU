@@ -19,7 +19,7 @@ import java.io.IOException;
 
 /**
  * Created by Sail on 2017/5/4 0004.
- * 截图并分享。
+ * 用于截图并分享工具类
  */
 
 public class ScreenShot {

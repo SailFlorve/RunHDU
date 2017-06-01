@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/friend_refresh_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/friend_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -27,13 +25,46 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:title="好友" />
 
+            <RelativeLayout
+                android:id="@+id/have_apply_layout"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginBottom="5dp"
+                android:background="#FFF"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/have_apply_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:text="你有好友请求。" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginRight="15dp"
+
+                    android:text="立即查看 >"
+                    android:textColor="@color/colorPrimary" />
+            </RelativeLayout>
+
             <LinearLayout
                 android:id="@+id/no_friend_tip_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="15dp">
+                android:paddingTop="65dp"
+                android:visibility="gone">
 
                 <ImageView
                     android:layout_width="96dp"
@@ -54,16 +85,14 @@
 
             </android.support.v7.widget.RecyclerView>
         </LinearLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/add_friend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_margin="15dp"
-            android:background="?attr/colorAccent"
-            android:src="@drawable/ic_person_add" />
-    </RelativeLayout>
-</android.support.v4.widget.SwipeRefreshLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_friend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="15dp"
+        android:background="?attr/colorAccent"
+        android:src="@drawable/ic_person_add" />
+</android.support.design.widget.CoordinatorLayout>

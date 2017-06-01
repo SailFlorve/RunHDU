@@ -1,11 +1,8 @@
 package com.cxsj.runhdu;
 
 import android.animation.ValueAnimator;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -19,6 +16,9 @@ import java.util.List;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 
 
+/**
+ * 帮助
+ */
 public class HelpActivity extends BaseActivity {
     private List<HelpItem> helpList = new ArrayList<>();
     private final int duration = 200;
@@ -37,11 +37,8 @@ public class HelpActivity extends BaseActivity {
             ImageView imagemore = (ImageView) view.findViewById(R.id.help_more);
             int spaceWidth = makeMeasureSpec(view.getMeasuredWidth(), View.MeasureSpec.EXACTLY);
             int spaceHeight = makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-            Log.i("geheight", String.valueOf(spaceHeight));
             infoText.measure(spaceWidth, spaceHeight);
             int height = infoText.getMeasuredHeight();
-            Log.i("viewheight", String.valueOf(view.getMeasuredHeight()));
-            Log.i("getheight", String.valueOf(height));
             if (infoText.getVisibility() == View.GONE) {
                 show(infoText, height);
                 more(imagemore);

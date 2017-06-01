@@ -2,6 +2,7 @@ package com.cxsj.runhdu.model.gson;
 
 /**
  * Created by Sail on 2017/5/8 0008.
+ * 阳光长跑返回Json的学生总体信息实体类
  */
 
 public class StudentInfo {

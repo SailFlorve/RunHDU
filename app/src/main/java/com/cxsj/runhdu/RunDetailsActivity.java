@@ -4,9 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,10 +21,8 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.cxsj.runhdu.model.gson.Running;
-import com.cxsj.runhdu.model.sport.RunningInfo;
-import com.cxsj.runhdu.utils.QueryUtil;
 import com.cxsj.runhdu.controller.DataSyncUtil;
+import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.NumberView;
 
@@ -33,6 +31,9 @@ import org.litepal.crud.DataSupport;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 跑步数据详情页面
+ */
 public class RunDetailsActivity extends BaseActivity {
 
     private TextView disText;
@@ -44,8 +45,10 @@ public class RunDetailsActivity extends BaseActivity {
     private NumberView energyNumber;
     private MapView mapView;
     private BaiduMap baiduMap;
+    private TextView noTrailText;
 
-    private String id = null;
+    private boolean isFriend;
+    private RunningInfo mRunningInfo;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,7 @@ public class RunDetailsActivity extends BaseActivity {
         energyNumber = (NumberView) findViewById(R.id.energy_details);
         startTimeNumber = (NumberView) findViewById(R.id.start_time_text_details);
         mapView = (MapView) findViewById(R.id.map_view_details);
+        noTrailText = (TextView) findViewById(R.id.no_trail_text);
         mapView.showZoomControls(false);
         baiduMap = mapView.getMap();
         setToolbar(R.id.details_toolbar, true);
@@ -69,9 +73,11 @@ public class RunDetailsActivity extends BaseActivity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         if (bundle != null) {
-            id = bundle.getString("runId", "");
-            RunningInfo runningInfo = (RunningInfo) intent.getSerializableExtra("running_info");
-            setAllDataById(id, runningInfo);
+            //是否为好友的跑步信息
+            isFriend = bundle.getBoolean("is_friend", false);
+            //获得序列化runningInfo
+            mRunningInfo = (RunningInfo) intent.getSerializableExtra("running_info");
+            setAllData(mRunningInfo);
         } else {
             Toast.makeText(this, "发生异常", Toast.LENGTH_SHORT).show();
             finish();
@@ -80,7 +86,8 @@ public class RunDetailsActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!TextUtils.isEmpty(id)) {
+        //如果不是好友的跑步信息，则显示删除图标
+        if (!isFriend) {
             getMenuInflater().inflate(R.menu.run_details_menu, menu);
         }
         return super.onCreateOptionsMenu(menu);
@@ -105,14 +112,7 @@ public class RunDetailsActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setAllDataById(String id, RunningInfo info) {
-        if (!TextUtils.isEmpty(id)) {
-            List<RunningInfo> infoList = QueryUtil.find("runId = ?", id);
-            info = infoList.get(0);
-        } else if (info == null) {
-            return;
-        }
-
+    private void setAllData(RunningInfo info) {
         if (info == null) return;
         disText.setText(Utility.formatDecimal(info.getDistance() / 1000.0, 2));
         stepNumber.setText(String.valueOf(info.getSteps()));
@@ -124,10 +124,14 @@ public class RunDetailsActivity extends BaseActivity {
         String pointStr = info.getTrailList();
         String[] points = pointStr.split(",");
         if (points.length <= 3) {
-            Toast.makeText(this, "轨迹点不存在。", Toast.LENGTH_SHORT).show();
+            noTrailText.setText("无轨迹");
+            noTrailText.setVisibility(View.VISIBLE);
+            baiduMap.getUiSettings().setAllGesturesEnabled(false);
             return;
         } else if (points.length % 2 != 0) {
-            Toast.makeText(this, "轨迹点异常。", Toast.LENGTH_SHORT).show();
+            noTrailText.setText("轨迹异常");
+            noTrailText.setVisibility(View.VISIBLE);
+            baiduMap.getUiSettings().setAllGesturesEnabled(false);
             return;
         }
         List<LatLng> pointList = new ArrayList<>();
@@ -183,7 +187,7 @@ public class RunDetailsActivity extends BaseActivity {
     }
 
     private void deleteLocalItem() {
-        DataSupport.deleteAll(RunningInfo.class.getSimpleName(), "runId = ?", id);
+        DataSupport.deleteAll(RunningInfo.class.getSimpleName(), "runId = ?", mRunningInfo.getRunId());
         toActivity(this, MainActivity.class);
         finish();
     }
@@ -191,7 +195,7 @@ public class RunDetailsActivity extends BaseActivity {
     private void requestDeleteItem() {
         if (isSyncOn) {
             showProgressDialog("正在同步删除至服务器...");
-            DataSyncUtil.deleteSingleLocalAndServerData(username, id, new DataSyncUtil.SyncDataCallback() {
+            DataSyncUtil.deleteSingleLocalAndServerData(username, mRunningInfo.getRunId(), new DataSyncUtil.SyncDataCallback() {
                 @Override
                 public void onSyncFailure(String msg) {
                     closeProgressDialog();

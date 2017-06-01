@@ -3,6 +3,9 @@ package com.cxsj.runhdu.utils;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 
+/**
+ * 动画控制工具类
+ */
 public class AnimationUtil {
     private static final String TAG = AnimationUtil.class.getSimpleName();
 

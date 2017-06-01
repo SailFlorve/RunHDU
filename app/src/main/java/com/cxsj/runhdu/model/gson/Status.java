@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by Sail on 2017/5/19 0019.
- * 服务器返回的json解析实体类
+ * 服务器返回的状态类json实体类
  */
 
 public class Status {

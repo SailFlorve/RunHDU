@@ -22,7 +22,9 @@
 
 # 百度地图
 -libraryjars libs/BaiduLBS_Android.jar
+
 -keep class com.baidu.** {*;}
+-keep class com.baidu.vi.** {*;}
 -keep class vi.com.** {*;}
 -keep class com.sinovoice.** {*;}
 -keep class pvi.com.** {*;}

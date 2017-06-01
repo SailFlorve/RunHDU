@@ -6,6 +6,9 @@ import org.litepal.crud.DataSupport;
 
 import java.io.Serializable;
 
+/**
+ * 数据库跑步信息实体类
+ */
 public class RunningInfo extends DataSupport implements Serializable {
 
 

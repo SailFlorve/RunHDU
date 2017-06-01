@@ -6,6 +6,9 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Activity的管理类，方便一键结束Activity
+ */
 public class ActivityManager {
 
     private static String TAG = "ActivityManager";

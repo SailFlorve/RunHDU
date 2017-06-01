@@ -56,7 +56,6 @@
                     android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
                     app:popupTheme="@style/AppTheme.PopupOverlay" />
-
             </android.support.design.widget.CollapsingToolbarLayout>
 
         </android.support.design.widget.AppBarLayout>
@@ -75,7 +74,7 @@
                     android:id="@+id/friend_no_run_tip"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="65dp"
                     android:gravity="center"
                     android:orientation="vertical"
                     android:visibility="gone">

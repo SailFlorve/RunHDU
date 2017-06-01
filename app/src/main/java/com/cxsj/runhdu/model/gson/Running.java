@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * 获取跑步信息的gson实体类
+ * 获取跑步信息的json实体类
  */
 
 public class Running {

@@ -21,9 +21,12 @@ import com.cxsj.runhdu.utils.QueryUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TodayFragment extends Fragment {
+/**
+ * 显示跑步详情页面的Fragment
+ */
+public class RunListFragment extends Fragment {
 
-    private static final String TAG = "TodayFragment";
+    private static final String TAG = "RunListFragment";
     private RecyclerView todayRecyclerView;
     private LinearLayout neverRunLayout;
     private RecyclerViewSectionAdapter viewAdapter;
@@ -67,7 +70,9 @@ public class TodayFragment extends Fragment {
             RunningInfoSection section = (RunningInfoSection) adapter.getItem(position);
             if (section.runningInfo == null) return;
             Intent intent = new Intent(getContext(), RunDetailsActivity.class);
-            intent.putExtra("runId", section.runningInfo.getRunId());
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("running_info", section.runningInfo);
+            intent.putExtras(bundle);
             startActivity(intent);
         });
     }

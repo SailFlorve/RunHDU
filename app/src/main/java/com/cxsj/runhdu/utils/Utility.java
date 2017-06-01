@@ -7,12 +7,18 @@ import android.content.res.Resources;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.telephony.TelephonyManager;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.StringSignature;
+import com.cxsj.runhdu.R;
 import com.cxsj.runhdu.constant.Types;
+import com.cxsj.runhdu.constant.URLs;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -144,14 +150,13 @@ public class Utility {
         return hours * 60 + minutes + seconds / 60;
     }
 
-    public static String getVersionName(Context context) {
-        try {
-            String pkName = context.getPackageName();
-            return context.getPackageManager().getPackageInfo(
-                    pkName, 0).versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static Uri getDownloadUri(String latestVersion) {
+        return Uri.parse(URLs.DOWNLOAD + latestVersion.replace(".", "") + ".apk");
+    }
+
+    public static void loadFriendProfileImg(Context context, String username, ImageView view) {
+        Glide.with(context).load(URLs.PROFILE_URL + username + ".JPEG")
+                .signature(new StringSignature(Utility.getTime(Calendar.HOUR_OF_DAY)))
+                .dontAnimate().error(R.drawable.photo).into(view);
     }
 }

@@ -58,6 +58,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
                 String username = usernameInputLayout.getEditText().getText().toString();
                 String password = pwInputLayout.getEditText().getText().toString();
+                //检查输入
                 InputCheckHelper.check(username, password, null, new InputCheckHelper.CheckCallback() {
                     @Override
                     public void onPass() {
@@ -79,6 +80,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                                     @Override
                                     public void onResponse(Call call, Response response) throws IOException {
                                         final String result = response.body().string();
+                                        //检查返回的json
                                         runOnUiThread(() -> checkReturn(result));
                                     }
                                 });
@@ -98,14 +100,15 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         }
     }
 
+    //检查返回的json
     private void checkReturn(String res) {
         Log.i("Login", res);
         StatusJsonCheckHelper.check(res, new StatusJsonCheckHelper.CheckCallback() {
             @Override
             public void onPass() {
                 usernameInputLayout.setEnabled(false);
-                prefs.put("username", usernameInputLayout.getEditText().getText().toString());
-                prefs.put("MD5Pw", MD5Util.encode(pwInputLayout.getEditText().getText().toString()));
+                defaultPrefs.put("username", usernameInputLayout.getEditText().getText().toString());
+                defaultPrefs.put("MD5Pw", MD5Util.encode(pwInputLayout.getEditText().getText().toString()));
                 loginButton.setProgress(100);
                 new Thread(() -> {
                     try {

@@ -15,6 +15,9 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+/**
+ * 用户反馈Activity
+ */
 public class FeedbackActivity extends BaseActivity {
 
     private EditText feedbackText;
@@ -40,6 +43,7 @@ public class FeedbackActivity extends BaseActivity {
             }
             if (TextUtils.isEmpty(contactStr)) contactStr = "0";
             feedbackButton.setProgress(50);
+            //提交反馈
             HttpUtil.load(URLs.FEEDBACK_URL)
                     .addParam("feedbackInformation", feedbackStr)
                     .addParam("contactWay", contactStr)

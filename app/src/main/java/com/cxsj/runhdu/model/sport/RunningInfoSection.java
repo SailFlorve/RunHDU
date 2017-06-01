@@ -2,6 +2,9 @@ package com.cxsj.runhdu.model.sport;
 
 import com.chad.library.adapter.base.entity.SectionEntity;
 
+/**
+ * 带Header的跑步列表实体类
+ */
 public class RunningInfoSection extends SectionEntity<RunningInfo> {
 
     public RunningInfo runningInfo;

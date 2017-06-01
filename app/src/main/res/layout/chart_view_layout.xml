@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/chart_view_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="5dp"
-    android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp">
+    android:paddingBottom="45dp"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:paddingTop="35dp">
 
     <TextView
         android:id="@+id/data_description"
@@ -14,15 +14,14 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:layout_marginBottom="15dp"
         android:gravity="center"
         android:textColor="#FFF" />
 
     <lecho.lib.hellocharts.view.ColumnChartView
-        android:layout_marginTop="45dp"
         android:id="@+id/column_chart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:layout_marginTop="45dp" />
 
 </RelativeLayout>

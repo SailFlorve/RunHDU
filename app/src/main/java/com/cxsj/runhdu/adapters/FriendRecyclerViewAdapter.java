@@ -14,6 +14,7 @@ import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.model.gson.FriendInfo;
 import com.cxsj.runhdu.utils.Utility;
 
+import java.util.Calendar;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -33,9 +34,7 @@ public class FriendRecyclerViewAdapter extends BaseQuickAdapter<FriendInfo, Base
     protected void convert(BaseViewHolder helper, FriendInfo item) {
         CircleImageView profileImg = helper.getView(R.id.friend_profile_list_item);
         CircleImageView onlineImg = helper.getView(R.id.online_flag_img);
-        Glide.with(mContext).load(URLs.PROFILE_URL + item.getUsername() + ".JPEG")
-                .signature(new StringSignature(Utility.getTime(Types.TYPE_STRING_FORM)))
-                .crossFade(0).error(R.drawable.photo).into(profileImg);
+        Utility.loadFriendProfileImg(mContext.getApplicationContext(), item.getUsername(), profileImg);
         if (item.isOnline()) {
             onlineImg.setVisibility(View.VISIBLE);
             onlineImg.setImageResource(R.drawable.green);

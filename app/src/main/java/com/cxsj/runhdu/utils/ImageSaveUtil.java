@@ -19,7 +19,7 @@ import okhttp3.Response;
 
 /**
  * Created by Sail on 2017/5/21 0021.
- * 保存图片工具
+ * 保存图片工具类
  */
 
 public class ImageSaveUtil {

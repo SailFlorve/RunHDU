@@ -2,6 +2,7 @@ package com.cxsj.runhdu.model.gson;
 
 /**
  * Created by SailFlorve on 2017/5/26 0026.
+ * 更新信息Json实体类
  */
 
 public class UpdateInfo {

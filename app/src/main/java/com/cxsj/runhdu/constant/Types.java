@@ -2,7 +2,7 @@ package com.cxsj.runhdu.constant;
 
 /**
  * Created by Sail on 2017/4/13 0013.
- * .
+ * 类型常量
  */
 
 public class Types {

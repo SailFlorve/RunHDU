@@ -47,6 +47,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * 跑步
+ */
 public class RunningActivity extends BaseActivity
         implements StepSensorBase.StepCallback {
 
@@ -119,11 +122,11 @@ public class RunningActivity extends BaseActivity
 
     private void initSettings() {
         locTime = (int) (Double.parseDouble(
-                (String) prefs.get("locate_rate", "1.5")) * 1000);
-        boolean showLog = (boolean) prefs.get("show_debug_log", false);
+                (String) defaultPrefs.get("locate_rate", "1.5")) * 1000);
+        boolean showLog = (boolean) defaultPrefs.get("show_debug_log", false);
         if (showLog) latLngText.setVisibility(View.VISIBLE);
         else latLngText.setVisibility(View.GONE);
-        runWithoutGPS = (boolean) prefs.get("only_gps_run", false);
+        runWithoutGPS = (boolean) defaultPrefs.get("only_gps_run", false);
     }
 
     @Override
@@ -411,7 +414,7 @@ public class RunningActivity extends BaseActivity
         baiduMap.addOverlay(overlay);
     }
 
-    //获取电源锁，保持该服务在屏幕熄灭时仍然获取CPU时，保持运行
+    //获取唤醒锁
     private void acquireWakeLock() {
         if (null == wakeLock) {
             PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
@@ -422,7 +425,7 @@ public class RunningActivity extends BaseActivity
         }
     }
 
-    //释放设备电源锁
+    //释放唤醒锁
     private void releaseWakeLock() {
         if (null != wakeLock) {
             wakeLock.release();
@@ -436,7 +439,7 @@ public class RunningActivity extends BaseActivity
             new AlertDialog.Builder(RunningActivity.this)
                     .setTitle("GPS未开启").setMessage(R.string.not_open_gps)
                     .setPositiveButton("知道了", null)
-                    .setNegativeButton("去设置", (dialog, which) -> {
+                    .setNegativeButton("去开启", (dialog, which) -> {
                         Intent intent = new Intent
                                 (Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                         startActivity(intent);

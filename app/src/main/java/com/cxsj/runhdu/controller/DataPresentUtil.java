@@ -26,7 +26,7 @@ import lecho.lib.hellocharts.model.SubcolumnValue;
 
 /**
  * Created by Sail on 2017/5/23 0023.
- * 数据展示相关的类
+ * 控制数据展示相关的类
  * 包括：显示进度、柱状图、跑步详情列表、跑步统计列表
  */
 
@@ -49,6 +49,10 @@ public class DataPresentUtil {
                          int allTimes, double averTimes, double allTime);
     }
 
+    /**
+     * 设置MainActivity中ProgressView的数据
+     * @param callback
+     */
     public static void setProgressViewData(ProgressViewDataCallback callback) {
         List<RunningInfo> runningInfoList = QueryUtil.findOrder(
                 "year = ? and month = ? and date = ?",
@@ -68,6 +72,11 @@ public class DataPresentUtil {
         callback.onDataFound(steps, times, dis, energy);
     }
 
+    /**
+     * 设置柱状图数据
+     * @param chartColumnNum 柱状图显示天数
+     * @param callback
+     */
     public static void setColumnChartViewData(int chartColumnNum, ChartViewDataCallback callback) {
         List<String> chartLabels = new ArrayList<>();
         List<Float> chartValues = new ArrayList<>();
@@ -139,7 +148,7 @@ public class DataPresentUtil {
     }
 
     /**
-     * 从数据库查找并回调List<RunningInfoSection>
+     * 显示跑步详情列表，从数据库查找并回调List<RunningInfoSection>
      *
      * @param callback
      */
@@ -195,6 +204,10 @@ public class DataPresentUtil {
         callback.onDataFound(runningInfoSectionList);
     }
 
+    /**
+     * 设置统计数据
+     * @param callback
+     */
     public static void setStatisticsData(StatisticsCallback callback) {
         int allStepsNum = DataSupport.sum(RunningInfo.class, "steps", int.class);
         int allEnergyNum = DataSupport.sum(RunningInfo.class, "energy", int.class);

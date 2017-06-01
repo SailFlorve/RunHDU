@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:background="?attr/colorPrimary">
+    android:background="?attr/colorPrimary"
+    android:orientation="vertical">
 
     <android.support.v7.widget.Toolbar
+        android:id="@+id/about_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:title="关于"
-        android:id="@+id/about_toolbar"
         android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-    </android.support.v7.widget.Toolbar>
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:title="关于"/>
 
     <ImageView
         android:id="@+id/app_logo"
@@ -36,45 +35,48 @@
         android:layout_height="wrap_content"
         android:divider="@drawable/divider_horizontal"
         android:orientation="vertical"
-        android:paddingTop="60dp"
         android:paddingBottom="20dp"
+        android:paddingTop="60dp"
         android:showDividers="middle">
 
         <TextView
+
             android:id="@+id/feedback_about"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#FFFFFF"
             android:padding="15dp"
             android:text="意见反馈"
-            android:textSize="16sp"
-            android:background="#FFFFFF"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/help_about"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#FFFFFF"
             android:padding="15dp"
             android:text="使用帮助"
-            android:textSize="16sp"
-            android:background="#FFFFFF"/>
+            android:textSize="16sp" />
+
         <TextView
             android:id="@+id/check_version_about"
-            android:clickable="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:clickable="true"
             android:padding="15dp"
             android:text="检查更新"
-            android:textSize="16sp"
-            android:background="#FFFFFF"/>
+            android:textSize="16sp" />
 
     </LinearLayout>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="12sp"
         android:gravity="center"
+        android:text="创新实践"
         android:textColor="#fff"
-        android:text="创新实践"/>
+        android:textSize="12sp" />
 </LinearLayout>
 
 
