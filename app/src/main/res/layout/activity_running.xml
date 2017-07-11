@@ -152,9 +152,9 @@
                 app:cpb_cornerRadius="48dp"
                 app:cpb_selectorComplete="@drawable/stop_run_button_selector"
                 app:cpb_selectorIdle="@drawable/run_button_selector"
-                app:cpb_textComplete="停止跑步"
+                app:cpb_textIdle="开始跑步"
                 app:cpb_textError="等待定位"
-                app:cpb_textIdle="开始跑步" />
+                app:cpb_textComplete="停止跑步"/>
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -184,7 +184,6 @@
                 android:textColor="#fff"
                 android:textSize="18sp" />
         </LinearLayout>
-
 
     </LinearLayout>
 

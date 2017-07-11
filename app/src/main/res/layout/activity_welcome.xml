@@ -54,6 +54,7 @@
             android:text="注册"
             android:textColor="#fff"
             android:visibility="gone" />
+
     </LinearLayout>
 
 </LinearLayout>

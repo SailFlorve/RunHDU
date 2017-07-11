@@ -24,12 +24,17 @@
                 android:title="好友" />
             <item
                 android:id="@+id/share"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_share"
                 android:title="分享" />
         </menu>
     </item>
     <item android:title="其他">
         <menu>
+            <item
+                android:id="@+id/lab"
+                android:icon="@drawable/ic_lab"
+                android:visible="false"
+                android:title="实验室" />
             <item
                 android:id="@+id/settings"
                 android:icon="@drawable/ic_settings"

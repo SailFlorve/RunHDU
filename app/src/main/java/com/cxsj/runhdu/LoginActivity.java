@@ -6,12 +6,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.cxsj.runhdu.utils.InputCheckHelper;
 import com.cxsj.runhdu.utils.MD5Util;
 import com.cxsj.runhdu.utils.StatusJsonCheckHelper;
-import com.dd.CircularProgressButton;
 import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.utils.HttpUtil;
 import com.cxsj.runhdu.utils.ActivityManager;
@@ -24,7 +24,7 @@ import okhttp3.Response;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
-    private CircularProgressButton loginButton;
+    private Button loginButton;
     private EditText usernameText;
     private TextInputLayout usernameInputLayout;
     private TextInputLayout pwInputLayout;
@@ -33,11 +33,10 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        loginButton = (CircularProgressButton) findViewById(R.id.login_button);
+        loginButton = (Button) findViewById(R.id.login_button);
         usernameText = (EditText) findViewById(R.id.username_text);
         usernameInputLayout = (TextInputLayout) findViewById(R.id.username_input_layout);
         pwInputLayout = (TextInputLayout) findViewById(R.id.pw_input_layout);
-        loginButton.setIndeterminateProgressMode(true);
         setToolbar(R.id.login_toolbar, true);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -62,8 +61,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                 InputCheckHelper.check(username, password, null, new InputCheckHelper.CheckCallback() {
                     @Override
                     public void onPass() {
-                        loginButton.setProgress(1);
-                        loginButton.setClickable(false);
+                        showProgressDialog("正在登录...");
                         HttpUtil.load(URLs.LOGIN)
                                 .addParam("name", username)
                                 .addParam("password", MD5Util.encode(password))
@@ -72,8 +70,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                                     public void onFailure(Call call, IOException e) {
                                         runOnUiThread(() -> {
                                             pwInputLayout.setError("网络连接失败。");
-                                            loginButton.setProgress(0);
-                                            loginButton.setClickable(true);
+                                            closeProgressDialog();
                                         });
                                     }
 
@@ -103,34 +100,26 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     //检查返回的json
     private void checkReturn(String res) {
         Log.i("Login", res);
+        closeProgressDialog();
         StatusJsonCheckHelper.check(res, new StatusJsonCheckHelper.CheckCallback() {
             @Override
             public void onPass() {
+                showProgressDialog("登录成功...");
                 usernameInputLayout.setEnabled(false);
                 defaultPrefs.put("username", usernameInputLayout.getEditText().getText().toString());
                 defaultPrefs.put("MD5Pw", MD5Util.encode(pwInputLayout.getEditText().getText().toString()));
-                loginButton.setProgress(100);
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(1000);
-                        toActivity(LoginActivity.this, MainActivity.class);
-                        ActivityManager.finishAll();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+                toActivity(LoginActivity.this, MainActivity.class);
+                ActivityManager.finishAll();
             }
 
             @Override
             public void onFailure(String msg, int which) {
+
                 if (which == 0) {
                     usernameInputLayout.setError(msg);
                 } else {
                     pwInputLayout.setError(msg);
                 }
-                loginButton.setProgress(0);
-                loginButton.setIdleText("重试");
-                loginButton.setClickable(true);
             }
         });
     }

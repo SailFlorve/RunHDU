@@ -21,16 +21,9 @@
 -keep class com.cxsj.runhdu.model.** {*;}
 
 # 百度地图
--libraryjars libs/BaiduLBS_Android.jar
-
 -keep class com.baidu.** {*;}
--keep class com.baidu.vi.** {*;}
 -keep class vi.com.** {*;}
--keep class com.sinovoice.** {*;}
--keep class pvi.com.** {*;}
 -dontwarn com.baidu.**
--dontwarn vi.com.**
--dontwarn pvi.com.**
 
 # Glide
 -keep public class * implements com.bumptech.glide.module.GlideModule
@@ -72,3 +65,6 @@
 }
 
 -keep class com.dd.** { *; }
+
+-dontwarn java.lang.invoke.*
+-dontwarn **$$Lambda$*

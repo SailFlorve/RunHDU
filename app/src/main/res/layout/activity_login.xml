@@ -18,9 +18,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_marginTop="100dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
+        android:layout_marginTop="100dp"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -62,26 +62,20 @@
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
 
-        <LinearLayout
+
+        <Button
+            android:id="@+id/login_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:gravity="center">
+            android:layout_marginBottom="30dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
+            android:layout_marginTop="65dp"
+            android:gravity="center"
+            android:textColor="#fff"
+            android:text="登录"
+            android:background="?attr/colorPrimary"/>
 
-            <com.dd.CircularProgressButton
-                android:id="@+id/login_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="30dp"
-                android:layout_marginLeft="60dp"
-                android:layout_marginRight="60dp"
-                android:layout_marginTop="25dp"
-                android:textColor="#fff"
-                app:cpb_selectorIdle="@drawable/normal_selector"
-                app:cpb_textComplete="登录成功"
-                app:cpb_textError="重试"
-                app:cpb_textIdle="登录" />
-        </LinearLayout>
     </LinearLayout>
 
     <ImageView

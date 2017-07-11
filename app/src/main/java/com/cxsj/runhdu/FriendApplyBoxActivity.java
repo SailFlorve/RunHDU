@@ -73,13 +73,11 @@ public class FriendApplyBoxActivity extends BaseActivity {
         applyListView.setLayoutManager(manager);
 
         adapter.setOnItemChildClickListener((adapter, view, position) -> {
-
             if (view.getId() == R.id.refuse_apply_button) {
                 reply(position, false);
             } else if (view.getId() == R.id.agree_apply_button) {
                 reply(position, true);
             }
-            return false;
         });
     }
 

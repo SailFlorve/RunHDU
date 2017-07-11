@@ -7,7 +7,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
+import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -65,7 +69,8 @@ public class BaseActivity extends AppCompatActivity {
 
     /**
      * 设置toolbar
-     * @param toolbarResId toolbar的id
+     *
+     * @param toolbarResId   toolbar的id
      * @param haveBackButton 是否有返回按钮
      */
     protected void setToolbar(int toolbarResId, boolean haveBackButton) {
@@ -95,6 +100,7 @@ public class BaseActivity extends AppCompatActivity {
 
     /**
      * 显示进度对话框
+     *
      * @param text 显示文字
      */
     protected void showProgressDialog(String text) {
@@ -124,8 +130,9 @@ public class BaseActivity extends AppCompatActivity {
 
     /**
      * 跳转到Activity
+     *
      * @param context 当前context
-     * @param cls 跳转的context
+     * @param cls     跳转的context
      */
     protected void toActivity(Context context, Class<?> cls) {
         Intent intent = new Intent(context, cls);
@@ -135,8 +142,9 @@ public class BaseActivity extends AppCompatActivity {
 
     /**
      * 权限请求
+     *
      * @param permissions 权限数组
-     * @param callback
+     * @param callback    回调
      */
     public void requestPermissions(String[] permissions, PermissionCallback callback) {
         permissionCallback = callback;
@@ -179,5 +187,17 @@ public class BaseActivity extends AppCompatActivity {
             default:
                 break;
         }
+    }
+
+    public int acquireDimen(@DimenRes int id) {
+        return (int) getResources().getDimension(id);
+    }
+
+    public int acquireColor(@ColorRes int id) {
+        return ContextCompat.getColor(this, id);
+    }
+
+    public String acquireString(@StringRes int id) {
+        return getResources().getString(id);
     }
 }

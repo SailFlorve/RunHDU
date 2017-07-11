@@ -2,6 +2,8 @@ package com.cxsj.runhdu;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.SystemClock;
@@ -10,6 +12,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.LinearLayout;
@@ -39,6 +43,8 @@ import com.cxsj.runhdu.model.sport.RunningInfo;
 import com.cxsj.runhdu.sensor.StepSensorAcceleration;
 import com.cxsj.runhdu.sensor.StepSensorBase;
 import com.cxsj.runhdu.sensor.StepSensorPedometer;
+import com.cxsj.runhdu.utils.ImageSaveUtil;
+import com.cxsj.runhdu.utils.ShareUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.ImageNumberDisplayView;
 import com.dd.CircularProgressButton;
@@ -97,9 +103,9 @@ public class RunningActivity extends BaseActivity
         initMapLocation();
 
         startButton.setOnClickListener(v -> {
-            if (startButton.getProgress() == 0) {
+            if (runningStatus == 0) {
                 startRunning();
-            } else {
+            } else if (runningStatus == 1) {
                 new AlertDialog.Builder(RunningActivity.this)
                         .setTitle("结束跑步")
                         .setMessage("你确定要结束跑步吗？")
@@ -107,6 +113,7 @@ public class RunningActivity extends BaseActivity
                         .setNegativeButton("取消", null).create().show();
             }
         });
+
     }
 
     @Override
@@ -181,6 +188,23 @@ public class RunningActivity extends BaseActivity
         client.setLocOption(option);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.run_details_menu, menu);
+        menu.findItem(R.id.delete_run_item).setVisible(false);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        } else if (item.getItemId() == R.id.share_run_item) {
+            shareData();
+        }
+        return true;
+    }
+
     private void startRunning() {
         if (isSyncOn) {
             if (!Utility.isNetworkAvailable(getApplicationContext())) {
@@ -227,8 +251,7 @@ public class RunningActivity extends BaseActivity
         timer.stop();
         client.stop();
 
-        startButton.setClickable(false);
-        startButton.setIdleText("跑步完成");
+        startButton.setIdleText("跑步结束");
         startButton.setProgress(0);
 
         if (!pointList.isEmpty()) {
@@ -348,9 +371,6 @@ public class RunningActivity extends BaseActivity
             @Override
             public void onSyncSuccess() {
                 isSyncing = false;
-                Snackbar.make(rootLayout, "上传跑步数据成功。", Snackbar.LENGTH_SHORT)
-                        .setAction("知道了", v -> {
-                        }).show();
             }
         });
     }
@@ -448,6 +468,16 @@ public class RunningActivity extends BaseActivity
         } else {
             return true;
         }
+    }
+
+    private  void shareData() {
+        baiduMap.snapshot(bitmap -> {
+            Bitmap backBitmap = ShareUtil.takeScreenShot(this);
+            Canvas canvas = new Canvas(backBitmap);
+            canvas.drawBitmap(bitmap, 0, getSupportActionBar().getHeight(), null);
+            String imagePath = ImageSaveUtil.saveToSDCard(this, backBitmap, "share_tmp.png");
+            ShareUtil.openShareDialog(this, imagePath);
+        });
     }
 
     @Override

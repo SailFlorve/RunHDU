@@ -1,8 +1,11 @@
 package com.cxsj.runhdu;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.cxsj.runhdu.constant.URLs;
@@ -20,6 +23,7 @@ import okhttp3.Response;
  */
 public class FeedbackActivity extends BaseActivity {
 
+    private LinearLayout rootLayout;
     private EditText feedbackText;
     private EditText contactText;
     private CircularProgressButton feedbackButton;
@@ -32,8 +36,9 @@ public class FeedbackActivity extends BaseActivity {
         feedbackText = (EditText) findViewById(R.id.feedback_text);
         contactText = (EditText) findViewById(R.id.feedback_contact);
         feedbackButton = (CircularProgressButton) findViewById(R.id.feedback_button);
-        feedbackButton.setIndeterminateProgressMode(true);
+        rootLayout = (LinearLayout) findViewById(R.id.feedback_root_layout);
 
+        feedbackButton.setIndeterminateProgressMode(true);
         feedbackButton.setOnClickListener(v -> {
             String feedbackStr = feedbackText.getText().toString();
             String contactStr = contactText.getText().toString();
@@ -41,7 +46,8 @@ public class FeedbackActivity extends BaseActivity {
                 Toast.makeText(this, "请输入反馈信息！", Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (TextUtils.isEmpty(contactStr)) contactStr = "0";
+            if (TextUtils.isEmpty(contactStr)) contactStr = "未填写";
+
             feedbackButton.setProgress(50);
             //提交反馈
             HttpUtil.load(URLs.FEEDBACK_URL)
@@ -51,22 +57,23 @@ public class FeedbackActivity extends BaseActivity {
                         @Override
                         public void onFailure(Call call, IOException e) {
                             runOnUiThread(() -> {
-                                feedbackButton.setProgress(0);
-                                feedbackButton.setIdleText("无网络，点击重试");
+                                feedbackButton.setProgress(-1);
+                                Snackbar.make(rootLayout, "网络连接失败！", Snackbar.LENGTH_LONG)
+                                        .setAction("重试", v -> feedbackButton.callOnClick()).show();
                             });
-
                         }
 
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
                             String result = response.body().string();
                             runOnUiThread(() -> {
+                                feedbackButton.setProgress(100);
                                 if (result.equals("true")) {
                                     feedbackButton.setClickable(false);
-                                    feedbackButton.setProgress(100);
+                                    Toast.makeText(FeedbackActivity.this, "已收到您的反馈。", Toast.LENGTH_SHORT).show();
+                                    finish();
                                 } else {
-                                    feedbackButton.setProgress(0);
-                                    feedbackButton.setIdleText("失败，点击重试");
+                                    feedbackButton.setProgress(-1);
                                 }
                             });
                         }

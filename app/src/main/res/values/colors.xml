@@ -7,8 +7,8 @@
     <color name="TextPrimary">#212121</color>
     <color name="TextTitle">#505050</color>
     <color name="BlackMD">#212121</color>
-    <color name="colorStartRun">#4caf50</color>
-    <color name="colorStartRunPressed">#388e3c</color>
-    <color name="colorStopRun">#FF9800</color>
-    <color name="colorStopRunPressed">#F57C00</color>
+    <color name="StartRun">#4caf50</color>
+    <color name="StartRunPressed">#388e3c</color>
+    <color name="StopRun">#FF9800</color>
+    <color name="StopRunPressed">#F57C00</color>
 </resources>

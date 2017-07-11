@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/feedback_root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -19,11 +19,12 @@
     <EditText
         android:id="@+id/feedback_text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="250dp"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
         android:layout_marginTop="30dp"
         android:background="@drawable/border_blue"
+        android:gravity="top"
         android:hint="输入反馈信息..."
         android:textSize="16sp" />
 
@@ -35,7 +36,7 @@
         android:layout_marginRight="15dp"
         android:layout_marginTop="15dp"
         android:background="@drawable/border_blue"
-        android:hint="您的QQ..."
+        android:hint="您的QQ(选填)..."
         android:textSize="16sp" />
 
     <com.dd.CircularProgressButton
@@ -46,9 +47,10 @@
         android:layout_marginLeft="75dp"
         android:layout_marginRight="75dp"
         android:layout_marginTop="30dp"
+        android:background="?attr/colorPrimary"
         android:textColor="#FFF"
-        app:cpb_selectorIdle="@drawable/normal_selector"
+        app:cpb_selectorComplete="@drawable/run_button_selector"
         app:cpb_textComplete="已收到您的反馈"
-        app:cpb_textError="重试"
+        app:cpb_textError="失败，点击重试"
         app:cpb_textIdle="提交反馈" />
 </LinearLayout>

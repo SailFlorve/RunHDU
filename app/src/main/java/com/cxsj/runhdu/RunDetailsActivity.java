@@ -1,12 +1,19 @@
 package com.cxsj.runhdu;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,13 +30,18 @@ import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.cxsj.runhdu.controller.DataSyncUtil;
 import com.cxsj.runhdu.model.sport.RunningInfo;
+import com.cxsj.runhdu.utils.ImageSaveUtil;
+import com.cxsj.runhdu.utils.ShareUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.NumberView;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import lecho.lib.hellocharts.model.Line;
 
 /**
  * 跑步数据详情页面
@@ -46,6 +58,7 @@ public class RunDetailsActivity extends BaseActivity {
     private MapView mapView;
     private BaiduMap baiduMap;
     private TextView noTrailText;
+    private LinearLayout floatInfo;
 
     private boolean isFriend;
     private RunningInfo mRunningInfo;
@@ -66,6 +79,7 @@ public class RunDetailsActivity extends BaseActivity {
         startTimeNumber = (NumberView) findViewById(R.id.start_time_text_details);
         mapView = (MapView) findViewById(R.id.map_view_details);
         noTrailText = (TextView) findViewById(R.id.no_trail_text);
+        floatInfo = (LinearLayout) findViewById(R.id.run_detail_float_info);
         mapView.showZoomControls(false);
         baiduMap = mapView.getMap();
         setToolbar(R.id.details_toolbar, true);
@@ -79,14 +93,14 @@ public class RunDetailsActivity extends BaseActivity {
             mRunningInfo = (RunningInfo) intent.getSerializableExtra("running_info");
             setAllData(mRunningInfo);
         } else {
-            Toast.makeText(this, "发生异常", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "发生异常。", Toast.LENGTH_SHORT).show();
             finish();
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //如果不是好友的跑步信息，则显示删除图标
+        //如果是好友的跑步信息，则不显示删除图标
         if (!isFriend) {
             getMenuInflater().inflate(R.menu.run_details_menu, menu);
         }
@@ -105,6 +119,16 @@ public class RunDetailsActivity extends BaseActivity {
                         .setMessage("你确定删除此条跑步信息吗？")
                         .setPositiveButton("删除", (dialog, which) -> requestDeleteItem())
                         .setNegativeButton("不删除", null).create().show();
+                break;
+            case R.id.share_run_item:
+                baiduMap.snapshot(bitmap -> {
+                    Bitmap backBitmap = ShareUtil.takeScreenShot(this);
+                    Canvas canvas = new Canvas(backBitmap);
+                    canvas.drawBitmap(bitmap, 0, getSupportActionBar().getHeight(), null);
+                    canvas.drawBitmap(ShareUtil.takeScreenShot(floatInfo), 0, getSupportActionBar().getHeight(), null);
+                    String imagePath = ImageSaveUtil.saveToSDCard(this, backBitmap, "share_tmp.png");
+                    ShareUtil.openShareDialog(this, imagePath);
+                });
                 break;
             default:
                 break;

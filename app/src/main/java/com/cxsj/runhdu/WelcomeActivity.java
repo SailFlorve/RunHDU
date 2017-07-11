@@ -12,6 +12,8 @@ import com.cxsj.runhdu.utils.ActivityManager;
 import com.cxsj.runhdu.utils.AnimationUtil;
 import com.cxsj.runhdu.utils.HttpUtil;
 import com.cxsj.runhdu.utils.StatusJsonCheckHelper;
+import com.dd.morphingbutton.MorphingButton;
+import com.dd.morphingbutton.impl.LinearProgressButton;
 
 import java.io.IOException;
 

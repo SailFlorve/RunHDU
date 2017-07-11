@@ -31,7 +31,7 @@ public class ImageSaveUtil {
      * @param fileName 文件名
      */
     public static String saveToSDCard(Context context, Bitmap bitmap, String fileName) {
-        FileOutputStream fos = null;
+        FileOutputStream fos;
         String saveDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
                 + fileName;
         try {

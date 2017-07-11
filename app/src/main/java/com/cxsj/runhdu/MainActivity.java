@@ -40,7 +40,7 @@ import com.cxsj.runhdu.utils.ActivityManager;
 import com.cxsj.runhdu.utils.HttpUtil;
 import com.cxsj.runhdu.utils.ImageSaveUtil;
 import com.cxsj.runhdu.utils.QueryUtil;
-import com.cxsj.runhdu.utils.ScreenShot;
+import com.cxsj.runhdu.utils.ShareUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.GradeProgressView;
 
@@ -398,8 +398,12 @@ public class MainActivity extends BaseActivity
             case R.id.sunlight_long_run:
                 toActivity(MainActivity.this, SunnyRunActivity.class);
                 break;
+            case R.id.lab:
+                toActivity(this, LabActivity.class);
+                break;
             case R.id.share:
-                ScreenShot.takeAndShare(this);
+                ShareUtil.setDelay(500);
+                ShareUtil.takeAndShare(this);
                 break;
             case R.id.about:
                 toActivity(MainActivity.this, AboutActivity.class);

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true"
-        android:color="@color/colorStopRunPressed"/>
+        android:color="@color/StopRunPressed"/>
     <item android:state_focused="true"
-        android:color="@color/colorStopRun"/>
+        android:color="@color/StopRun"/>
     <item android:state_enabled="true"
-        android:color="@color/colorStopRun"/>
+        android:color="@color/StopRun"/>
 </selector>
