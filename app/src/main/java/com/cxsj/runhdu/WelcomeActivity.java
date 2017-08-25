@@ -8,19 +8,8 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.cxsj.runhdu.Model.LoginModel;
-import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.utils.ActivityManager;
 import com.cxsj.runhdu.utils.AnimationUtil;
-import com.cxsj.runhdu.utils.HttpUtil;
-import com.cxsj.runhdu.utils.StatusJsonCheckHelper;
-import com.dd.morphingbutton.MorphingButton;
-import com.dd.morphingbutton.impl.LinearProgressButton;
-
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 /**
  * 欢迎页面

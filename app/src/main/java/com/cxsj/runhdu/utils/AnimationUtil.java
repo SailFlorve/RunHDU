@@ -1,6 +1,5 @@
 package com.cxsj.runhdu.utils;
 
-import android.animation.ValueAnimator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 

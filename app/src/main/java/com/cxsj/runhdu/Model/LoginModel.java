@@ -3,7 +3,6 @@ package com.cxsj.runhdu.Model;
 import com.cxsj.runhdu.bean.gson.Status;
 import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.utils.HttpUtil;
-import com.cxsj.runhdu.utils.MD5Util;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 

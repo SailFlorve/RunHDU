@@ -42,8 +42,6 @@ public class DataQueryModel {
 
     /**
      * 获取某个日期跑步数据
-     *
-     * @param callback
      */
     public static void getRunningInfo(Calendar calendar, RunningInfoCallback callback) {
         String year = String.valueOf(calendar.get(Calendar.YEAR));
@@ -196,8 +194,6 @@ public class DataQueryModel {
 
     /**
      * 设置统计数据
-     *
-     * @param callback
      */
     public static void setStatisticsData(StatisticsCallback callback) {
         int allStepsNum = DataSupport.sum(RunningInfo.class, "steps", int.class);

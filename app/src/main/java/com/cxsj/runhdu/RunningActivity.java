@@ -564,9 +564,5 @@ public class RunningActivity extends BaseActivity
                 drawCurrentPoint(latLng);
             });
         }
-
-        @Override
-        public void onConnectHotSpotMessage(String s, int i) {
-        }
     }
 }

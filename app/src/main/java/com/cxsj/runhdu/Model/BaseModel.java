@@ -23,10 +23,10 @@ public class BaseModel {
 
     protected static final String TAG = "";
 
-    protected static final String CONNECT_FAILED = "网络连接失败。";
-    protected static final String RETURN_DATA_ERROR = "服务器数据出错。";
+    static final String CONNECT_FAILED = "网络连接失败。";
+    static final String RETURN_DATA_ERROR = "服务器数据出错。";
 
-    protected static Handler mHandler = new Handler(Looper.getMainLooper());
+    static Handler mHandler = new Handler(Looper.getMainLooper());
 
     public interface BaseCallback {
         void onFailure(String msg);
@@ -36,8 +36,6 @@ public class BaseModel {
 
     /**
      * 检查服务器返回为true还是false
-     *
-     * @param response
      */
     private static void checkStatusResponse(Response response, BaseCallback callback) throws IOException {
         String result = response.body().string();
@@ -71,7 +69,7 @@ public class BaseModel {
         });
     }
 
-    protected static Callback getStatusHttpCallback(BaseCallback callback) {
+    static Callback getStatusHttpCallback(BaseCallback callback) {
         return new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -85,7 +83,7 @@ public class BaseModel {
         };
     }
 
-    protected static Callback getJsonStatusHttpCallback(BaseCallback callback) {
+    static Callback getJsonStatusHttpCallback(BaseCallback callback) {
         return new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {

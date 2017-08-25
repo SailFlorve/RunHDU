@@ -23,20 +23,12 @@ import android.widget.TextView;
 import com.cxsj.runhdu.Model.BaseModel;
 import com.cxsj.runhdu.Model.FriendModel;
 import com.cxsj.runhdu.adapters.FriendRecyclerViewAdapter;
-import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.bean.gson.FriendInfo;
 import com.cxsj.runhdu.bean.gson.MyFriend;
-import com.cxsj.runhdu.bean.gson.Status;
-import com.cxsj.runhdu.utils.HttpUtil;
 import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 /**
  * 好友

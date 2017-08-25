@@ -1,8 +1,7 @@
 package com.cxsj.runhdu;
 
-import android.support.transition.TransitionManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 public class LabActivity extends AppCompatActivity {
 

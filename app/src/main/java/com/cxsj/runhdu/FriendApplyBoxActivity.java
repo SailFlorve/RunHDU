@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -13,19 +12,11 @@ import android.widget.Toast;
 import com.cxsj.runhdu.Model.BaseModel;
 import com.cxsj.runhdu.Model.FriendModel;
 import com.cxsj.runhdu.adapters.FriendApplyRecyclerViewAdapter;
-import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.bean.gson.MyFriend;
-import com.cxsj.runhdu.bean.gson.Status;
-import com.cxsj.runhdu.utils.HttpUtil;
 import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 /**
  * 好友申请Activity

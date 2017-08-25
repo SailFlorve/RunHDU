@@ -1,28 +1,17 @@
 package com.cxsj.runhdu;
 
-import android.support.design.widget.TextInputLayout;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.cxsj.runhdu.Model.BaseModel;
 import com.cxsj.runhdu.Model.LoginModel;
+import com.cxsj.runhdu.utils.ActivityManager;
 import com.cxsj.runhdu.utils.InputCheckHelper;
 import com.cxsj.runhdu.utils.MD5Util;
-import com.cxsj.runhdu.utils.StatusJsonCheckHelper;
-import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.utils.HttpUtil;
-import com.cxsj.runhdu.utils.ActivityManager;
-
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 public class LoginActivity extends BaseActivity implements View.OnClickListener, LoginModel.LoginCallback {
 
