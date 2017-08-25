@@ -12,7 +12,7 @@ import com.cxsj.runhdu.R;
 
 /**
  * Created by Sail on 2017/4/15 0015.
- * 显示数字及其表示图片。
+ * 数字及其表示图片。
  */
 
 public class ImageNumberDisplayView extends LinearLayout {

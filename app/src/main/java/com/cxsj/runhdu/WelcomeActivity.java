@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.cxsj.runhdu.Model.LoginModel;
 import com.cxsj.runhdu.constant.URLs;
 import com.cxsj.runhdu.utils.ActivityManager;
 import com.cxsj.runhdu.utils.AnimationUtil;
@@ -24,7 +25,7 @@ import okhttp3.Response;
 /**
  * 欢迎页面
  */
-public class WelcomeActivity extends BaseActivity {
+public class WelcomeActivity extends BaseActivity implements LoginModel.LoginCallback{
 
     private Button loginButton;
     private Button registerButton;
@@ -72,45 +73,22 @@ public class WelcomeActivity extends BaseActivity {
     }
 
     private void doLogin() {
-        runOnUiThread(() -> HttpUtil.load(URLs.LOGIN)
-                .addParam("name", username)
-                .addParam("password", (String) defaultPrefs.get("MD5Pw", ""))
-                .post(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        runOnUiThread(() -> {
-                            Toast.makeText(WelcomeActivity.this,
-                                    "网络连接失败，请重试。", Toast.LENGTH_LONG).show();
-                            showButtons();
-                        });
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        String json = response.body().string();
-                        checkReturn(json);
-                    }
-                }));
+        LoginModel.login(username, (String) defaultPrefs.get("MD5Pw", ""), WelcomeActivity.this);
     }
 
-    private void checkReturn(String json) {
-        runOnUiThread(() -> {
-            closeProgressDialog();
-            StatusJsonCheckHelper.check(json, new StatusJsonCheckHelper.CheckCallback() {
-                @Override
-                public void onPass() {
-                    toActivity(WelcomeActivity.this, MainActivity.class);
-                    ActivityManager.finishAll();
-                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                }
+    @Override
+    public void onLoginSuccess() {
+        closeProgressDialog();
+        toActivity(WelcomeActivity.this, MainActivity.class);
+        ActivityManager.finishAll();
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
 
-                @Override
-                public void onFailure(String msg, int which) {
-                    Toast.makeText(WelcomeActivity.this,
-                            "登录失败。原因：" + msg, Toast.LENGTH_SHORT).show();
-                    showButtons();
-                }
-            });
-        });
+    @Override
+    public void onLoginFailure(String msg, int which) {
+        closeProgressDialog();
+        Toast.makeText(WelcomeActivity.this,
+                "登录失败。原因：" + msg, Toast.LENGTH_SHORT).show();
+        showButtons();
     }
 }

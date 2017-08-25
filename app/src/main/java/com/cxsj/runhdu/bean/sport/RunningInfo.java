@@ -1,4 +1,4 @@
-package com.cxsj.runhdu.model.sport;
+package com.cxsj.runhdu.bean.sport;
 
 import com.cxsj.runhdu.utils.ZipUtil;
 

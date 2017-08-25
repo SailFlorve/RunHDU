@@ -1,11 +1,10 @@
-package com.cxsj.runhdu.controller;
+package com.cxsj.runhdu.Model;
 
 import android.graphics.Color;
 
-import com.cxsj.runhdu.constant.Types;
-import com.cxsj.runhdu.model.sport.RunningInfo;
-import com.cxsj.runhdu.model.sport.RunningInfoSection;
-import com.cxsj.runhdu.utils.QueryUtil;
+import com.cxsj.runhdu.bean.sport.RunningInfo;
+import com.cxsj.runhdu.bean.sport.RunningInfoSection;
+import com.cxsj.runhdu.utils.RunningQueryUtil;
 import com.cxsj.runhdu.utils.Utility;
 
 import org.litepal.crud.DataSupport;
@@ -30,35 +29,30 @@ import lecho.lib.hellocharts.model.SubcolumnValue;
  * 包括：显示进度、柱状图、跑步详情列表、跑步统计列表
  */
 
-public class DataPresentUtil {
-    public interface ProgressViewDataCallback {
-        void onDataFound(int steps, int times, int dis, int energy);
-    }
-
-    public interface ChartViewDataCallback {
-        void onDataFound(ColumnChartData data);
-    }
-
-    public interface GetSectionListCallback {
-        void onDataFound(List<RunningInfoSection> infoList);
+public class DataQueryModel {
+    public interface RunningInfoCallback {
+        void onDataPrepare(int steps, int times, int dis, int energy);
     }
 
     public interface StatisticsCallback {
-        void onDataFound(int allSteps, int allEnergy, double allDis,
-                         double averSteps, double averEnergy, double averDis,
-                         int allTimes, double averTimes, double allTime);
+        void onDataPrepare(int allSteps, int allEnergy, double allDis,
+                           double averSteps, double averEnergy, double averDis,
+                           int allTimes, double averTimes, double allTime);
     }
 
     /**
-     * 设置MainActivity中ProgressView的数据
+     * 获取某个日期跑步数据
+     *
      * @param callback
      */
-    public static void setProgressViewData(ProgressViewDataCallback callback) {
-        List<RunningInfo> runningInfoList = QueryUtil.findOrder(
+    public static void getRunningInfo(Calendar calendar, RunningInfoCallback callback) {
+        String year = String.valueOf(calendar.get(Calendar.YEAR));
+        String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+        String day = String.valueOf(calendar.get(Calendar.DATE));
+
+        List<RunningInfo> runningInfoList = RunningQueryUtil.findOrder(
                 "year = ? and month = ? and date = ?",
-                Utility.getTime(Calendar.YEAR),
-                Utility.getTime(Types.TYPE_MONTH),
-                Utility.getTime(Calendar.DATE));
+                year, month, day);
         int steps = 0;
         int times = 0;
         int dis = 0;
@@ -69,15 +63,15 @@ public class DataPresentUtil {
             dis += info.getDistance();
             energy += info.getEnergy();
         }
-        callback.onDataFound(steps, times, dis, energy);
+        callback.onDataPrepare(steps, times, dis, energy);
     }
 
     /**
      * 设置柱状图数据
+     *
      * @param chartColumnNum 柱状图显示天数
-     * @param callback
      */
-    public static void setColumnChartViewData(int chartColumnNum, ChartViewDataCallback callback) {
+    public static ColumnChartData getColumnChartData(int chartColumnNum) {
         List<String> chartLabels = new ArrayList<>();
         List<Float> chartValues = new ArrayList<>();
         //初始化ColumnChart
@@ -86,7 +80,7 @@ public class DataPresentUtil {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd", Locale.CHINA);
         for (int i = 0; i < chartColumnNum; i++) {
             chartLabels.add(sdf.format(c.getTime()));
-            List<RunningInfo> runningInfoList = QueryUtil.findOrder(
+            List<RunningInfo> runningInfoList = RunningQueryUtil.findOrder(
                     "year = ? and month = ? and date = ?",
                     String.valueOf(c.get(Calendar.YEAR)),
                     String.valueOf(c.get(Calendar.MONTH) + 1),
@@ -104,8 +98,7 @@ public class DataPresentUtil {
         if (chartLabels.size() != chartValues.size()
                 || chartLabels.isEmpty()
                 || chartValues.isEmpty()) {
-            callback.onDataFound(null);
-            return;
+            return null;
         }
 
         ColumnChartData data;
@@ -144,19 +137,16 @@ public class DataPresentUtil {
         axisX.setValues(axisValues);
         //把X轴Y轴数据设置到ColumnChartData 对象中
         data.setAxisXBottom(axisX);
-        callback.onDataFound(data);
+        return data;
     }
 
     /**
-     * 显示跑步详情列表，从数据库查找并回调List<RunningInfoSection>
-     *
-     * @param callback
+     * 获取跑步详情列表
      */
-    public static void getSectionList(List<RunningInfo> list, GetSectionListCallback callback) {
+    public static List<RunningInfoSection> getSectionList(List<RunningInfo> list) {
         List<RunningInfoSection> runningInfoSectionList = new ArrayList<>();
         if (list.isEmpty()) {
-            callback.onDataFound(null);
-            return;
+            return null;
         }
         String oldYear = list.get(0).getYear();
         String oldMonth = list.get(0).getMonth();
@@ -201,11 +191,12 @@ public class DataPresentUtil {
             }
         }
         Collections.reverse(runningInfoSectionList);
-        callback.onDataFound(runningInfoSectionList);
+        return runningInfoSectionList;
     }
 
     /**
      * 设置统计数据
+     *
      * @param callback
      */
     public static void setStatisticsData(StatisticsCallback callback) {
@@ -219,7 +210,7 @@ public class DataPresentUtil {
         double averTimesNum = 0;
         double allTimeNum = 0;
 
-        List<RunningInfo> list = QueryUtil.findAllOrder();
+        List<RunningInfo> list = RunningQueryUtil.findAllOrder();
         String oldDate = null;
         int runDays = 0;
         for (RunningInfo info : list) {
@@ -234,7 +225,7 @@ public class DataPresentUtil {
             averTimesNum = (double) allTimesNum / runDays;
         }
 
-        callback.onDataFound(allStepsNum, allEnergyNum, allDisNum,
+        callback.onDataPrepare(allStepsNum, allEnergyNum, allDisNum,
                 averStepsNum, averEnergyNum, averDisNum,
                 allTimesNum, averTimesNum, allTimeNum);
     }

@@ -5,7 +5,7 @@ import android.widget.ImageView;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.cxsj.runhdu.R;
-import com.cxsj.runhdu.model.sport.SunnyRunInfo;
+import com.cxsj.runhdu.bean.sport.SunnyRunInfo;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.NumberView;
 

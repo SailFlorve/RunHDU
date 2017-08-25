@@ -1,6 +1,6 @@
 package com.cxsj.runhdu.utils;
 
-import com.cxsj.runhdu.model.sport.RunningInfo;
+import com.cxsj.runhdu.bean.sport.RunningInfo;
 
 import org.litepal.crud.DataSupport;
 
@@ -8,10 +8,10 @@ import java.util.List;
 
 /**
  * Created by Sail on 2017/5/10 0010.
- * 操作数据库的封装工具类
+ * 查询跑步数据操作数据库的封装工具类
  */
 
-public class QueryUtil {
+public class RunningQueryUtil {
     /**
      * 普通查找
      * @param conditions 查找条件

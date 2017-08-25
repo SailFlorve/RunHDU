@@ -11,7 +11,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * 用于数据实时获取的服务。（暂未被使用）
+ * ...
  */
 public class SocialService extends Service {
 

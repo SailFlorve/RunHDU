@@ -6,7 +6,8 @@ import android.preference.PreferenceFragment;
 import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
-import com.cxsj.runhdu.controller.DataSyncUtil;
+import com.cxsj.runhdu.Model.BaseModel;
+import com.cxsj.runhdu.Model.RunningModel;
 import com.cxsj.runhdu.utils.Prefs;
 
 /**
@@ -93,15 +94,15 @@ public class SettingsActivity extends BaseActivity {
             SettingsActivity parent = (SettingsActivity) getActivity();
             parent.showProgressDialog("正在删除...");
             String username = (String) prefs.get("username", "0");
-            DataSyncUtil.deleteAllLocalAndServerData(username, new DataSyncUtil.SyncDataCallback() {
+            RunningModel.deleteAll(username, new BaseModel.BaseCallback() {
                 @Override
-                public void onSyncFailure(String msg) {
+                public void onFailure(String msg) {
                     parent.closeProgressDialog();
                     Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
-                public void onSyncSuccess() {
+                public void onSuccess() {
                     parent.closeProgressDialog();
                     Toast.makeText(getActivity(), "删除成功。", Toast.LENGTH_SHORT).show();
                 }

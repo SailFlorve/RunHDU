@@ -9,6 +9,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.cxsj.runhdu.Model.BaseModel;
+import com.cxsj.runhdu.Model.LoginModel;
 import com.cxsj.runhdu.utils.InputCheckHelper;
 import com.cxsj.runhdu.utils.MD5Util;
 import com.cxsj.runhdu.utils.StatusJsonCheckHelper;
@@ -22,7 +24,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class LoginActivity extends BaseActivity implements View.OnClickListener {
+public class LoginActivity extends BaseActivity implements View.OnClickListener, LoginModel.LoginCallback {
 
     private Button loginButton;
     private EditText usernameText;
@@ -62,25 +64,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
                     @Override
                     public void onPass() {
                         showProgressDialog("正在登录...");
-                        HttpUtil.load(URLs.LOGIN)
-                                .addParam("name", username)
-                                .addParam("password", MD5Util.encode(password))
-                                .post(new Callback() {
-                                    @Override
-                                    public void onFailure(Call call, IOException e) {
-                                        runOnUiThread(() -> {
-                                            pwInputLayout.setError("网络连接失败。");
-                                            closeProgressDialog();
-                                        });
-                                    }
-
-                                    @Override
-                                    public void onResponse(Call call, Response response) throws IOException {
-                                        final String result = response.body().string();
-                                        //检查返回的json
-                                        runOnUiThread(() -> checkReturn(result));
-                                    }
-                                });
+                        LoginModel.login(username, MD5Util.encode(password), LoginActivity.this);
                     }
 
                     @Override
@@ -97,30 +81,23 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
         }
     }
 
-    //检查返回的json
-    private void checkReturn(String res) {
-        Log.i("Login", res);
+    @Override
+    public void onLoginSuccess() {
+        showProgressDialog("登录成功...");
+        usernameInputLayout.setEnabled(false);
+        defaultPrefs.put("username", usernameInputLayout.getEditText().getText().toString());
+        defaultPrefs.put("MD5Pw", MD5Util.encode(pwInputLayout.getEditText().getText().toString()));
+        toActivity(LoginActivity.this, MainActivity.class);
+        ActivityManager.finishAll();
+    }
+
+    @Override
+    public void onLoginFailure(String msg, int which) {
         closeProgressDialog();
-        StatusJsonCheckHelper.check(res, new StatusJsonCheckHelper.CheckCallback() {
-            @Override
-            public void onPass() {
-                showProgressDialog("登录成功...");
-                usernameInputLayout.setEnabled(false);
-                defaultPrefs.put("username", usernameInputLayout.getEditText().getText().toString());
-                defaultPrefs.put("MD5Pw", MD5Util.encode(pwInputLayout.getEditText().getText().toString()));
-                toActivity(LoginActivity.this, MainActivity.class);
-                ActivityManager.finishAll();
-            }
-
-            @Override
-            public void onFailure(String msg, int which) {
-
-                if (which == 0) {
-                    usernameInputLayout.setError(msg);
-                } else {
-                    pwInputLayout.setError(msg);
-                }
-            }
-        });
+        if (which == InputCheckHelper.ERR_USERNAME) {
+            usernameInputLayout.setError(msg);
+        } else {
+            pwInputLayout.setError(msg);
+        }
     }
 }

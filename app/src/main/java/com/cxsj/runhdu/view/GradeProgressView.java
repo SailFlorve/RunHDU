@@ -21,7 +21,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import com.cxsj.runhdu.R;
 
 /**
- * 显示进度条。
+ * 进度条。
  */
 public class GradeProgressView extends View {
 

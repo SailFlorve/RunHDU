@@ -8,7 +8,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.cxsj.runhdu.adapters.HelpAdapter;
-import com.cxsj.runhdu.model.HelpItem;
+import com.cxsj.runhdu.bean.HelpItem;
 
 import java.util.ArrayList;
 import java.util.List;

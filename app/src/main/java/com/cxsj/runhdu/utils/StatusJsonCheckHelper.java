@@ -1,6 +1,6 @@
 package com.cxsj.runhdu.utils;
 
-import com.cxsj.runhdu.model.gson.Status;
+import com.cxsj.runhdu.bean.gson.Status;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 

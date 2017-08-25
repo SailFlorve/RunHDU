@@ -1,7 +1,5 @@
 package com.cxsj.runhdu;
 
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,15 +7,15 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.cxsj.runhdu.Model.BaseModel;
+import com.cxsj.runhdu.Model.FriendModel;
 import com.cxsj.runhdu.adapters.FriendApplyRecyclerViewAdapter;
 import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.model.gson.MyFriend;
-import com.cxsj.runhdu.model.gson.Status;
+import com.cxsj.runhdu.bean.gson.MyFriend;
+import com.cxsj.runhdu.bean.gson.Status;
 import com.cxsj.runhdu.utils.HttpUtil;
 import com.google.gson.Gson;
 
@@ -100,47 +98,32 @@ public class FriendApplyBoxActivity extends BaseActivity {
 
     /**
      * 回复申请
+     *
      * @param position 回复第几个申请
-     * @param isAgree 是否同意
+     * @param isAgree  是否同意
      */
     private void reply(int position, Boolean isAgree) {
         String agreeName = applicantInfoList.get(position).getApplicant();
         showProgressDialog("正在处理...");
-        HttpUtil.load(URLs.REPLY_FRIEND)
-                .addParam("UserA", agreeName)
-                .addParam("UserB", username)
-                .addParam("IsAgree", isAgree.toString())
-                .post(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        runOnUiThread(() -> {
-                            closeProgressDialog();
-                            Toast.makeText(FriendApplyBoxActivity.this,
-                                    "网络连接失败。", Toast.LENGTH_SHORT).show();
-                        });
-                    }
+        FriendModel.replyFriendApply(username, agreeName, isAgree, new BaseModel.BaseCallback() {
+            @Override
+            public void onFailure(String msg) {
+                closeProgressDialog();
+                Toast.makeText(FriendApplyBoxActivity.this,
+                        msg, Toast.LENGTH_SHORT).show();
+            }
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        String json = response.body().string();
-                        Log.d(TAG, "onResponse: " + json);
-                        runOnUiThread(() -> {
-                            closeProgressDialog();
-                            Status status = new Gson().fromJson(json, Status.class);
-                            if (status.getResult()) {
-                                Toast.makeText(FriendApplyBoxActivity.this,
-                                        "操作成功", Toast.LENGTH_SHORT).show();
-                                applicantInfoList.remove(position);
-                                adapter.notifyDataSetChanged();
-                                if (applicantInfoList.isEmpty()) {
-                                    noApplyTipLayout.setVisibility(View.VISIBLE);
-                                }
-                            } else {
-                                Toast.makeText(FriendApplyBoxActivity.this,
-                                        status.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                });
+            @Override
+            public void onSuccess() {
+                closeProgressDialog();
+                Toast.makeText(FriendApplyBoxActivity.this,
+                        "操作成功", Toast.LENGTH_SHORT).show();
+                applicantInfoList.remove(position);
+                adapter.notifyDataSetChanged();
+                if (applicantInfoList.isEmpty()) {
+                    noApplyTipLayout.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 }

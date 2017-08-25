@@ -1,4 +1,4 @@
-package com.cxsj.runhdu.model.gson;
+package com.cxsj.runhdu.bean.gson;
 
 import com.google.gson.annotations.SerializedName;
 

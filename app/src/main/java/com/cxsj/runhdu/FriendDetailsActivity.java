@@ -17,13 +17,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.bumptech.glide.Glide;
+import com.cxsj.runhdu.Model.RunningModel;
 import com.cxsj.runhdu.adapters.RecyclerViewSectionAdapter;
 import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.controller.DataPresentUtil;
-import com.cxsj.runhdu.controller.DataSyncUtil;
-import com.cxsj.runhdu.model.gson.Running;
-import com.cxsj.runhdu.model.gson.Status;
-import com.cxsj.runhdu.model.sport.RunningInfoSection;
+import com.cxsj.runhdu.Model.DataQueryModel;
+import com.cxsj.runhdu.bean.gson.Running;
+import com.cxsj.runhdu.bean.gson.Status;
+import com.cxsj.runhdu.bean.sport.RunningInfoSection;
 import com.cxsj.runhdu.utils.HttpUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.google.gson.Gson;
@@ -136,7 +136,7 @@ public class FriendDetailsActivity extends BaseActivity {
     //获取好友跑步详情
     private void getData() {
         refreshLayout.setRefreshing(true);
-        DataSyncUtil.downloadFromServer(friendUsername, new DataSyncUtil.DownloadRunDataCallback() {
+        RunningModel.getRunningInfo(friendUsername, new RunningModel.GetRunningInfoCallback() {
             @Override
             public void onFailure(String msg) {
                 refreshLayout.setRefreshing(false);
@@ -150,12 +150,10 @@ public class FriendDetailsActivity extends BaseActivity {
                     noRunTipLayout.setVisibility(View.VISIBLE);
                     return;
                 }
-
-                DataPresentUtil.getSectionList(running.dataList, infoList -> {
-                    sectionList.clear();
-                    sectionList.addAll(infoList);
-                    adapter.notifyDataSetChanged();
-                });
+                List<RunningInfoSection> infoList = DataQueryModel.getSectionList(running.dataList);
+                sectionList.clear();
+                sectionList.addAll(infoList);
+                adapter.notifyDataSetChanged();
             }
         });
     }

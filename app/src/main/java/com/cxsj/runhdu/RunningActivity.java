@@ -36,14 +36,15 @@ import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.cxsj.runhdu.Model.BaseModel;
+import com.cxsj.runhdu.Model.RunningModel;
 import com.cxsj.runhdu.constant.Strings;
 import com.cxsj.runhdu.constant.Types;
-import com.cxsj.runhdu.controller.DataSyncUtil;
-import com.cxsj.runhdu.model.sport.RunningInfo;
+import com.cxsj.runhdu.bean.sport.RunningInfo;
 import com.cxsj.runhdu.sensor.StepSensorAcceleration;
 import com.cxsj.runhdu.sensor.StepSensorBase;
 import com.cxsj.runhdu.sensor.StepSensorPedometer;
-import com.cxsj.runhdu.utils.ImageSaveUtil;
+import com.cxsj.runhdu.utils.ImageUtil;
 import com.cxsj.runhdu.utils.ShareUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.ImageNumberDisplayView;
@@ -360,16 +361,16 @@ public class RunningActivity extends BaseActivity
     private void updateToServer(RunningInfo runningInfo) {
         isSyncing = true;
         Log.d(TAG, "saveRunData: " + runningInfo.getRunId());
-        DataSyncUtil.uploadSingleToServer(username, runningInfo, new DataSyncUtil.SyncDataCallback() {
+        RunningModel.upload(username, runningInfo, new BaseModel.BaseCallback() {
             @Override
-            public void onSyncFailure(String msg) {
+            public void onFailure(String msg) {
                 isSyncing = false;
                 Snackbar.make(rootLayout, msg, Snackbar.LENGTH_LONG)
                         .setAction("重试", v -> updateToServer(runningInfo)).show();
             }
 
             @Override
-            public void onSyncSuccess() {
+            public void onSuccess() {
                 isSyncing = false;
             }
         });
@@ -472,11 +473,11 @@ public class RunningActivity extends BaseActivity
 
     private  void shareData() {
         baiduMap.snapshot(bitmap -> {
-            Bitmap backBitmap = ShareUtil.takeScreenShot(this);
+            Bitmap backBitmap = ImageUtil.takeScreenShot(this);
             Canvas canvas = new Canvas(backBitmap);
             canvas.drawBitmap(bitmap, 0, getSupportActionBar().getHeight(), null);
-            String imagePath = ImageSaveUtil.saveToSDCard(this, backBitmap, "share_tmp.png");
-            ShareUtil.openShareDialog(this, imagePath);
+            String imagePath = ImageUtil.saveToSDCard(this, backBitmap, "share_tmp.png");
+            ShareUtil.shareImg(this, imagePath);
         });
     }
 

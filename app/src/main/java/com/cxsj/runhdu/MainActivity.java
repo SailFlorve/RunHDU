@@ -28,18 +28,20 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.cxsj.runhdu.Model.AppModel;
+import com.cxsj.runhdu.Model.BaseModel;
+import com.cxsj.runhdu.Model.RunningModel;
 import com.cxsj.runhdu.adapters.MyFragmentPagerAdapter;
 import com.cxsj.runhdu.constant.Types;
 import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.controller.DataPresentUtil;
-import com.cxsj.runhdu.controller.DataSyncUtil;
-import com.cxsj.runhdu.model.gson.Running;
-import com.cxsj.runhdu.model.gson.UpdateInfo;
-import com.cxsj.runhdu.model.sport.RunningInfo;
+import com.cxsj.runhdu.Model.DataQueryModel;
+import com.cxsj.runhdu.bean.gson.Running;
+import com.cxsj.runhdu.bean.gson.UpdateInfo;
+import com.cxsj.runhdu.bean.sport.RunningInfo;
 import com.cxsj.runhdu.utils.ActivityManager;
 import com.cxsj.runhdu.utils.HttpUtil;
-import com.cxsj.runhdu.utils.ImageSaveUtil;
-import com.cxsj.runhdu.utils.QueryUtil;
+import com.cxsj.runhdu.utils.ImageUtil;
+import com.cxsj.runhdu.utils.RunningQueryUtil;
 import com.cxsj.runhdu.utils.ShareUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.GradeProgressView;
@@ -58,6 +60,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
 import lecho.lib.hellocharts.listener.ColumnChartOnValueSelectListener;
+import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.ColumnChartView;
@@ -142,20 +145,12 @@ public class MainActivity extends BaseActivity
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(new Date());
                 calendar.add(Calendar.DATE, -1 * (chartColumnNum - columnIndex - 1));
-                String year = String.valueOf(calendar.get(Calendar.YEAR));
-                String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-                String day = String.valueOf(calendar.get(Calendar.DATE));
-
-                int dis = 0;
-                List<RunningInfo> runningInfoList = QueryUtil.findOrder(
-                        "year = ? and month = ? and date = ?",
-                        year, month, day);
-                for (RunningInfo info : runningInfoList) {
-                    dis += info.getDistance();
-                }
-                dataDescription.setText(
+                DataQueryModel.getRunningInfo(calendar, (steps, times, dis, energy)
+                        -> dataDescription.setText(
                         String.format("%s月%s日 跑步%d次 | %d步 | %d米",
-                                month, day, runningInfoList.size(), (int) value.getValue(), dis));
+                                calendar.get(Calendar.MONTH) + 1,
+                                calendar.get(Calendar.DATE),
+                                times, steps, dis)));
             }
 
             @Override
@@ -202,14 +197,15 @@ public class MainActivity extends BaseActivity
     private void checkServerData() {
         if (!isSyncOn) return;
         //获取服务器端的跑步次数
-        DataSyncUtil.checkServerData(username, new DataSyncUtil.CheckDataCallback() {
+        RunningModel.getRunningTimes(username, new RunningModel.GetTimesCallback() {
+
             @Override
-            public void onCheckFailure(String msg) {
+            public void onFailure(String msg) {
                 showSnackBar(msg);
             }
 
             @Override
-            public void onCheckSuccess(int serverTimes, int localTimes) {
+            public void onSuccess(int serverTimes, int localTimes) {
                 if (serverTimes != localTimes) {
                     new AlertDialog.Builder(MainActivity.this)
                             .setTitle("同步数据")
@@ -220,7 +216,7 @@ public class MainActivity extends BaseActivity
                             .setPositiveButton("服务器数据同步至本地", (dialog, which) ->
                                     syncFromServer())
                             .setNegativeButton("本地数据上传至服务器", (dialog, which) -> {
-                                List<RunningInfo> infoList = QueryUtil.findAllOrder();
+                                List<RunningInfo> infoList = RunningQueryUtil.findAllOrder();
                                 if (infoList.isEmpty()) {
                                     new AlertDialog.Builder(MainActivity.this)
                                             .setTitle("本地无数据")
@@ -317,7 +313,7 @@ public class MainActivity extends BaseActivity
                 @Override
                 public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                     profileImage.setImageBitmap(resource);
-                    String fileDir = ImageSaveUtil.saveToSDCard(MainActivity.this, resource, "profile.jpg");
+                    String fileDir = ImageUtil.saveToSDCard(MainActivity.this, resource, "profile.jpg");
                     prefs.put(username + "_profile_path", fileDir);
                 }
             });
@@ -352,7 +348,9 @@ public class MainActivity extends BaseActivity
     @SuppressLint("SetTextI18n")
     private void setProgressView() {
         circleProgress.setProgress(0);
-        DataPresentUtil.setProgressViewData((steps, times, dis, energy) -> {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        DataQueryModel.getRunningInfo(calendar, (steps, times, dis, energy) -> {
             progressRunTimesText.setText("今日跑步" + times + "次");
             progressStepsText.setText(String.valueOf(steps));
             progressDisEnergyText.setText(String.format("%sKM | %d千卡",
@@ -363,13 +361,12 @@ public class MainActivity extends BaseActivity
 
     @SuppressLint("WrongConstant")
     private void setChartData() {
-        DataPresentUtil.setColumnChartViewData(chartColumnNum, data -> {
-            columnChart.setColumnChartData(data);
-            Viewport v2 = new Viewport(columnChart.getMaximumViewport());
-            v2.right = chartColumnNum;
-            v2.left = chartColumnNum - 7;
-            columnChart.setCurrentViewport(v2);
-        });
+        ColumnChartData data = DataQueryModel.getColumnChartData(chartColumnNum);
+        columnChart.setColumnChartData(data);
+        Viewport v2 = new Viewport(columnChart.getMaximumViewport());
+        v2.right = chartColumnNum;
+        v2.left = chartColumnNum - 7;
+        columnChart.setCurrentViewport(v2);
     }
 
 
@@ -403,7 +400,9 @@ public class MainActivity extends BaseActivity
                 break;
             case R.id.share:
                 ShareUtil.setDelay(500);
-                ShareUtil.takeAndShare(this);
+                Bitmap bitmap = ImageUtil.takeScreenShot(this);
+                String path = ImageUtil.saveToSDCard(this, bitmap, new Date().toString() + ".jpg");
+                ShareUtil.shareImg(this, path);
                 break;
             case R.id.about:
                 toActivity(MainActivity.this, AboutActivity.class);
@@ -435,10 +434,10 @@ public class MainActivity extends BaseActivity
                         .setItems(items, (dialog, which) -> {
                             switch (which) {
                                 case 0:
-                                    choosePhoto(Types.TYPE_CHANGE_PROFILE);
+                                    ImageUtil.openPhotoChooser(this, Types.TYPE_CHANGE_PROFILE);
                                     break;
                                 case 1:
-                                    choosePhoto(Types.TYPE_CHANGE_MENU_BG);
+                                    ImageUtil.openPhotoChooser(this, Types.TYPE_CHANGE_MENU_BG);
                                     break;
                                 case 2:
                                     exitLogin();
@@ -505,30 +504,6 @@ public class MainActivity extends BaseActivity
         });
     }
 
-    //开始选择照片
-    private void choosePhoto(int type) {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");//相片类型
-        startActivityForResult(intent, type);
-    }
-
-    //开启裁剪照片Activity
-    public void startPhotoZoom(Uri uri) {
-        Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setDataAndType(uri, "image/*");
-        // 设置裁剪
-        intent.putExtra("crop", "true");
-        // aspectX aspectY 是宽高的比例
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-        // outputX outputY 是裁剪图片宽高
-        intent.putExtra("outputX", 192);
-        intent.putExtra("outputY", 192);
-        intent.putExtra("return-data", true);
-        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-        startActivityForResult(intent, Types.TYPE_SAVE_PROFILE);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -538,7 +513,7 @@ public class MainActivity extends BaseActivity
         switch (requestCode) {
             case Types.TYPE_CHANGE_PROFILE:
                 Uri profileUri = data.getData();
-                startPhotoZoom(profileUri);
+                ImageUtil.openPhotoCutter(this, profileUri);
                 break;
             case Types.TYPE_CHANGE_MENU_BG:
                 Uri bgUri = data.getData();
@@ -549,10 +524,10 @@ public class MainActivity extends BaseActivity
                 if (data != null) {
                     Bitmap bitmap = data.getParcelableExtra("data");
                     profileImage.setImageBitmap(bitmap);
-                    String saveDir = ImageSaveUtil.saveToSDCard(
+                    String saveDir = ImageUtil.saveToSDCard(
                             this, bitmap, "profile.jpg");
                     prefs.put(username + "_profile_path", saveDir);
-                    ImageSaveUtil.saveToServer(username, bitmap);
+                    ImageUtil.saveToServer(username, bitmap);
                 }
                 break;
             default:
@@ -572,7 +547,7 @@ public class MainActivity extends BaseActivity
     public void syncFromServer() {
         showProgressDialog("正在从服务器同步...");
 
-        DataSyncUtil.downloadFromServer(username, new DataSyncUtil.DownloadRunDataCallback() {
+        RunningModel.getRunningInfo(username, new RunningModel.GetRunningInfoCallback() {
             @Override
             public void onFailure(String msg) {
                 closeProgressDialog();
@@ -598,15 +573,15 @@ public class MainActivity extends BaseActivity
     //把本地的数据同步至服务器
     private void uploadToServer() {
         showProgressDialog("正在上传至服务器...");
-        DataSyncUtil.uploadAllToServer(username, new DataSyncUtil.SyncDataCallback() {
+        RunningModel.uploadAll(username, new BaseModel.BaseCallback() {
             @Override
-            public void onSyncFailure(String msg) {
+            public void onFailure(String msg) {
                 closeProgressDialog();
                 showSnackBar(msg);
             }
 
             @Override
-            public void onSyncSuccess() {
+            public void onSuccess() {
                 closeProgressDialog();
                 showSnackBar("上传成功。");
             }
@@ -614,7 +589,7 @@ public class MainActivity extends BaseActivity
     }
 
     private void checkUpdate() {
-        DataSyncUtil.checkUpdate(this, new DataSyncUtil.UpdateCheckCallback() {
+        AppModel.checkUpdate(this, new AppModel.UpdateCheckCallback() {
             @Override
             public void onSuccess(UpdateInfo updateInfo) {
                 if (updateInfo.isUpdate()) {

@@ -13,10 +13,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.cxsj.runhdu.adapters.RecyclerViewSectionAdapter;
-import com.cxsj.runhdu.controller.DataPresentUtil;
-import com.cxsj.runhdu.model.sport.RunningInfo;
-import com.cxsj.runhdu.model.sport.RunningInfoSection;
-import com.cxsj.runhdu.utils.QueryUtil;
+import com.cxsj.runhdu.Model.DataQueryModel;
+import com.cxsj.runhdu.bean.sport.RunningInfo;
+import com.cxsj.runhdu.bean.sport.RunningInfoSection;
+import com.cxsj.runhdu.utils.RunningQueryUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,22 +78,21 @@ public class RunListFragment extends Fragment {
     }
 
     public void setListData() {
-        List<RunningInfo> list = QueryUtil.findAllOrder();
-        DataPresentUtil.getSectionList(list, sectionList -> {
-            if (infoList == null) {
-                infoList = new ArrayList<>();
-            } else {
-                infoList.clear();
-            }
-            if (sectionList != null) {
-                infoList.addAll(sectionList);
-            }
-            viewAdapter.notifyDataSetChanged();
-            if (!infoList.isEmpty()) {
-                neverRunLayout.setVisibility(View.GONE);
-            } else {
-                neverRunLayout.setVisibility(View.VISIBLE);
-            }
-        });
+        List<RunningInfo> list = RunningQueryUtil.findAllOrder();
+        List<RunningInfoSection> sectionList = DataQueryModel.getSectionList(list);
+        if (infoList == null) {
+            infoList = new ArrayList<>();
+        } else {
+            infoList.clear();
+        }
+        if (sectionList != null) {
+            infoList.addAll(sectionList);
+        }
+        viewAdapter.notifyDataSetChanged();
+        if (!infoList.isEmpty()) {
+            neverRunLayout.setVisibility(View.GONE);
+        } else {
+            neverRunLayout.setVisibility(View.VISIBLE);
+        }
     }
 }

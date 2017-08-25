@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.cxsj.runhdu.controller.DataPresentUtil;
+import com.cxsj.runhdu.Model.DataQueryModel;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.NumberView;
 
@@ -54,9 +54,9 @@ public class StatisticsFragment extends Fragment {
 
     //设置统计数据
     public void updateData() {
-        DataPresentUtil.setStatisticsData((allStepsNum, allEnergyNum, allDisNum,
-                                           averStepsNum, averEnergyNum, averDisNum,
-                                           allTimesNum, averTimesNum, allTimeNum) -> {
+        DataQueryModel.setStatisticsData((allStepsNum, allEnergyNum, allDisNum,
+                                          averStepsNum, averEnergyNum, averDisNum,
+                                          allTimesNum, averTimesNum, allTimeNum) -> {
             allSteps.setText(handleBigInt(allStepsNum));
             allEnergy.setText(handleBigInt(allEnergyNum));
             allDis.setText(Utility.formatDecimal(allDisNum / 1000, 1));

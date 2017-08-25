@@ -20,12 +20,13 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.cxsj.runhdu.Model.BaseModel;
+import com.cxsj.runhdu.Model.FriendModel;
 import com.cxsj.runhdu.adapters.FriendRecyclerViewAdapter;
 import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.controller.DataSyncUtil;
-import com.cxsj.runhdu.model.gson.FriendInfo;
-import com.cxsj.runhdu.model.gson.MyFriend;
-import com.cxsj.runhdu.model.gson.Status;
+import com.cxsj.runhdu.bean.gson.FriendInfo;
+import com.cxsj.runhdu.bean.gson.MyFriend;
+import com.cxsj.runhdu.bean.gson.Status;
 import com.cxsj.runhdu.utils.HttpUtil;
 import com.google.gson.Gson;
 
@@ -164,7 +165,7 @@ public class FriendActivity extends BaseActivity {
      */
     private void getFriendData() {
         refreshLayout.setRefreshing(true);
-        DataSyncUtil.getFriend(username, new DataSyncUtil.FriendCallback() {
+        FriendModel.getFriendList(username, new FriendModel.GetFriendCallback() {
             @Override
             public void onSuccess(String json, MyFriend myFriend) {
                 refreshLayout.setRefreshing(false);
@@ -209,33 +210,20 @@ public class FriendActivity extends BaseActivity {
             return;
         }
         showProgressDialog("正在申请好友...");
-        HttpUtil.load(URLs.APPLY_FRIEND)
-                .addParam("UserA", username)
-                .addParam("UserB", friendName)
-                .post(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        runOnUiThread(() -> {
-                            closeProgressDialog();
-                            showSnackBar("网络连接失败。");
-                        });
-                    }
+        FriendModel.addFriend(username, friendName, new BaseModel.BaseCallback() {
+            @Override
+            public void onFailure(String msg) {
+                closeProgressDialog();
+                showSnackBar(msg,"重试", v ->
+                        addFriendButton.callOnClick());
+            }
 
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        String statusJson = response.body().string();
-                        runOnUiThread(() -> {
-                            closeProgressDialog();
-                            Status status = new Gson().fromJson(statusJson, Status.class);
-                            if (status.getResult()) {
-                                showSnackBar("请求发送成功。");
-                            } else {
-                                showSnackBar(status.getMessage(), "重试", v ->
-                                        addFriendButton.callOnClick());
-                            }
-                        });
-                    }
-                });
+            @Override
+            public void onSuccess() {
+                closeProgressDialog();
+                showSnackBar("请求发送成功。");
+            }
+        });
     }
 
     private void showSnackBar(String text) {

@@ -3,10 +3,6 @@ package com.cxsj.runhdu;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -28,20 +24,18 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.PolylineOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.cxsj.runhdu.controller.DataSyncUtil;
-import com.cxsj.runhdu.model.sport.RunningInfo;
-import com.cxsj.runhdu.utils.ImageSaveUtil;
+import com.cxsj.runhdu.Model.BaseModel;
+import com.cxsj.runhdu.Model.RunningModel;
+import com.cxsj.runhdu.bean.sport.RunningInfo;
+import com.cxsj.runhdu.utils.ImageUtil;
 import com.cxsj.runhdu.utils.ShareUtil;
 import com.cxsj.runhdu.utils.Utility;
 import com.cxsj.runhdu.view.NumberView;
 
 import org.litepal.crud.DataSupport;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import lecho.lib.hellocharts.model.Line;
 
 /**
  * 跑步数据详情页面
@@ -122,12 +116,12 @@ public class RunDetailsActivity extends BaseActivity {
                 break;
             case R.id.share_run_item:
                 baiduMap.snapshot(bitmap -> {
-                    Bitmap backBitmap = ShareUtil.takeScreenShot(this);
+                    Bitmap backBitmap = ImageUtil.takeScreenShot(this);
                     Canvas canvas = new Canvas(backBitmap);
                     canvas.drawBitmap(bitmap, 0, getSupportActionBar().getHeight(), null);
-                    canvas.drawBitmap(ShareUtil.takeScreenShot(floatInfo), 0, getSupportActionBar().getHeight(), null);
-                    String imagePath = ImageSaveUtil.saveToSDCard(this, backBitmap, "share_tmp.png");
-                    ShareUtil.openShareDialog(this, imagePath);
+                    canvas.drawBitmap(ImageUtil.takeScreenShot(floatInfo), 0, getSupportActionBar().getHeight(), null);
+                    String imagePath = ImageUtil.saveToSDCard(this, backBitmap, "share_tmp.png");
+                    ShareUtil.shareImg(this, imagePath);
                 });
                 break;
             default:
@@ -219,15 +213,15 @@ public class RunDetailsActivity extends BaseActivity {
     private void requestDeleteItem() {
         if (isSyncOn) {
             showProgressDialog("正在同步删除至服务器...");
-            DataSyncUtil.deleteSingleLocalAndServerData(username, mRunningInfo.getRunId(), new DataSyncUtil.SyncDataCallback() {
+            RunningModel.delete(username, mRunningInfo.getRunId(), new BaseModel.BaseCallback(){
                 @Override
-                public void onSyncFailure(String msg) {
+                public void onFailure(String msg) {
                     closeProgressDialog();
                     Toast.makeText(RunDetailsActivity.this, "网络连接错误，删除失败。", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
-                public void onSyncSuccess() {
+                public void onSuccess() {
                     closeProgressDialog();
                     Toast.makeText(RunDetailsActivity.this, "删除成功。", Toast.LENGTH_SHORT).show();
                     deleteLocalItem();

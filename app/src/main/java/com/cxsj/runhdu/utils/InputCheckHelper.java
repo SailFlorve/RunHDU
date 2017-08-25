@@ -68,8 +68,10 @@ public class InputCheckHelper {
     }
 
     /**
+     * todo: 使用正则表达式
      * @param username 检查的用户名
      * @return 错误信息
+     *
      */
     private static String checkUsername(String username) {
         if (TextUtils.isEmpty(username)) {
@@ -93,6 +95,7 @@ public class InputCheckHelper {
         return null;
     }
 
+    //todo: 使用正则表达式
     private static String checkPassword(String password) {
         if (TextUtils.isEmpty(password)) {
             return "密码不可以为空。";

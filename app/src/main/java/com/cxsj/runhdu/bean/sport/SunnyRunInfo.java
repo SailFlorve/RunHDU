@@ -1,4 +1,4 @@
-package com.cxsj.runhdu.model.sport;
+package com.cxsj.runhdu.bean.sport;
 
 /**
  * 阳光长跑信息实体类

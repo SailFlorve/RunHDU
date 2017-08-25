@@ -1,17 +1,11 @@
 package com.cxsj.runhdu.adapters;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.signature.StringSignature;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.cxsj.runhdu.R;
-import com.cxsj.runhdu.constant.Types;
-import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.model.gson.FriendInfo;
-import com.cxsj.runhdu.model.gson.MyFriend;
+import com.cxsj.runhdu.bean.gson.MyFriend;
 import com.cxsj.runhdu.utils.Utility;
 
-import java.util.Calendar;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;

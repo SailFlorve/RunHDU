@@ -1,15 +1,13 @@
 package com.cxsj.runhdu;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cxsj.runhdu.constant.URLs;
-import com.cxsj.runhdu.controller.DataSyncUtil;
-import com.cxsj.runhdu.model.gson.UpdateInfo;
+import com.cxsj.runhdu.Model.AppModel;
+import com.cxsj.runhdu.bean.gson.UpdateInfo;
 import com.cxsj.runhdu.utils.Utility;
 
 /**
@@ -45,7 +43,7 @@ public class AboutActivity extends BaseActivity {
     //检查更新
     private void checkUpdate() {
         showProgressDialog("正在检查更新...");
-        DataSyncUtil.checkUpdate(this, new DataSyncUtil.UpdateCheckCallback() {
+        AppModel.checkUpdate(this, new AppModel.UpdateCheckCallback() {
             @Override
             public void onSuccess(UpdateInfo updateInfo) {
                 closeProgressDialog();

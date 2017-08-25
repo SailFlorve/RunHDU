@@ -1,4 +1,4 @@
-package com.cxsj.runhdu.model.gson;
+package com.cxsj.runhdu.bean.gson;
 
 /**
  * Created by SailFlorve on 2017/5/26 0026.
