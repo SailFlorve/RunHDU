@@ -1,7 +1,8 @@
 package com.cxsj.runhdu.utils;
 
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.Nullable;
 
 /**
  * 检查登录注册时输入正确性的工具类
@@ -69,9 +70,9 @@ public class InputCheckHelper {
 
     /**
      * todo: 使用正则表达式
+     *
      * @param username 检查的用户名
      * @return 错误信息
-     *
      */
     private static String checkUsername(String username) {
         if (TextUtils.isEmpty(username)) {

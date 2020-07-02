@@ -6,13 +6,13 @@
     android:background="?attr/colorPrimary"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/about_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:title="关于"/>
+        app:title="关于" />
 
     <ImageView
         android:id="@+id/app_logo"

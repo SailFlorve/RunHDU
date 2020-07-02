@@ -38,17 +38,17 @@ public class StepSensorPedometer extends StepSensorBase {
             return;
         }
         /*
-        * TYPE_STEP_DETECTOR
-        * 每次检测到步数变化，会给出变化值
-        *
-        * TYPE_STEP_COUNTER
-        * 每次检测到步数变化，会给出总步数，精确度也更高
-        */
+         * TYPE_STEP_DETECTOR
+         * 每次检测到步数变化，会给出变化值
+         *
+         * TYPE_STEP_COUNTER
+         * 每次检测到步数变化，会给出总步数，精确度也更高
+         */
         if (sensorManager.registerListener(this, detectorSensor, SensorManager.SENSOR_DELAY_GAME)) {
             isAvailable = true;
             sensorMode = 0;
             Log.i(TAG, "计步传感器count可用！");
-        } else if (sensorManager.registerListener(this,  countSensor,SensorManager.SENSOR_DELAY_GAME)) {
+        } else if (sensorManager.registerListener(this, countSensor, SensorManager.SENSOR_DELAY_GAME)) {
             isAvailable = true;
             sensorMode = 1;
             Log.i(TAG, "计步传感器detector可用！");

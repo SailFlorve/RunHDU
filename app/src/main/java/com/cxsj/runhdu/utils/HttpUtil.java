@@ -1,6 +1,7 @@
 package com.cxsj.runhdu.utils;
 
-import java.io.IOException;
+import com.cxsj.runhdu.application.MyApplication;
+
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -15,12 +16,18 @@ import okhttp3.Request;
  */
 
 public class HttpUtil {
+
     private static RequestManager manager;
 
     public static RequestManager load(String url) {
         manager = new RequestManager();
         manager.url(url);
         return manager;
+    }
+
+    public static boolean isOfflineMode() {
+        Prefs defaultPrefs = new Prefs(MyApplication.getContext());
+        return (boolean) defaultPrefs.get("offline_mode", false);
     }
 
     public static class RequestManager {

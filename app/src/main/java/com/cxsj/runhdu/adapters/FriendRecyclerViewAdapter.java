@@ -9,6 +9,7 @@ import com.cxsj.runhdu.bean.gson.FriendInfo;
 import com.cxsj.runhdu.utils.Utility;
 
 import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -37,6 +38,8 @@ public class FriendRecyclerViewAdapter extends BaseQuickAdapter<FriendInfo, Base
 
         helper.setText(R.id.friend_name_list_item, item.getUsername());
         helper.setText(R.id.friend_des_list_item,
-                String.format("今日跑步%d次 | 共跑步%d次", item.getNumToday(), item.getNumAll()));
+                String.format(Locale.getDefault(),
+                        "今日跑步%d次 | 共跑步%d次",
+                        item.getNumToday(), item.getNumAll()));
     }
 }

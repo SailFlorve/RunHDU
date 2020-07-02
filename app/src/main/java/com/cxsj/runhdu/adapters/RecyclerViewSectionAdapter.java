@@ -3,9 +3,9 @@ package com.cxsj.runhdu.adapters;
 import com.chad.library.adapter.base.BaseSectionQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.cxsj.runhdu.R;
-import com.cxsj.runhdu.constant.Strings;
 import com.cxsj.runhdu.bean.sport.RunningInfo;
 import com.cxsj.runhdu.bean.sport.RunningInfoSection;
+import com.cxsj.runhdu.constant.Strings;
 import com.cxsj.runhdu.utils.Utility;
 
 import java.util.List;

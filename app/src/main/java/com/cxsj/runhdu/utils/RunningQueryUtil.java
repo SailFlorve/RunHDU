@@ -14,6 +14,7 @@ import java.util.List;
 public class RunningQueryUtil {
     /**
      * 普通查找
+     *
      * @param conditions 查找条件
      * @return
      */
@@ -23,6 +24,7 @@ public class RunningQueryUtil {
 
     /**
      * 按跑步时间排序查找
+     *
      * @param conditions 查找条件
      * @return
      */
@@ -32,6 +34,7 @@ public class RunningQueryUtil {
 
     /**
      * 按跑步时间跑需，查找所有
+     *
      * @return
      */
     public static List<RunningInfo> findAllOrder() {

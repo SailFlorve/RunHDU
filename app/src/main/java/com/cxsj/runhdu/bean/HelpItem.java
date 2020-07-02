@@ -9,11 +9,12 @@ public class HelpItem {
     private String title;
     private String info;
 
-    public HelpItem(String title, String info){
+    public HelpItem(String title, String info) {
         this.title = title;
         this.info = info;
     }
-    public String getTitle(){
+
+    public String getTitle() {
         return title;
     }
 

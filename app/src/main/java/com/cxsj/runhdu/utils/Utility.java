@@ -2,15 +2,11 @@ package com.cxsj.runhdu.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.telephony.TelephonyManager;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.DistanceUtil;
@@ -72,10 +68,8 @@ public class Utility {
             NetworkInfo info = connectivity.getActiveNetworkInfo();
             if (info != null && info.isConnected()) {
                 // 当前网络是连接的
-                if (info.getState() == NetworkInfo.State.CONNECTED) {
-                    // 当前所连接的网络可用
-                    return true;
-                }
+                // 当前所连接的网络可用
+                return info.getState() == NetworkInfo.State.CONNECTED;
             }
         }
         return false;

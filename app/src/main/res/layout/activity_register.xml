@@ -1,12 +1,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/register_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -14,7 +13,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:title="注册">
 
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
 
     <LinearLayout
@@ -24,7 +23,7 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/username_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,9 +36,9 @@
                 android:hint="用户名"
                 android:inputType="textPersonName"
                 android:textColor="?attr/colorPrimaryDark" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/pw_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,9 +52,9 @@
                 android:hint="密码"
                 android:inputType="textPassword"
                 android:textColor="?attr/colorPrimaryDark" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/pw_ensure_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -69,7 +68,7 @@
                 android:hint="确认密码"
                 android:inputType="textPassword"
                 android:textColor="?attr/colorPrimaryDark" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/register_button"

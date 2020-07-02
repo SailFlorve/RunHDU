@@ -6,9 +6,9 @@
     android:layout_height="match_parent"
     android:background="@color/BlackMD"
     android:orientation="vertical"
-    tools:context="com.cxsj.runhdu.RunDetailsActivity">
+    tools:context="com.cxsj.runhdu.appfunctions.main.RunDetailsActivity">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/details_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -18,7 +18,7 @@
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:title="详细信息">
 
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
     <RelativeLayout
         android:layout_width="match_parent"

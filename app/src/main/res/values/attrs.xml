@@ -21,14 +21,14 @@
         <attr name="numberUnitText" format="string" />
         <attr name="numberTextColor" format="color" />
         <attr name="numberDesTextColor" format="color" />
-        <attr name="numberUnitTextColor" format="color"/>
+        <attr name="numberUnitTextColor" format="color" />
         <attr name="NumberSize" format="dimension" />
     </declare-styleable>
 
     <declare-styleable name="ImageNumberDisplayView">
-        <attr name="number" format="string" />
+        <attr name="number_s" format="string" />
         <attr name="imageSrc" format="reference" />
-        <attr name="unit" format="string"/>
-            <attr name="description" format="string"/>
+        <attr name="unit" format="string" />
+        <attr name="description" format="string" />
     </declare-styleable>
 </resources>

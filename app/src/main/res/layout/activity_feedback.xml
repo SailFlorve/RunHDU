@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/feedback_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -14,15 +14,15 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:title="意见反馈">
 
-    </android.support.v7.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
     <EditText
         android:id="@+id/feedback_text"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
         android:layout_marginTop="30dp"
+        android:layout_marginRight="15dp"
         android:background="@drawable/border_blue"
         android:gravity="top"
         android:hint="输入反馈信息..."
@@ -33,20 +33,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
         android:layout_marginTop="15dp"
+        android:layout_marginRight="15dp"
         android:background="@drawable/border_blue"
         android:hint="您的QQ(选填)..."
         android:textSize="16sp" />
 
-    <com.dd.CircularProgressButton
+    <com.cxsj.runhdu.view.circularprogressbutton.CircularProgressButton
         android:id="@+id/feedback_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginLeft="75dp"
-        android:layout_marginRight="75dp"
         android:layout_marginTop="30dp"
+        android:layout_marginRight="75dp"
         android:background="?attr/colorPrimary"
         android:textColor="#FFF"
         app:cpb_selectorComplete="@drawable/run_button_selector"

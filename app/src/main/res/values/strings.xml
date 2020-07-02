@@ -73,7 +73,9 @@
         <item>3.0</item>
     </string-array>
 
-    <string name="developer">开发人员\n\n飞翔的傻瓜\nSailFlorve\n晴天流水\n乔莹\nhang 行不止</string>
+    <string name="developer">开发人员\n\nSailFlorve(Android)\n飞翔的傻瓜(Android)\n晴天流水(Web)\nQiao Ying(Web)\nhang行不止(Web)</string>
+    <string name="offline_mode">离线模式</string>
+    <string name="offline_mode_des">离线模式可以在没有网络的情况下注册和登录，并关闭一部分运动数据同步功能。</string>
     <string-array name="help_title">
         <item>更新日志</item>
         <item>跑步前一直提示“等待定位”或者“等待GPS”？</item>
@@ -89,6 +91,11 @@
 
     <string-array name="help_answer">
         <item>更新日志：
+            \n\nVer 1.2.5 2020-07-02
+            \n1.修复在Android高版本跑步界面崩溃的问题；
+            \n2.修复分享功能崩溃的问题；
+            \n2.新增离线模式；
+            \n3.升级App目标SDK和最低SDK版本。
             \n\nVer 1.2.2 2017-06-29
             \n1.新增跑步界面及跑步详情界面分享；
             \n2.增强稳定性；
@@ -114,7 +121,7 @@
         <item>为了能准确记录您的速度、路程、轨迹等信息，没有搜索到GPS时，不允许开始跑步。\n请您在室外空旷地带尝试进行定位以及跑步；或者打开设置中的“不检查GPS”。</item>
         <item>请确认您已经授予了本APP的定位权限。</item>
         <item>地图数据的下载、WIFI辅助定位以及云同步都需要网络连接才能工作。</item>
-        <item>可能是您的手机没有加速度传感器。</item>
+        <item>可能是您的手机没有计步传感器。</item>
         <item>跑步时需要显示与处理大量数据，请确认您的手机运行内存充足。\n内存不足时会APP被系统杀死，从而丢失跑步数据。\n我们会持续优化内存占用。</item>
         <item>请查看手机的省电设置，例如MIUI的“神隐模式”或OPPO的“纯净后台”功能，请把此APP加入省电白名单。</item>
         <item>进入APP后，我们会将您的数据和服务器进行比对；\n每次跑步后，您的跑步数据将会上传到服务器；\n删除跑步数据时，将会同步服务器进行删除。</item>

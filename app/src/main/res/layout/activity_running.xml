@@ -7,10 +7,10 @@
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     android:id="@+id/running_root_layout"
-    tools:context="com.cxsj.runhdu.MainActivity"
+    tools:context="com.cxsj.runhdu.appfunctions.main.MainActivity"
     android:keepScreenOn="true">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/running_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
@@ -18,8 +18,7 @@
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:title="开始跑步"
         app:layout_collapseMode="pin"
-        app:popupTheme="@style/AppTheme.PopupOverlay">
-    </android.support.v7.widget.Toolbar>
+        app:popupTheme="@style/AppTheme.PopupOverlay"></androidx.appcompat.widget.Toolbar>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -104,7 +103,7 @@
                     app:imageSrc="@drawable/ic_steps"
                     app:layout_columnWeight="1"
                     app:layout_rowWeight="1"
-                    app:number="0"
+                    app:number_s="0"
                     app:unit="步" />
 
                 <com.cxsj.runhdu.view.ImageNumberDisplayView
@@ -117,7 +116,7 @@
                     app:imageSrc="@drawable/ic_distance"
                     app:layout_columnWeight="1"
                     app:layout_rowWeight="1"
-                    app:number="0"
+                    app:number_s="0"
                     app:unit="M" />
 
                 <com.cxsj.runhdu.view.ImageNumberDisplayView
@@ -130,7 +129,7 @@
                     app:imageSrc="@drawable/ic_energy"
                     app:layout_columnWeight="1"
                     app:layout_rowWeight="1"
-                    app:number="0"
+                    app:number_s="0"
                     app:unit="千卡" />
             </LinearLayout>
         </LinearLayout>
@@ -142,7 +141,7 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <com.dd.CircularProgressButton
+            <com.cxsj.runhdu.view.circularprogressbutton.CircularProgressButton
                 android:id="@+id/cpb_button"
                 android:layout_width="96dp"
                 android:layout_height="96dp"

@@ -1,5 +1,4 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
@@ -23,6 +22,23 @@
             android:gravity="center"
             android:text="@string/app_description"
             android:textColor="#fff" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cb_offline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/offline_mode"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:gravity="center"
+            android:text="@string/offline_mode_des"
+            android:textColor="@android:color/white" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -36,9 +52,9 @@
             android:id="@+id/welcome_login_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
+            android:layout_marginBottom="15dp"
             android:background="?attr/colorPrimaryDark"
             android:text="登录"
             android:textColor="#fff"

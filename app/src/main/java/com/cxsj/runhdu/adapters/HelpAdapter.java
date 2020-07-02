@@ -1,15 +1,16 @@
 package com.cxsj.runhdu.adapters;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.cxsj.runhdu.bean.HelpItem;
+import androidx.annotation.NonNull;
+
 import com.cxsj.runhdu.R;
+import com.cxsj.runhdu.bean.HelpItem;
 
 import java.util.List;
 
@@ -21,8 +22,9 @@ import java.util.List;
 
 public class HelpAdapter extends ArrayAdapter<HelpItem> {
     private int resourceId;
-    public HelpAdapter(Context context, int textViewResourceId, List<HelpItem> objects){
-        super(context,textViewResourceId,objects);
+
+    public HelpAdapter(Context context, int textViewResourceId, List<HelpItem> objects) {
+        super(context, textViewResourceId, objects);
         resourceId = textViewResourceId;
     }
 
@@ -30,7 +32,7 @@ public class HelpAdapter extends ArrayAdapter<HelpItem> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         HelpItem help_item = getItem(position);
-        View view = LayoutInflater.from(getContext()).inflate(resourceId,parent,false);
+        View view = LayoutInflater.from(getContext()).inflate(resourceId, parent, false);
         TextView title = (TextView) view.findViewById(R.id.help_title);
         TextView info = (TextView) view.findViewById(R.id.help_info);
         title.setText(help_item.getTitle());

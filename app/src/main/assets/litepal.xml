@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <litepal>
     <dbname value="RunHDU"/>
-    <version value="5"/>
+    <version value="6" />
     <list>
         <mapping class="com.cxsj.runhdu.bean.sport.RunningInfo"/>
+        <mapping class="com.cxsj.runhdu.bean.UserInfo" />
     </list>
 </litepal>

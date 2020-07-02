@@ -40,7 +40,7 @@ public class ImageNumberDisplayView extends LinearLayout {
         super(context, attrs);
         initView();
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ImageNumberDisplayView);
-        number = a.getString(R.styleable.ImageNumberDisplayView_number);
+        number = a.getString(R.styleable.ImageNumberDisplayView_number_s);
         image_res = a.getResourceId(R.styleable.ImageNumberDisplayView_imageSrc, R.drawable.ic_steps);
         unit = a.getString(R.styleable.ImageNumberDisplayView_unit);
         des = a.getString(R.styleable.ImageNumberDisplayView_description);

@@ -32,7 +32,7 @@ public class MyFriend {
         this.applyList = applyList;
     }
 
-    public class ApplicantInfo{
+    public class ApplicantInfo {
         @SerializedName("Applicant")
         private String applicant;
 

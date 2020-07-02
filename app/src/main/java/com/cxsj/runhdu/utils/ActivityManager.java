@@ -15,13 +15,13 @@ public class ActivityManager {
     private static List<Activity> activities = new ArrayList<>();
 
     public static void addActivity(Activity activity) {
-        Log.d(TAG, "addActivity: "+activity.getLocalClassName());
+        Log.d(TAG, "addActivity: " + activity.getLocalClassName());
         activities.add(activity);
     }
 
     public static void removeActivity(Activity activity) {
         if (activity != null) {
-            Log.d(TAG, "removeActivity: "+activity.getLocalClassName());
+            Log.d(TAG, "removeActivity: " + activity.getLocalClassName());
             activities.remove(activity);
         }
     }

@@ -7,7 +7,7 @@
     android:background="#FAFAFA"
     android:orientation="vertical">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="0dp">
@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <android.support.v7.widget.GridLayout
+            <androidx.gridlayout.widget.GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:columnCount="3"
@@ -121,7 +121,7 @@
                     app:numberDesText="总跑步时长"
                     app:numberText="0"
                     app:numberUnitText="h" />
-            </android.support.v7.widget.GridLayout>
+            </androidx.gridlayout.widget.GridLayout>
         </LinearLayout>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

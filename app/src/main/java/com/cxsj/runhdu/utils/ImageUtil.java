@@ -7,11 +7,9 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
-import android.test.ActivityTestCase;
 import android.util.Base64;
 import android.view.View;
 
-import com.baidu.mapapi.map.BitmapDescriptor;
 import com.cxsj.runhdu.constant.Types;
 import com.cxsj.runhdu.constant.URLs;
 
@@ -109,11 +107,7 @@ public class ImageUtil {
         Bitmap tBitmap = view.getDrawingCache();
         tBitmap = Bitmap.createBitmap(tBitmap);
         view.setDrawingCacheEnabled(false);
-        if (tBitmap != null) {
-            return tBitmap;
-        } else {
-            return null;
-        }
+        return tBitmap;
     }
 
     public static void openPhotoChooser(Activity activity, int resultCode) {
