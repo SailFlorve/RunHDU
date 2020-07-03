@@ -6,5 +6,8 @@
 #### 2020更新
 此项目是早年学习Android时开发的练手项目，没有什么太高级的功能和复杂的架构，而且服务器端已经没了。最近升级了SDK版本，做了些兼容性修复。推荐使用Android Studio 4.0及以上版本运行。
 #### todolist
-1.项目使用JetPack组件重构并改为MVVM架构；<br>
-2.编程语言改为Kotlin。<br>
+1.使用JetPack组件和MVVM架构重构所有功能；<br>
+
+2.网络部分使用Retrofit重写；<br>
+
+3.编程语言改为Kotlin。<br>
